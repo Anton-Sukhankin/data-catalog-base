@@ -1,1 +1,0 @@
-export { FaviconProvider } from './FaviconProvider';

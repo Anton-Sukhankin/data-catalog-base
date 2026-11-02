@@ -1,1 +1,0 @@
-export { Dining } from './Dining';

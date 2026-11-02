@@ -1,1 +1,0 @@
-export { ZoomOut } from './ZoomOut';

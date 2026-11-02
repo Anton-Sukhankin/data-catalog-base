@@ -1,1 +1,0 @@
-export { PhotoDone } from './PhotoDone';

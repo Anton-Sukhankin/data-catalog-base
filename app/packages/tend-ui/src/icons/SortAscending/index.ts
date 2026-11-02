@@ -1,1 +1,0 @@
-export { SortAscending } from './SortAscending';

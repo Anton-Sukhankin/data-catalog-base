@@ -1,1 +1,0 @@
-export { DoneCircle } from './DoneCircle';

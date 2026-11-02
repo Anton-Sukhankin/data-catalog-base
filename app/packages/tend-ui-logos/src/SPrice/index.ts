@@ -1,1 +1,0 @@
-export { SPrice } from './SPrice';

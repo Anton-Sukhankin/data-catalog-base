@@ -1,1 +1,0 @@
-export { withInjectedClassName } from './withInjectedClassName';

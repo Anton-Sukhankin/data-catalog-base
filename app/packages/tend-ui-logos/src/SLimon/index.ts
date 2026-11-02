@@ -1,1 +1,0 @@
-export { SLimon } from './SLimon';

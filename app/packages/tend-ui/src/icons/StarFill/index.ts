@@ -1,1 +1,0 @@
-export { StarFill } from './StarFill';

@@ -1,2 +1,0 @@
-// Main package export
-export {};

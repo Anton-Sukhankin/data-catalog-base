@@ -1,1 +1,0 @@
-export { FormatSize } from './FormatSize';

@@ -1,1 +1,0 @@
-export { Light } from './Light';

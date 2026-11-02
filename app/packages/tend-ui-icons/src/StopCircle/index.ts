@@ -1,1 +1,0 @@
-export { StopCircle } from './StopCircle';

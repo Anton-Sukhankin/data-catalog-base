@@ -1,1 +1,0 @@
-export { ConvertShape } from './ConvertShape';

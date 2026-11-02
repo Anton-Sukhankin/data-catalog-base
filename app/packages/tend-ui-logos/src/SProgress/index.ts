@@ -1,1 +1,0 @@
-export { SProgress } from './SProgress';

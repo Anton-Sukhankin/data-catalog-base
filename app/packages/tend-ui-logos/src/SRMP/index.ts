@@ -1,1 +1,0 @@
-export { SRMP } from './SRMP';

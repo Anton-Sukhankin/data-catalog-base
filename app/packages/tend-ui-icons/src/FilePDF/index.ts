@@ -1,1 +1,0 @@
-export { FilePDF } from './FilePDF';

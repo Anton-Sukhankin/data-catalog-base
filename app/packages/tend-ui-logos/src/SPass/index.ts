@@ -1,1 +1,0 @@
-export { SPass } from './SPass';

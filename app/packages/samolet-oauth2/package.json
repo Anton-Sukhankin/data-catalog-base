@@ -1,8 +1,0 @@
-{
-  "name": "samolet-oauth2",
-  "version": "1.2.25",
-  "private": true,
-  "license": "MIT",
-  "main": "index.js",
-  "types": "index.d.ts"
-}

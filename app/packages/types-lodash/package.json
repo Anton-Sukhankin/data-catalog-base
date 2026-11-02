@@ -1,8 +1,0 @@
-{
-  "name": "@types/lodash",
-  "version": "4.17.21",
-  "description": "Local offline type stub for Rovna UI LC-07A lodash helpers.",
-  "types": "index.d.ts",
-  "license": "UNLICENSED",
-  "private": true
-}

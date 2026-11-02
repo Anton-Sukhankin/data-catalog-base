@@ -1,1 +1,0 @@
-export { SMaterials } from './SMaterials';

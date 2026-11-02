@@ -1,1 +1,0 @@
-export { Brush } from './Brush';

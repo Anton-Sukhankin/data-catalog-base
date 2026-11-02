@@ -1,1 +1,0 @@
-export { FormatAlignCenter } from './FormatAlignCenter';

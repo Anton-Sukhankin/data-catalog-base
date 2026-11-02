@@ -1,1 +1,0 @@
-export { NextIcon } from './styled';

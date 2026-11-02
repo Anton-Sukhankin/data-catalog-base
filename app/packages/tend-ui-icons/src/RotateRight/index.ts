@@ -1,1 +1,0 @@
-export { RotateRight } from './RotateRight';

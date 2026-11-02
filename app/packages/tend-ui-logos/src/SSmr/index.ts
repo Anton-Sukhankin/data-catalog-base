@@ -1,1 +1,0 @@
-export { SSmr } from './SSmr';

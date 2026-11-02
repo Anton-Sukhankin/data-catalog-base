@@ -1,1 +1,0 @@
-export { AlarmRemove } from './AlarmRemove';

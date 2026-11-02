@@ -1,1 +1,0 @@
-export { PhotoRemove } from './PhotoRemove';

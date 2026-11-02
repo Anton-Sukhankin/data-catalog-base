@@ -1,1 +1,0 @@
-export { ToggleFilter } from './ToggleFilter';

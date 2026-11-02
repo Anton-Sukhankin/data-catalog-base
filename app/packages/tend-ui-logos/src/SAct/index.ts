@@ -1,1 +1,0 @@
-export { SAct } from './SAct';

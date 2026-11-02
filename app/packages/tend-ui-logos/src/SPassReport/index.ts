@@ -1,1 +1,0 @@
-export { SPassReport } from './SPassReport';

@@ -1,1 +1,0 @@
-export { CloseFullscreen } from './CloseFullscreen';

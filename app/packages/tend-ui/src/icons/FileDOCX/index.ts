@@ -1,1 +1,0 @@
-export { FileDOCX } from './FileDOCX';

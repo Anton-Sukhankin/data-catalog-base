@@ -1,1 +1,0 @@
-export { Sigma } from './Sigma';

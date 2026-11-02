@@ -1,1 +1,0 @@
-export { ClipboardText } from './ClipboardText';

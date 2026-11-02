@@ -1,1 +1,0 @@
-export { VideoCameraRemove } from './VideoCameraRemove';

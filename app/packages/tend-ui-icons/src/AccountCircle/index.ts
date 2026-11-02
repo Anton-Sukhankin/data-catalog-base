@@ -1,1 +1,0 @@
-export { AccountCircle } from './AccountCircle';

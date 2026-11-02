@@ -1,1 +1,0 @@
-export { VideoCameraAdd } from './VideoCameraAdd';

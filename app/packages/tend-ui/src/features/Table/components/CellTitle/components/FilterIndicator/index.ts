@@ -1,1 +1,0 @@
-export { FilterIndicator } from './FilterIndicator';

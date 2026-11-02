@@ -1,1 +1,0 @@
-export { ShieldCancel } from './ShieldCancel';

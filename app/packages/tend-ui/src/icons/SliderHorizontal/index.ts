@@ -1,1 +1,0 @@
-export { SliderHorizontal } from './SliderHorizontal';

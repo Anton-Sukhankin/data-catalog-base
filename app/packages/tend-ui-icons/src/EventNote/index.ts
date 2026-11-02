@@ -1,1 +1,0 @@
-export { EventNote } from './EventNote';

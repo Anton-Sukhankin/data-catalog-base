@@ -1,1 +1,0 @@
-export { useMap } from './useMap';

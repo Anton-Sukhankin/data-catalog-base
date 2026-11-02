@@ -1,1 +1,0 @@
-export { MoreVert } from './MoreVert';

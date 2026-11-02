@@ -1,1 +1,0 @@
-export { SWarehouse } from './SWarehouse';

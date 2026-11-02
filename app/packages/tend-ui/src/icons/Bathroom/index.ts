@@ -1,1 +1,0 @@
-export { Bathroom } from './Bathroom';

@@ -1,1 +1,0 @@
-export { FormatAlignJustify } from './FormatAlignJustify';

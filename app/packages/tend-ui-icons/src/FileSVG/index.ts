@@ -1,1 +1,0 @@
-export { FileSVG } from './FileSVG';

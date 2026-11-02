@@ -1,1 +1,0 @@
-export { SortAscendingAlt } from './SortAscendingAlt';

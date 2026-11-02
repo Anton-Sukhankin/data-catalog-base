@@ -1,1 +1,0 @@
-export { SCenter } from './SCenter';

@@ -1,1 +1,0 @@
-export { SLego } from './SLego';

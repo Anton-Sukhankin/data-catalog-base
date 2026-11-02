@@ -1,1 +1,0 @@
-export { SorterIndicator } from './SorterIndicator';

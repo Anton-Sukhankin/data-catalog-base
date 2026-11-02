@@ -1,38 +1,37 @@
 # Dependencies
 node_modules/
-app/node_modules/
+.pnp.*
+.yarn/cache/
+.yarn/unplugged/
+.yarn/install-state.gz
 
-# Build outputs
+# Build and test output
 dist/
 build/
+.next/
+out/
+coverage/
 storybook-static/
-app/**/dist/
-app/storybook-static/
-app/storybook-static-next/
-app/storybook-static-previous/
-app/release/
-# Local diagnostics and staging
-tmp/
-release/
-source-docs/
-.agents/
-.codex/
-.cache/
-.git.broken-reparsepoint-*/
+playwright-report/
+test-results/
+*.tsbuildinfo
 
-# Local environments and credentials
+# Tool caches and temporary files
+.cache/
+.turbo/
+.vite/
+tmp/
+temp/
+*.log
+
+# Local environment and credentials
 .env
 .env.*
 !.env.example
-*.pem
-*.key
-*.p12
-*.pfx
-*.jks
+!.env.*.example
 
-# Logs and local machine files
-*.log
-yarn-error.log
-.DS_Store
-.vscode/
+# Local editor and operating-system files
 .idea/
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,1 +1,0 @@
-export { SearchAssistant } from './SearchAssistant';

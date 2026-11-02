@@ -1,8 +1,0 @@
-{
-  "name": "query-string",
-  "version": "8.2.0",
-  "private": true,
-  "license": "MIT",
-  "main": "index.js",
-  "types": "index.d.ts"
-}

@@ -1,1 +1,0 @@
-export { FormatColorText } from './FormatColorText';

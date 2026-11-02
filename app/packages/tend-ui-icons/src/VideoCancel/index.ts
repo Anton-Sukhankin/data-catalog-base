@@ -1,1 +1,0 @@
-export { VideoCancel } from './VideoCancel';

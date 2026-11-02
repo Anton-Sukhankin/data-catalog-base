@@ -1,1 +1,0 @@
-export { SPlan } from './SPlan';

@@ -1,1 +1,0 @@
-export { SMkpp } from './SMkpp';

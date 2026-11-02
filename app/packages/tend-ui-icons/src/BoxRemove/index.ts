@@ -1,1 +1,0 @@
-export { BoxRemove } from './BoxRemove';

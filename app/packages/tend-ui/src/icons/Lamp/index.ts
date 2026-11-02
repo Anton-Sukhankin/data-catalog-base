@@ -1,1 +1,0 @@
-export { Lamp } from './Lamp';

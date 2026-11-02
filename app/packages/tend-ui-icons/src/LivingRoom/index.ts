@@ -1,1 +1,0 @@
-export { LivingRoom } from './LivingRoom';

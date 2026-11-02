@@ -1,1 +1,0 @@
-export { SorterContext } from './SorterContext';

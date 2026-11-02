@@ -1,1 +1,0 @@
-export { Samolet } from './Samolet';

@@ -1,1 +1,0 @@
-export { DoubleArrowHorizontal } from './DoubleArrowHorizontal';

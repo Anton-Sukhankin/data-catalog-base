@@ -1,4 +1,0 @@
-registry=https://registry.npmjs.org/
-@rovna-ui:registry=https://registry.npmjs.org/
-access=public
-//registry.npmjs.org/:_authToken=${NPM_TOKEN}

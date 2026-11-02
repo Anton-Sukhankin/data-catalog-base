@@ -1,1 +1,0 @@
-export { FolderRemove } from './FolderRemove';

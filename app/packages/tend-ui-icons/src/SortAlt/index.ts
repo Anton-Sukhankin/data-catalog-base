@@ -1,1 +1,0 @@
-export { SortAlt } from './SortAlt';

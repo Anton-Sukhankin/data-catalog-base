@@ -1,1 +1,0 @@
-export { ChatBubbleFavorite } from './ChatBubbleFavorite';

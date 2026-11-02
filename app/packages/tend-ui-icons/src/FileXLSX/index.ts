@@ -1,1 +1,0 @@
-export { FileXLSX } from './FileXLSX';

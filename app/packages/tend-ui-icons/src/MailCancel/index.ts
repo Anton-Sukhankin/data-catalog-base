@@ -1,1 +1,0 @@
-export { MailCancel } from './MailCancel';

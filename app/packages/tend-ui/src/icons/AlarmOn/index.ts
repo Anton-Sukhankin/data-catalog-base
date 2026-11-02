@@ -1,1 +1,0 @@
-export { AlarmOn } from './AlarmOn';

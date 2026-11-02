@@ -1,1 +1,0 @@
-export { ArrowUpToRight } from './ArrowUpToRight';

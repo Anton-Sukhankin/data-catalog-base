@@ -1,1 +1,0 @@
-export { ShieldDone } from './ShieldDone';

@@ -1,1 +1,0 @@
-export { CheckboxGroupSearchFilter } from './CheckboxGroupSearchFilter';

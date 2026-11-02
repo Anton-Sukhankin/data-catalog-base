@@ -1,1 +1,0 @@
-export { ArrowDropUp } from './ArrowDropUp';

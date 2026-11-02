@@ -1,1 +1,0 @@
-export { SControl } from './SControl';

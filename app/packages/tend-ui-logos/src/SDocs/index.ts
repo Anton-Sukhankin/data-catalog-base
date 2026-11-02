@@ -1,1 +1,0 @@
-export { SDocs } from './SDocs';

@@ -1,1 +1,0 @@
-export { mapFileToAttachment } from './mapFileToAttachment';

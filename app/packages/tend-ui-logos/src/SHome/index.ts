@@ -1,1 +1,0 @@
-export { SHome } from './SHome';

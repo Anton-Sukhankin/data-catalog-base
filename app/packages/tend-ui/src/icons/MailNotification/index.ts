@@ -1,1 +1,0 @@
-export { MailNotification } from './MailNotification';

@@ -1,8 +1,0 @@
-{
-  "name": "@types/uuid",
-  "version": "11.1.1",
-  "description": "Local offline type stub for the uuid helper used by Rovna UI sources.",
-  "types": "index.d.ts",
-  "license": "UNLICENSED",
-  "private": true
-}

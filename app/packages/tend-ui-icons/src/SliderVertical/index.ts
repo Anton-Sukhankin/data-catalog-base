@@ -1,1 +1,0 @@
-export { SliderVertical } from './SliderVertical';

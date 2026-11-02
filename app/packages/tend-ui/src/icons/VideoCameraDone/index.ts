@@ -1,1 +1,0 @@
-export { VideoCameraDone } from './VideoCameraDone';

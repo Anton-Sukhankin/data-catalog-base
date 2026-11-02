@@ -1,1 +1,0 @@
-export { SCatalog } from './SCatalog';

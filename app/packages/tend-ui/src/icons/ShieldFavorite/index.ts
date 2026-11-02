@@ -1,1 +1,0 @@
-export { ShieldFavorite } from './ShieldFavorite';

@@ -1,5 +1,0 @@
-{
-  "formatVersion": 1,
-  "policy": "No known Storybook story flake is accepted. Add an entry only after proving an infrastructure-only cause.",
-  "entries": []
-}

@@ -1,1 +1,0 @@
-export { CalendarRemove } from './CalendarRemove';

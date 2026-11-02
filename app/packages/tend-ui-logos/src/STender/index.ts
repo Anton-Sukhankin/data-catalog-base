@@ -1,1 +1,0 @@
-export { STender } from './STender';

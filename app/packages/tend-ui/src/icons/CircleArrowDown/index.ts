@@ -1,1 +1,0 @@
-export { CircleArrowDown } from './CircleArrowDown';

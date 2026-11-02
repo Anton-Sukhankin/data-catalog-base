@@ -1,1 +1,0 @@
-export { VolumeDown } from './VolumeDown';

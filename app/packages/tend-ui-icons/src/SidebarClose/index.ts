@@ -1,1 +1,0 @@
-export { SidebarClose } from './SidebarClose';

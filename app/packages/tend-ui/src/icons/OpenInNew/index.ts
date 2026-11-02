@@ -1,1 +1,0 @@
-export { OpenInNew } from './OpenInNew';

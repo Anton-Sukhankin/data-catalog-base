@@ -1,1 +1,0 @@
-export { PhotoCancel } from './PhotoCancel';

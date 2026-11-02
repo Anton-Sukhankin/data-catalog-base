@@ -1,1 +1,0 @@
-export { HotFilters } from './HotFilters';

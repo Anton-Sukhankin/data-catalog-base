@@ -1,1 +1,0 @@
-export { MoreHoriz } from './MoreHoriz';

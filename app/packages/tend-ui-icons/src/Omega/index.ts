@@ -1,1 +1,0 @@
-export { Omega } from './Omega';

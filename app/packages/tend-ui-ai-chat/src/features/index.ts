@@ -1,2 +1,0 @@
-// Features layer exports
-export {};

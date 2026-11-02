@@ -1,1 +1,0 @@
-export { FolderIncoming } from './FolderIncoming';

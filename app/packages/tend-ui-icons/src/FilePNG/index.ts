@@ -1,1 +1,0 @@
-export { FilePNG } from './FilePNG';
