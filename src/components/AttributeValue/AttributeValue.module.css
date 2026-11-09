@@ -1,0 +1,14 @@
+.missing { position:relative; display:inline-block; flex:none; }
+.missing::after {
+  position:absolute;
+  inset-inline:0;
+  inset-block-start:calc(50% - 0.5px);
+  block-size:1px;
+  background:#9499a3;
+  content:'';
+}
+.measure { visibility:hidden; }
+
+@media (forced-colors:active) {
+  .missing::after { forced-color-adjust:none; background:GrayText; }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema":"https://ui.shadcn.com/schema.json",
+  "style":"new-york",
+  "rsc":false,
+  "tsx":true,
+  "tailwind":{"config":"","css":"src/features/icon-catalog/styles.css","baseColor":"neutral","cssVariables":true,"prefix":""},
+  "iconLibrary":"lucide",
+  "aliases":{
+    "components":"@/features/icon-catalog",
+    "utils":"@/features/icon-catalog/lib/utils",
+    "ui":"@/features/icon-catalog/ui",
+    "lib":"@/features/icon-catalog/lib",
+    "hooks":"@/features/icon-catalog/hooks"
+  }
+}

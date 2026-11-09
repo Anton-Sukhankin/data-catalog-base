@@ -1,0 +1,11 @@
+.preview { min-width: 600px; padding: 24px; background: #f4f6f9; color: #101d3b; }
+.preview h1 { margin: 0 0 16px; font-size: 20px; line-height: 28px; }
+.examplePicker { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.controller { max-width: 1050px; font-size: 14px; line-height: 20px; }
+.controller button { margin-right: 8px; }
+.controller p { margin: 12px 0; }
+.controller output { display: block; }
+.stage { width: 368px; min-height: 80px; padding: 16px 24px 32px; }
+.log { max-width: 1050px; font-size: 14px; }
+.log h2 { margin: 12px 0; font-size: 16px; font-weight: 500; }
+.log ol { margin: 0; padding-left: 24px; }

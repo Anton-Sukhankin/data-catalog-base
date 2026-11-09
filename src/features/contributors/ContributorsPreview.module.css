@@ -1,0 +1,9 @@
+.preview { min-width: 1144px; padding: 24px; }
+.preview h1 { margin: 0 0 12px; }
+.preview h2 { margin: 0 0 12px; font-size: 18px; font-weight: 500; }
+.preview p { margin: 0 0 16px; }
+.example { margin: 24px 0; }
+.master { width: 986px; }
+.consumer { width: 1094px; }
+.group { width: 1096px; overflow: hidden; border: 1px solid #d7e6f5; border-radius: 12px; background: #fff; }
+.group > article:last-child { border-bottom: 0; }

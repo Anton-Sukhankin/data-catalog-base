@@ -1,0 +1,7 @@
+.preview { min-height:100vh; padding:24px; background:#f4f6f9; color:#101d3b; font-family:'CoFo Sans',sans-serif; }
+.controller { width:650px; font-size:14px; line-height:20px; }
+.controller h1 { margin:0 0 16px; font-size:20px; }
+.controller nav { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:16px; }
+.controller output { display:block; margin-top:12px; }
+.listStage { width:max-content; padding:16px 24px 32px; }
+.popup { position:fixed; z-index:101; }

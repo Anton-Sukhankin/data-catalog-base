@@ -1,0 +1,27 @@
+:root[data-catalog-transition] { view-transition-name: none; }
+:root[data-catalog-transition='screen'] [data-catalog-screen] { view-transition-name: catalog-content; }
+:root[data-catalog-transition='view'] [data-catalog-view-results] { view-transition-name: catalog-content; }
+
+::view-transition { pointer-events: none; }
+::view-transition-group(catalog-content) {
+  animation-duration: 240ms;
+  animation-timing-function: ease-in-out;
+}
+:root[data-catalog-transition='view']::view-transition-group(catalog-content) { animation-duration: 200ms; }
+::view-transition-old(catalog-content) {
+  animation-name: catalog-content-out;
+  animation-timing-function: ease-in;
+}
+::view-transition-new(catalog-content) {
+  animation-name: catalog-content-in;
+  animation-timing-function: ease-out;
+}
+
+@keyframes catalog-content-out {
+  from { opacity: 1; }
+  45%, 100% { opacity: 0; }
+}
+@keyframes catalog-content-in {
+  0%, 45% { opacity: 0; }
+  to { opacity: 1; }
+}

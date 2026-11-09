@@ -1,0 +1,13 @@
+.surface {
+  padding:12px;
+  border-radius:8px;
+  background:#141f33;
+  color:#fff;
+  font:400 14px/20px 'CoFo Sans',sans-serif;
+  overflow-wrap:anywhere;
+}
+.tooltip {
+  composes:surface;
+  max-width:min(340px, calc(100vw - 16px));
+  z-index:200;
+}

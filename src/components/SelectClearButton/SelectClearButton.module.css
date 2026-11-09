@@ -1,0 +1,6 @@
+.control { position:relative; min-width:0; }
+.control[data-can-clear='true'] > button:first-child { column-gap:36px; }
+.clear { position:absolute; inset-inline-end:36px; inset-block-start:50%; translate:0 -50%; display:grid; place-items:center; width:20px; height:20px; padding:0; border:0; border-radius:50%; background:transparent; cursor:pointer; }
+.clear:focus-visible { outline:2px solid #007bfc; outline-offset:1px; }
+.clear .badge { width:18px; height:18px; }
+.badge > svg { width:12px; height:12px; }

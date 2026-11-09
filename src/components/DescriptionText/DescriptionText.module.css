@@ -1,0 +1,11 @@
+.separator {
+  display:inline-block;
+  width:3px;
+  height:3px;
+  margin-inline:var(--description-separator-gap);
+  border-radius:50%;
+  background:currentColor;
+  font-size:0;
+  line-height:0;
+  vertical-align:middle;
+}

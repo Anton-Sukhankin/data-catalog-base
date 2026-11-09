@@ -1,0 +1,22 @@
+.card { composes:surface from '../CatalogEntityIcon/CatalogEntityIcon.module.css'; position: relative; min-width: 0; border: 1px solid #d7e6f5; border-radius: 12px; background: #fff; color: #101d3b; transition:border-color 160ms ease; }
+.open { display: flex; align-items: center; gap: 16px; width: 100%; min-height: 96px; padding: 24px 76px 24px 24px; border: 0; border-radius: 11px; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.document { composes:badge from '../CatalogEntityIcon/CatalogEntityIcon.module.css'; }
+.verifiedBadge { position: absolute; left: 24px; top: -2px; }
+.defaultGlyph, .hoverGlyph { grid-area:1 / 1; width:16px; height:16px; transition:opacity 160ms ease; }
+.defaultGlyph { opacity:1; }
+.hoverGlyph { opacity:0; }
+.information { display: flex; flex:1; flex-direction: column; gap: 4px; min-width: 0; }
+.title { display: block; overflow: hidden; min-width: 0; font-size: 16px; font-weight: 400; line-height: 22px; text-overflow: ellipsis; white-space: nowrap; transition:color var(--navigation-hover-duration) ease; }
+.description { display: flex; align-items: center; gap: var(--description-separator-gap); width: 100%; min-width: 0; height: 18px; overflow: hidden; color: #52698c; font-size: 12px; font-weight: 400; line-height: 18px; letter-spacing: -.12px; white-space: nowrap; }
+.domain { flex: 0 0 auto; white-space: nowrap; }
+.separator { flex: 0 0 3px; width: 3px; height: 3px; border-radius: 50%; background: #52698c; }
+.verification { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.verification > span:first-child { flex:none; }
+.reviewer { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.edit { position:absolute; top:50%; right:24px; transform:translateY(-50%); }
+.card:hover { border-color: var(--item-hover-border); }
+.card:hover .title { color:var(--item-hover-ink); }
+.card:hover .defaultGlyph { opacity:0; }
+.card:hover .hoverGlyph { opacity:1; }
+.card button:not([data-round-action]):focus-visible { outline: 2px solid #007aff; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .card, .defaultGlyph, .hoverGlyph { transition:none; } }

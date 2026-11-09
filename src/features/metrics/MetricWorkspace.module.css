@@ -1,0 +1,5 @@
+.workspace { display:flex; flex-direction:column; gap:var(--section-heading-gap); min-width:0; }
+.workspace > h1 { margin:0; height:28px; }
+.unavailable { padding:16px; border:1px solid #d7e6f5; border-radius:12px; background:#fff; }
+.unavailable p { font-size:14px; color:#6d84a6; }
+.unavailable button { border:0; padding:0; color:#007bfc; background:none; font:inherit; cursor:pointer; }

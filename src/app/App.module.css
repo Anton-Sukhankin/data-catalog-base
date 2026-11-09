@@ -1,0 +1,11 @@
+/* Service-screen presentation only; product DS bindings belong to later implementation. */
+.shell { min-height: 100vh; }
+.header { display: flex; justify-content: space-between; gap: 24px; padding: 20px 32px; background: #fff; border-bottom: 1px solid #dce2ea; font-weight: 500; }
+.note { color: #515a68; font-weight: 400; }
+.nav { display: flex; flex-wrap: wrap; gap: 24px; padding: 20px 32px; }
+.nav :global(a[aria-current='page']) { color: #20242b; font-weight: 500; }
+.main { max-width: 920px; margin: 20px auto; padding: 32px; background: #fff; border: 1px solid #dce2ea; border-radius: 12px; }
+.label { color: #515a68; font-size: 14px; }
+.action { display: inline-block; margin-top: 12px; }
+@media (max-width: 960px) { .main { margin: 16px; } }
+@media (max-width: 600px) { .main { padding: 20px; } .header, .nav { padding: 16px; } .header { flex-direction: column; gap: 4px; } }

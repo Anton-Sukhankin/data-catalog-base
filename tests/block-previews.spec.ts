@@ -1,0 +1,55 @@
+import { expect, test } from '@playwright/test';
+
+test('delivered feature previews load with assets and preserve their interaction boundaries', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error' || message.type() === 'warning') errors.push(message.text()); });
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Открыть список новостей · I14' }).click();
+  await expect(page.locator('[data-news-id]')).toHaveCount(14);
+  await page.locator('[data-news-id="demo-news-1"]').getByRole('button', { name: 'Читать «Практикум по качеству данных»', exact: true }).click();
+  await expect(page.locator('[data-intent-log]')).toContainText('demo-news-1');
+  for (const image of await page.locator('img').all()) {
+    await expect.poll(()=>image.evaluate(node => (node as HTMLImageElement).complete && (node as HTMLImageElement).naturalWidth > 0)).toBe(true);
+  }
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Открыть карточки подписок · I10' }).click();
+  const group = page.locator('[data-preview="group"]');
+  await expect(group.locator('[data-subscription-id]')).toHaveCount(3);
+  const first = group.locator('[data-subscription-id="subscription-receivables"]');
+  await first.getByRole('button', { name: 'Отписаться от «Дебиторская задолженность»' }).click();
+  await expect(page.locator('[data-intent-log]')).toContainText('unsubscribe: subscription-receivables');
+  await first.getByRole('button', { name: 'Отчёт по дебиторской задолженности', exact: true }).click();
+  await expect(page.locator('[data-intent-log]')).toContainText('open-report: report-receivables');
+  await expect(group.locator('[data-subscription-id]')).toHaveCount(3);
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Открыть карточку участника · I12' }).click();
+  const contributors = page.locator('[data-preview="group"]');
+  await expect(contributors.locator('[data-contributor-id]')).toHaveCount(5);
+  const contributor = contributors.locator('[data-contributor-id="demo-contributor-1"]');
+  await expect(contributor).toContainText('Лапова Юлия Владимировна');
+  await expect(contributor.locator('dd')).toHaveText(['116', '143', '29', '80%']);
+  await expect(contributors.locator('button, a, [tabindex]')).toHaveCount(0);
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Проверить меню фильтров · I07' }).click();
+  const menu = page.getByRole('dialog', { name: 'Фильтр: Отчёт' });
+  await expect(menu.getByRole('checkbox')).toHaveCount(9);
+  await menu.getByRole('button', { name: 'Сбросить', exact: true }).click();
+  await expect(menu).toHaveCount(0);
+  await expect(page.locator('[data-applied-values]')).toContainText('нет');
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Проверить переключатели Главной · I09a' }).click();
+  await expect(page.locator('[data-home-controls]')).toBeVisible();
+  const subscriptionsTab = page.getByRole('tab', { name: /Мои подписки/ });
+  await subscriptionsTab.click();
+  await expect(subscriptionsTab).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('[data-intent-log]')).toContainText('segment: subscriptions');
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Проверить общую панель фильтров · I08' }).click();
+  const panel = page.getByRole('dialog', { name: 'Фильтры отчётов', exact: true });
+  await expect(panel.locator('[data-panel-field]')).toHaveCount(8);
+  await panel.getByRole('button', { name: 'Закрыть', exact: true }).click();
+  await expect(panel).toHaveCount(0);
+  expect(errors).toEqual([]);
+});

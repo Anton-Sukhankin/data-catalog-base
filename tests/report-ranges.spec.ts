@@ -1,0 +1,58 @@
+import { expect, test } from '@playwright/test';
+
+for(const context of ['catalog','favorites'] as const) {
+  test(`${context}: numerical ranges and exclusive thresholds stay synchronized across panel and columns`, async ({page})=>{
+    await page.setViewportSize({width:1440,height:900});
+    const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+    await page.goto(`/preview/navigation?section=${context==='catalog'?'reports':'home'}&segment=favorites`);
+    const rows=page.locator('[data-table-report-id]');
+    const initialCount=context==='catalog'?8:10;
+    await expect(rows).toHaveCount(initialCount);
+    const open=page.getByRole('button',{name:'Открыть фильтры отчётов',exact:true});
+    const panel=page.locator('[data-report-filter-panel]');
+    const min=(label:string)=>panel.getByRole('spinbutton',{name:`${label}: от`,exact:true});
+    const max=(label:string)=>panel.getByRole('spinbutton',{name:`${label}: до`,exact:true});
+    await open.click();
+    const mau=panel.locator('[data-report-range="mau"]');
+    const last=panel.locator('[data-report-range="lastViewed"]');
+    expect((await mau.boundingBox())!.width).toBe(440);expect((await last.boundingBox())!.width).toBe(440);
+    expect((await last.boundingBox())!.y).toBeGreaterThan((await mau.boundingBox())!.y+(await mau.boundingBox())!.height);
+    await mau.getByRole('button',{name:'От 50',exact:true}).click();
+    await mau.getByRole('button',{name:'От 100',exact:true}).click();
+    await expect(mau.locator('button[aria-pressed="true"]')).toHaveCount(1);
+    await expect(min('MAU')).toHaveValue('100');await expect(max('MAU')).toHaveValue('');
+    await max('Последний просмотр').fill('2');
+    await expect(panel.locator('[data-panel-count]')).toHaveText('2');
+    await expect(rows).toHaveCount(initialCount);
+    await panel.getByRole('button',{name:'Применить',exact:true}).click();
+    await expect(rows).toHaveCount(2);
+    expect(await rows.evaluateAll(nodes=>nodes.map(n=>n.getAttribute('data-table-report-id')))).toEqual(['demo-report-summary','demo-report-finance-plan']);
+    await open.click();await min('MAU').fill('250');await max('MAU').fill('100');
+    await expect(panel.getByRole('alert')).toBeVisible();
+    await expect(panel.getByRole('button',{name:'Применить',exact:true})).toBeDisabled();
+    await page.keyboard.press('Escape');
+    await page.getByRole('button',{name:'Фильтр «MAU»',exact:true}).click();
+    const menu=page.getByRole('dialog',{name:'Фильтр: MAU',exact:true});
+    await expect(menu.getByRole('spinbutton',{name:'MAU: от',exact:true})).toHaveValue('100');
+    await expect(menu.getByRole('checkbox')).toHaveCount(0);
+    await menu.getByRole('button',{name:'От 500',exact:true}).click();
+    await menu.getByRole('button',{name:'Применить',exact:true}).click();
+    await expect(rows).toHaveCount(0);
+    await open.click();await expect(min('MAU')).toHaveValue('500');
+    await panel.getByRole('button',{name:'Сбросить',exact:true}).click();
+    await expect(panel).toBeVisible();await expect(rows).toHaveCount(0);
+    await panel.getByRole('button',{name:'Применить',exact:true}).click();
+    await expect(rows).toHaveCount(initialCount);
+    await open.click();
+    const lower=panel.getByRole('slider',{name:'MAU: нижняя граница',exact:true});
+    await lower.focus();await lower.press('ArrowRight');
+    await expect(min('MAU')).toHaveValue('1');
+    await panel.getByRole('button',{name:'Сбросить',exact:true}).click();
+    await page.setViewportSize({width:1280,height:700});
+    await max('Последний просмотр').fill('7');
+    await expect(panel.getByRole('button',{name:'Применить',exact:true})).toBeVisible();
+    await panel.getByRole('button',{name:'Применить',exact:true}).click();
+    await expect(rows).toHaveCount(context==='catalog'?7:6);
+    expect(errors).toEqual([]);
+  });
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "name": "tab-slides",
+    "nodeId": "1076:3988",
+    "sha256": "f6e84e035f2f9155bca5623c7ac1c84408d0737f2cde587487a16c6dd92243dd",
+    "file": "tab-slides.svg"
+  },
+  {
+    "name": "tab-metrics",
+    "nodeId": "1435:51211",
+    "sha256": "25733cd580745f14dbb50486a92b814d02ce336f9f5e36f9271e66d3b018e4ca",
+    "file": "tab-metrics.svg"
+  },
+  {
+    "name": "tab-sources",
+    "nodeId": "113:57",
+    "sha256": "3c37d20ab5236f115111cdc4d6ce8ca1afad6a4074677342816e4f72e2fe9543",
+    "file": "tab-sources.svg"
+  },
+  {
+    "name": "tab-usage",
+    "nodeId": "113:108",
+    "sha256": "bbbb2d9b59b86f19ee44422b321fb6cfe803de751a55000764f6fd219f867455",
+    "file": "tab-usage.svg"
+  },
+  {
+    "name": "tab-mailings",
+    "nodeId": "1435:51213",
+    "sha256": "5328b11cf43e782eda0c73909b4e5d1a2f197ebcca8629e0723c07e31c43b735",
+    "file": "tab-mailings.svg"
+  },
+  {
+    "name": "tab-technical",
+    "nodeId": "1435:51215",
+    "sha256": "69657fdc9a40459e143116b9c3f2cb0fadbdc8801580b147563462976f0768c6",
+    "file": "tab-technical.svg"
+  },
+  {
+    "name": "empty",
+    "nodeId": "926:21458",
+    "sha256": "b957e45de769dfb9adc2511bba5d3e763f2b56424de9287b26c4556b1e8a195d",
+    "file": "empty.png"
+  },
+  {
+    "name": "ai-hint",
+    "nodeId": "I894:25507;894:25049",
+    "file": "ai-hint.svg",
+    "sha256": "6fece8b92809f93334ce434f9c36162b43a8925a6158e047f10032527815ce10"
+  }
+]

@@ -1,0 +1,12 @@
+.landing {
+  padding-inline: 2px;
+  border-radius: 3px;
+  background: #006bcf;
+  color: #fff;
+  box-decoration-break: clone;
+  scroll-margin: 32px;
+}
+.landing:focus { outline: none; }
+@media (forced-colors: active) {
+  .landing { background: Highlight; color: HighlightText; forced-color-adjust: none; }
+}

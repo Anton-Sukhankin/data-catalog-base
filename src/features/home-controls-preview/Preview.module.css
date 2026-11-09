@@ -1,0 +1,7 @@
+.preview { min-width: 1176px; min-height: 100vh; padding: 24px; background: #fff; }
+.tools { width: 1128px; margin-bottom: 24px; color: #101d3b; }
+.tools h1 { margin: 0 0 16px; }
+.tools label { display: flex; align-items: center; gap: 8px; }
+.tools p { margin: 12px 0 0; }
+.stage { width: 1128px; background: #fff; }
+.log { margin-top: 32px; color: #52698c; }

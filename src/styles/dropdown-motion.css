@@ -1,0 +1,53 @@
+:root {
+  --dropdown-enter-duration:180ms;
+  --dropdown-enter-easing:cubic-bezier(.22,1,.36,1);
+}
+
+/* Fade only: anchoring and clickable geometry never move or scale. */
+@keyframes catalog-dropdown-enter {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+[data-dropdown-surface='true'] {
+  animation:catalog-dropdown-enter var(--dropdown-enter-duration) var(--dropdown-enter-easing);
+}
+
+/* Preserve native selection and keyboard behavior while animating supported pickers. */
+@supports (appearance:base-select) {
+  select:not([multiple]):not([size]), select:not([multiple]):not([size])::picker(select) {
+    appearance:base-select;
+  }
+  select:not([multiple]):not([size]) { align-items:center; }
+  select::picker-icon {
+    content:'';
+    flex-shrink:0;
+    width:16px;
+    height:16px;
+    background:url('/images/metrics/catalog/chevron-down.svg') center / 16px no-repeat;
+  }
+  select::picker(select) {
+    margin-block:8px;
+    padding:6px;
+    border:0;
+    border-radius:12px;
+    background:#fff;
+    color:#202028;
+    box-shadow:0 8px 24px rgb(0 0 0 / 12%);
+    font:400 14px/20px 'CoFo Sans',sans-serif;
+    opacity:0;
+  }
+  select:open::picker(select) {
+    opacity:1;
+    transition:opacity var(--dropdown-enter-duration) var(--dropdown-enter-easing);
+  }
+  @starting-style { select:open::picker(select) { opacity:0; } }
+  select option { min-height:36px; padding:8px; border-radius:8px; }
+  select option:hover, select option:focus { background:var(--table-heading-hover); }
+  select option:checked { color:#0067dc; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  :root { --dropdown-enter-duration:0ms; }
+  [data-dropdown-surface='true'] { animation:none; }
+  select:open::picker(select) { transition:none; }
+}

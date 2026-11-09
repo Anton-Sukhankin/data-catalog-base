@@ -1,0 +1,32 @@
+.badge {
+  position:relative;
+  display:grid;
+  place-items:center;
+  flex:0 0 40px;
+  width:40px;
+  height:40px;
+  border-radius:24px;
+  background:var(--catalog-icon-fill,#eef2f6);
+  transition:background-color var(--navigation-hover-duration) ease, color var(--navigation-hover-duration) ease;
+}
+.glyph {
+  color:var(--catalog-icon-ink,var(--catalog-icon-idle,#7186a5));
+}
+.glyph::before {
+  width:var(--catalog-icon-size,16px);
+  height:var(--catalog-icon-size,16px);
+  background:currentColor;
+  mask:var(--catalog-icon-mask) center / contain no-repeat;
+  content:'';
+}
+.metric { --catalog-icon-mask:url('/icons/sidebar/metrics.svg'); }
+.indicator { --catalog-icon-mask:url('/icons/metrics/indicator.svg'); }
+.reference { --catalog-icon-mask:url('/icons/sidebar/systems.svg'); }
+.source { --catalog-icon-mask:url('/icons/sidebar/sources.svg'); }
+.surface:hover {
+  --catalog-icon-fill:var(--item-hover-icon-fill);
+  --catalog-icon-ink:var(--item-hover-ink);
+}
+@media (forced-colors:active) {
+  .glyph::before { background:CanvasText; forced-color-adjust:none; }
+}

@@ -1,0 +1,9 @@
+.preview { min-width: 1144px; padding: 24px; }
+.preview h1 { margin: 0 0 12px; }
+.preview h2 { margin: 0 0 12px; font-size: 18px; font-weight: 500; }
+.preview p { margin: 0 0 16px; }
+.example { margin: 24px 0; }
+.group { width: 1096px; }
+.consumer { width: 1094px; }
+.master { width: 780px; }
+.log { margin-top: 32px; }

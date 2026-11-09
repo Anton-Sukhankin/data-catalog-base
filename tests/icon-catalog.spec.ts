@@ -1,0 +1,58 @@
+import { test, expect } from '@playwright/test';
+
+test('icon catalog exposes the complete installed library, previews settings and exports the selected SVG in isolation', async ({ page, context }) => {
+  test.setTimeout(60000);
+  const errors:string[]=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  await context.grantPermissions(['clipboard-read','clipboard-write']);
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto('/previews/icons.html');
+  await expect(page.getByRole('heading',{name:'Библиотека иконок',exact:true})).toBeVisible();
+  const tiles=page.locator('[data-catalog-icon]');
+  await expect(tiles).toHaveCount(96);
+  const allNames:string[]=[];
+  for(let index=0;index<22;index++) {
+    await expect(page.getByText(`Страница ${index+1} из 22`,{exact:true})).toBeVisible();
+    allNames.push(...await tiles.evaluateAll(nodes=>nodes.map(node=>node.getAttribute('data-catalog-icon')!)));
+    if(index<21) await page.getByRole('button',{name:'Далее',exact:true}).click();
+  }
+  expect(allNames).toHaveLength(2020);expect(new Set(allNames).size).toBe(2020);
+  await expect(page.getByRole('button',{name:'Далее',exact:true})).toBeDisabled();
+  const search=page.getByLabel('Найти иконку',{exact:true});
+  await search.fill('FileText');
+  await page.getByRole('button',{name:'FileText',exact:true}).click();
+  const detail=page.getByRole('complementary',{name:'Выбранная иконка',exact:true});
+  await expect(detail.getByText('FileText',{exact:true})).toBeVisible();
+  await page.getByRole('slider',{name:/Размер/}).focus();
+  await page.keyboard.press('End');await page.keyboard.press('ArrowLeft');await page.keyboard.press('ArrowLeft');
+  await expect(page.getByRole('slider',{name:/Размер/})).toHaveValue('32');
+  await expect(page.getByRole('button',{name:'FileText',exact:true}).locator('svg')).toHaveCSS('width','32px');
+  const stroke=page.getByRole('slider',{name:/Толщина/});
+  await stroke.focus();await page.keyboard.press('End');
+  await page.keyboard.press('ArrowLeft');await page.keyboard.press('ArrowLeft');await page.keyboard.press('ArrowLeft');
+  await expect(stroke).toHaveValue('2.25');
+  await expect(detail.locator('svg').first()).toHaveAttribute('stroke-width','2.25');
+  await detail.getByRole('button',{name:'Скопировать название',exact:true}).click();
+  expect(await page.evaluate(()=>navigator.clipboard.readText())).toBe('FileText');
+  const downloading=page.waitForEvent('download');
+  await detail.getByRole('button',{name:'Скачать SVG',exact:true}).click();
+  const download=await downloading;expect(download.suggestedFilename()).toBe('FileText.svg');
+  const stream=await download.createReadStream();let exported='';
+  for await(const chunk of stream!)exported+=chunk.toString();
+  expect(exported).toContain('width="32"');expect(exported).toContain('stroke-width="2.25"');
+  expect(exported).toContain('xmlns="http://www.w3.org/2000/svg"');
+  await search.fill('поиск');await expect(tiles.first()).toBeVisible();
+  expect(await tiles.count()).toBeGreaterThan(1);
+  await search.fill('нет-такой-иконки-xyz');await expect(page.getByText('Иконки не найдены',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Сбросить поиск',exact:true}).click();await expect(tiles).toHaveCount(96);
+  await page.evaluate(()=>document.fonts.ready);
+  await page.screenshot({path:'verification/icon-catalog-2026-11-04/catalog.png'});
+  await page.setViewportSize({width:1024,height:768});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await page.screenshot({path:'verification/icon-catalog-2026-11-04/catalog-1024.png'});
+  const requests:string[]=[];page.on('request',request=>requests.push(request.url()));
+  await page.getByRole('link',{name:'К прототипу',exact:true}).click();
+  await expect(page.getByRole('heading',{name:'Главная',exact:true})).toBeVisible();
+  expect(requests.some(url=>/\/assets\/icons[-.]/.test(url))).toBe(false);
+  expect(errors).toEqual([]);
+});

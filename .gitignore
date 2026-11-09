@@ -35,3 +35,6 @@ temp/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Local browser captures
+verification/

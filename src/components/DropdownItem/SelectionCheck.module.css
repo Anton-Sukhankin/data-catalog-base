@@ -1,0 +1,2 @@
+.slot { display:inline-flex; flex:0 0 24px; align-items:center; justify-content:center; width:24px; height:24px; pointer-events:none; }
+.slot img { display:block; flex:none; width:24px; height:24px; }

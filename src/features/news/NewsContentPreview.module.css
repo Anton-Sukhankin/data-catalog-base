@@ -1,0 +1,9 @@
+.preview { min-height:100vh; background:#f3f4f9; }
+.tools { position:absolute; top:24px; left:24px; width:240px; color:#101d3b; font-family:'CoFo Sans',sans-serif; font-size:14px; line-height:20px; }
+.tools h1 { margin:0 0 16px; font-size:20px; line-height:28px; }
+.tools label, .category { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:12px; }
+.category > div { width:140px; }
+.tools p { margin:12px 0; }
+.tools output { display:block; }
+.tools ol { padding-left:20px; }
+.stage { position:absolute; left:296px; width:calc(100vw - 312px); }

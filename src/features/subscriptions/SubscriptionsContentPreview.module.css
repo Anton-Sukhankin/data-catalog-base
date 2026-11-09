@@ -1,0 +1,9 @@
+.preview { min-height:100vh; background:#fff; font-family:'CoFo Sans',sans-serif; }
+.controller { position:absolute; top:16px; left:24px; width:248px; font-size:12px; line-height:18px; color:#52698c; }
+.controller h1 { margin:0 0 12px; font-size:18px; line-height:22px; }
+.controller p { margin:0 0 12px; }
+.controller button { margin-right:8px; }
+.controller nav { margin-top:8px; }
+.controller output { display:block; }
+.controller ol { max-height:400px; overflow:auto; padding-left:16px; overflow-wrap:anywhere; }
+.stage { position:absolute; top:210px; left:296px; right:16px; }

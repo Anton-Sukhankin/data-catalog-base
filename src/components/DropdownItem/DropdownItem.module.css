@@ -1,0 +1,3 @@
+.item { border-radius:8px; transition:background-color 160ms ease; }
+.item:hover { background-color:var(--sidebar-surface,#f3f4f9); }
+@media (prefers-reduced-motion:reduce) { .item { transition:none; } }
