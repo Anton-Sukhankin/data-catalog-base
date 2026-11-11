@@ -12,7 +12,7 @@ test('favorites preserve ten identities, canonical state, and applied conditions
   const table = page.getByRole('region', { name: 'Таблица отчётов', exact: true });
   const tableView = page.getByRole('button', { name: 'Табличный вид', exact: true });
   const cardView = page.getByRole('button', { name: 'Карточный вид', exact: true });
-  const panel = page.getByRole('dialog', { name: 'Фильтры избранных отчётов', exact: true });
+  const panel = page.getByRole('dialog', { name: 'Фильтры', exact: true });
   const popup = page.locator('[data-panel-value-list]');
   const open = page.getByRole('button', { name: 'Открыть фильтры отчётов', exact: true });
   await expect(cards.locator('[data-card-report-id]')).toHaveCount(10);
@@ -94,7 +94,7 @@ test('favorite pages retain the same objects when the view changes and filtering
   await expect(table.locator('[data-table-report-id]')).toHaveCount(2);
   expect(await table.locator('[data-table-report-id]').evaluateAll(elements => elements.map(element => element.getAttribute('data-table-report-id')))).toEqual(secondIds);
   await page.getByRole('button', { name: 'Открыть фильтры отчётов', exact: true }).click();
-  const panel = page.getByRole('dialog', { name: 'Фильтры избранных отчётов', exact: true });
+  const panel = page.getByRole('dialog', { name: 'Фильтры', exact: true });
   await panel.locator('[data-panel-field="domain"]').click();
   await page.locator('[data-panel-value-list]').getByRole('checkbox', { name: 'Гостеприимство', exact: true }).check();
   await panel.getByRole('button', { name: 'Применить', exact: true }).click();

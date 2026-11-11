@@ -1,0 +1,21 @@
+.groups { --report-field-label-size:12px; --report-field-value-size:16px; }
+
+.row { display:grid; grid-template-columns:minmax(0,1fr); margin:0; }
+.row[data-layout='thirds'] { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.row[data-layout='left-third'] { grid-template-columns:minmax(0,1fr) minmax(0,2fr); }
+.row[data-layout='halves'] { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.row[data-layout='left-wide'] { grid-template-columns:minmax(0,56fr) minmax(0,44fr); }
+.row + .row { border-top:1px solid var(--accordion-border); }
+.row > div + div { border-inline-start:1px solid var(--accordion-border); }
+.unknown { color:#52627c; font-weight:400; }
+
+.row > .tableField { padding:12px 0 0; }
+.tableField dt { padding-inline:20px; }
+.tableList { list-style:none; margin:0; padding:0; }
+.tableList li { padding:12px 20px; }
+.tableList li + li { border-top:1px solid var(--accordion-border); }
+
+@container (max-width:480px) {
+  .row[data-layout] { grid-template-columns:minmax(0,1fr); }
+  .row > div + div { border-inline-start:0; border-top:1px solid var(--accordion-border); }
+}

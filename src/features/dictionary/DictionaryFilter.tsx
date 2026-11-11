@@ -15,6 +15,7 @@ interface Props {
   options: readonly FilterValueOption[];
   selected: readonly string[];
   single: boolean;
+  unavailable?: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onChange: (values: readonly string[]) => void;
@@ -29,7 +30,7 @@ const emptyLabels: Record<DictionaryFilterField, string> = {
   owner: 'Все владельцы',
 };
 
-export function DictionaryFilter({ field, label, options, selected, single, open, onOpenChange, onChange }: Props) {
+export function DictionaryFilter({ field, label, options, selected, single, unavailable, open, onOpenChange, onChange }: Props) {
   const id = useId();
   const anchor = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -90,9 +91,9 @@ export function DictionaryFilter({ field, label, options, selected, single, open
           if (event.target instanceof Node && anchor.current?.contains(event.target)) event.preventDefault();
         }}
         onEscapeKeyDown={() => { requestAnimationFrame(() => trigger.current?.focus()); }}>
-        <FilterValueList label={label} options={visible} totalOptionsCount={choices.length} width="100%"
+        {unavailable ? <p className={s.unavailableFilter}>Значения фильтра не предоставлены.</p> : <FilterValueList label={label} options={visible} totalOptionsCount={choices.length} width="100%"
           selectedValues={single ? [selected[0] ?? ''] : selected} searchValue={query} onSearchChange={setQuery}
-          onToggleValue={choose} selectionMode={single ? 'single' : 'multiple'} showSearch={choices.length > 7} />
+          onToggleValue={choose} selectionMode={single ? 'single' : 'multiple'} showSearch={choices.length > 7} />}
       </Popover.Content>
     </Popover.Portal>
   </Popover.Root>;

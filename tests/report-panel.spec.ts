@@ -10,7 +10,7 @@ test('general panel applies one atomic draft, cancels all close paths, and synch
   const table = page.getByRole('region', { name: 'Таблица отчётов', exact: true });
   const rows = page.locator('[data-table-report-id]');
   const open = page.getByRole('button', { name: 'Открыть фильтры отчётов', exact: true });
-  const panel = page.getByRole('dialog', { name: 'Фильтры отчётов', exact: true });
+  const panel = page.getByRole('dialog', { name: 'Фильтры', exact: true });
   const popup = page.locator('[data-panel-value-list]');
   const field = (name: string) => panel.locator(`[data-panel-field="${name}"]`);
   const apply = () => panel.getByRole('button', { name: 'Применить', exact: true }).click();

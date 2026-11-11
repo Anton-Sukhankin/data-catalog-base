@@ -1,13 +1,20 @@
 export interface Point { x: number; y: number }
 export interface Bounds extends Point { width: number; height: number }
 
-export const defaultScene: Bounds = { x: 0, y: 0, width: 1070, height: 500 };
-export const defaultReportPosition: Point = { x: 325, y: 88 };
+export const defaultScene: Bounds = { x: 0, y: 0, width: 800, height: 500 };
+export const lineageNodeSize = { width: 230, height: 52 };
+export const defaultReportPosition: Point = { x: (defaultScene.width - lineageNodeSize.width) / 2, y: 88 };
+
+export function lineageRow(ids: readonly string[]) {
+  const step = lineageNodeSize.width + 26;
+  const firstX = defaultReportPosition.x - (ids.length - 1) * step / 2;
+  return ids.map((sourceId, index) => ({ sourceId, x: firstX + index * step, y: 272 }));
+}
 
 /** Child's top port to parent's bottom port, with outward-facing tangents. */
 export function lineagePath(child: Point, parent: Point): string {
   const bend = Math.max(32, Math.min(160, Math.abs(child.y - parent.y) / 2));
-  const spread = Math.sign(child.x - parent.x) * Math.min(60, Math.abs(child.x - parent.x) / 3);
+  const spread = Math.sign(child.x - parent.x) * Math.min(36, Math.abs(child.x - parent.x) / 5);
   return `M${child.x} ${child.y} C${child.x} ${child.y - bend} ${parent.x + spread} ${parent.y + bend} ${parent.x} ${parent.y}`;
 }
 

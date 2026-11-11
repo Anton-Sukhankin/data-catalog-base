@@ -1,0 +1,35 @@
+.page { composes: page from '../questions/QuestionsWorkspace.module.css'; }
+.heading { composes: heading from '../questions/QuestionsWorkspace.module.css'; }
+.workspace { composes: workspace from '../questions/QuestionsWorkspace.module.css'; }
+.scroll { composes: workspaceScroll from '../questions/QuestionsWorkspace.module.css'; }
+.list { composes: appeals from '../questions/QuestionsWorkspace.module.css'; }
+
+.card {
+  composes: card from '../../components/ReportCard/ReportCard.module.css';
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 20px;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.card:focus-visible { outline: 2px solid #007aff; outline-offset: -2px; }
+.content { display: grid; gap: 4px; min-width: 0; }
+.title { composes: subject from '../questions/QuestionsWorkspace.module.css'; }
+.card:hover .title { color: var(--item-hover-ink); }
+.metadata {
+  --description-separator-gap: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  color: #52698c;
+  font-size: 13px;
+  line-height: 18px;
+  overflow-wrap: anywhere;
+}
+
+@container (max-width: 420px) {
+  .card { gap: 12px; padding: 12px; }
+  .title { white-space: normal; overflow-wrap: anywhere; }
+}

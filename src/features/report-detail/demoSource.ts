@@ -1,10 +1,14 @@
 import raw from './overview/source.json';
-import { reportPassportExamples } from '../../demo/reportPassports';
+import { reportPassportExamples, summaryReportSlides } from '../../demo/reportPassports';
+import { readRelatedSourceReport, reportCrmDateSourceId } from '../../demo/relatedSourceReports';
+import { demoSourcesGateway } from '../../demo/sources';
+import { technicalReportDetail, technicalReportSummary } from '../../demo/technicalReport';
 import { demoMetricsSource } from './metrics/demoSource';
 import { demoMailingsSource } from './mailings/source';
 import type { ReportDetailContent, ReportDetailSources, ReportOverviewContent } from './source';
 import { demoReportUsageSource } from './usage/demoSource';
 import { paperSources, paperLineage } from './sources/demoSource';
+import { lineageRow } from './sources/lineageGeometry';
 
 const text = (suffix: string) => raw.find(item => item.id.endsWith(suffix))?.text ?? '';
 const overview: ReportOverviewContent = {
@@ -25,12 +29,7 @@ const summary: ReportDetailContent = {
   catalogId: '562',
   headingNote: 'Стабильный отчёт\u00a0\u00a0\u00a0•\u00a0\u00a0\u00a0Отчет по заявкам Домиленда',
   overview,
-  slides: [
-    { title: 'План-Факт. Проекты накопительно', description: 'План и факт по проектам с начала периода.', example: [['Накопленный план', '120 сделок'], ['Накопленный факт', '112 сделок']] },
-    { title: 'План-Факт. Без наценки', description: 'Сравнение продаж без учёта наценки.', example: [['План без наценки', '18 млн ₽'], ['Факт без наценки', '17,2 млн ₽']] },
-    { title: 'План-Факт. Без сертификатов', description: 'План и факт продаж без учёта сертификатов.', example: [['План', '105 сделок'], ['Факт', '99 сделок']] },
-    { title: 'План-Факт. Проекты/Очереди/Этапы накопительно', description: 'Фактические продажи по очередям и этапам с начала периода.', example: [['Первая очередь', '64 сделки'], ['Вторая очередь', '48 сделок']] },
-  ],
+  slides: summaryReportSlides,
   sources: paperSources,
   lineage: paperLineage,
 };
@@ -43,16 +42,32 @@ for (const [reportId, example] of reportPassportExamples) {
     slides: example.slides,
     sources,
     lineage: {
-      nodes: sources.map(({ id }, index) => ({ sourceId: id, x: 199.5 + 351 * index, y: 220 })),
+      nodes: lineageRow(sources.map(({ id }) => id)),
       edges: sources.map(({ id }) => ({ sourceId: id })),
     },
     demonstration: true,
   });
 }
 examples.set('demo-report-summary', summary);
+examples.set(technicalReportSummary.id, technicalReportDetail);
+
+const calendar = demoSourcesGateway.list().find(source => source.id === reportCrmDateSourceId);
 
 export const demoReportDetailSources: ReportDetailSources = {
-  read: id => examples.get(id),
+  read(id) {
+    const existing = examples.get(id);
+    if (existing) return existing;
+    const report = readRelatedSourceReport(id);
+    if (!report || !calendar) return undefined;
+    return {
+      overview: report.description ? { description: report.description } : undefined,
+      sources: [{
+        id: calendar.id, name: calendar.technicalName, category: 'catalog',
+        platform: calendar.platform, database: calendar.storageContext, fieldCount: calendar.columns,
+      }],
+      demonstration: true,
+    };
+  },
   metrics:demoMetricsSource,
   mailings:demoMailingsSource,
   usage:demoReportUsageSource,

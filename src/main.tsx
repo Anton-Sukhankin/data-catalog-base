@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { App } from './app/App';
+import { ListScrollIndicator } from './components/ListScrollIndicator/ListScrollIndicator';
 import { createHttpDiagnostics, demoDiagnostics } from './data/demoGateway';
 import './styles/base.css';
 
@@ -22,6 +23,7 @@ async function bootstrap() {
       <QueryClientProvider client={queryClient}>
         {/* Commit route changes inside the native snapshot callback. */}
         <BrowserRouter useTransitions={false}><App gateway={gateway} /></BrowserRouter>
+        <ListScrollIndicator />
       </QueryClientProvider>
     </StrictMode>,
   );

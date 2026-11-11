@@ -30,4 +30,4 @@ React-прототип корпоративного каталога. Основ
 - public и previews — ресурсы приложения и служебные страницы.
 - tests — браузерные сценарии.
 
-Для изменений интерфейса начните с [инструкций для агентов](AGENTS.md) и [оглавления спецификаций](https://github.com/Anton-Sukhankin/-./blob/main/README.md).
+Для изменений интерфейса начните с [инструкций для агентов](AGENTS.md) и [оглавления спецификаций](https://github.com/Anton-Sukhankin/Data-Catalog-Context/blob/main/README.md).

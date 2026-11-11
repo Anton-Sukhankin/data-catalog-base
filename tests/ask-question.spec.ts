@@ -27,6 +27,9 @@ test('the dialog validates both fields and each dismissal restores focus and dis
   await expect(modal.getByRole('alert')).toHaveCount(0);
   await message.fill('  ');
   await message.press('Tab');
+  const attach = modal.getByRole('button', { name: 'Прикрепить файл', exact: true });
+  await expect(attach).toBeFocused();
+  await attach.press('Tab');
   await expect(modal.getByRole('button', { name: 'Отмена', exact: true })).toBeFocused();
   await expect(modal.getByRole('alert')).toHaveCount(0);
   await send.click();
@@ -135,6 +138,108 @@ test('submits from My questions without resetting its active filter and retains 
   await expect(page.getByRole('heading', { name: 'Согласование новой метрики' })).toHaveCount(0);
 });
 
+test('opens the file picker and shows, validates and removes optional attachments', async ({ page }, testInfo) => {
+  await page.goto(mineEntry);
+  const trigger = page.getByRole('button', { name: 'Задать вопрос', exact: true });
+  await trigger.click();
+  const modal = page.getByRole('dialog', { name: 'Задать вопрос' });
+  const attach = modal.getByRole('button', { name: 'Прикрепить файл', exact: true });
+  const [chooser] = await Promise.all([page.waitForEvent('filechooser'), attach.click()]);
+  expect(chooser.isMultiple()).toBe(true);
+  const input = modal.locator('input[type="file"]');
+  const file = (name: string, mimeType: string) => ({ name, mimeType, buffer: Buffer.from('test') });
+  await chooser.setFiles([
+    file('Скриншот ошибки.PNG', 'image/png'),
+    file('Диагностика.pdf', 'application/pdf'),
+    file('script.exe', 'application/octet-stream'),
+  ]);
+  const list = modal.getByRole('list', { name: 'Прикреплённые файлы' });
+  await expect(list.getByRole('listitem')).toHaveCount(2);
+  await expect(list.getByText('Скриншот ошибки.PNG', { exact: true })).toBeVisible();
+  await expect(list.getByText('Диагностика.pdf', { exact: true })).toBeVisible();
+  await expect(modal.getByRole('alert')).toHaveText('Файлы неподдерживаемого формата пропущены.');
+  await list.getByRole('button', { name: 'Удалить файл Диагностика.pdf', exact: true }).click();
+  await expect(attach).toBeFocused();
+  await expect(list.getByRole('listitem')).toHaveCount(1);
+  await input.setInputFiles(file('Диагностика.pdf', 'application/pdf'));
+  await expect(list.getByRole('listitem')).toHaveCount(2);
+  await expect(modal.getByRole('alert')).toHaveCount(0);
+  await page.screenshot({ path: testInfo.outputPath('ask-attachments.png') });
+  await page.setViewportSize({ width: 400, height: 400 });
+  const panel = modal.locator('[data-question-surface]');
+  const box = (await panel.boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(16);
+  expect(box.y + box.height).toBeLessThanOrEqual(384);
+  expect(await panel.evaluate(element => element.scrollHeight > element.clientHeight)).toBe(true);
+  await modal.getByRole('textbox', { name: 'Тема', exact: true }).fill('Вопрос с вложениями');
+  await modal.getByRole('textbox', { name: 'Ваш вопрос', exact: true }).fill('Два файла с деталями.');
+  await modal.getByRole('button', { name: 'Отправить вопрос' }).click();
+  await expect(trigger).toBeFocused();
+  await expect(page.getByRole('heading', { name: 'Вопрос с вложениями', exact: true })).toBeVisible();
+  await trigger.click();
+  await expect(list).toHaveCount(0);
+  await expect(modal.getByRole('alert')).toHaveCount(0);
+});
+
+test('morphs in both directions and uses the latest panel size on exit', async ({ page }) => {
+  await page.addInitScript(() => {
+    const reverse = Animation.prototype.reverse;
+    Animation.prototype.reverse = function () {
+      reverse.call(this);
+      if ((this.effect as KeyframeEffect).target?.hasAttribute('data-question-morph')) {
+        void this.ready.then(() => this.pause());
+      }
+    };
+  });
+  await page.goto(faqEntry);
+  const trigger = page.getByRole('button', { name: 'Задать вопрос', exact: true });
+  const opener = (await trigger.boundingBox())!;
+  const viewport = page.viewportSize()!;
+  await trigger.press('Enter');
+  const surface = page.locator('[data-question-morph]');
+  const panel = page.locator('[data-question-surface]');
+  const readMask = () => surface.evaluate(async element => {
+    const [animation] = element.getAnimations();
+    await animation.ready;
+    const effect = animation.effect as KeyframeEffect;
+    return {
+      frames: effect.getKeyframes().map(frame => frame.clipPath),
+      duration: effect.getTiming().duration,
+      rate: animation.playbackRate,
+    };
+  });
+  function expectClip(frame: unknown, box: typeof opener, radius: number) {
+    const match = typeof frame === 'string' ? frame.match(/^inset\((.*?) round (\d+)px\)$/) : null;
+    expect(Number(match?.[2])).toBe(radius);
+    const [top, right = top, bottom = top, left = right] = match![1].split(' ').map(Number.parseFloat);
+    expect(top).toBeCloseTo(box.y, 1);
+    expect(right).toBeCloseTo(viewport.width - box.x - box.width, 1);
+    expect(bottom).toBeCloseTo(viewport.height - box.y - box.height, 1);
+    expect(left).toBeCloseTo(box.x, 1);
+  }
+  const initialPanel = (await panel.boundingBox())!;
+  const opening = await readMask();
+  expect(opening.duration).toBe(300);
+  expect(opening.rate).toBe(1);
+  expectClip(opening.frames[0], opener, 20);
+  expectClip(opening.frames[1], initialPanel, 16);
+  await expect(surface).toHaveCSS('clip-path', 'none');
+  await panel.locator('input[type="file"]').setInputFiles({
+    name: 'details.txt', mimeType: 'text/plain', buffer: Buffer.from('details'),
+  });
+  const expandedPanel = (await panel.boundingBox())!;
+  expect(expandedPanel.height).toBeGreaterThan(initialPanel.height);
+  await page.keyboard.press('Escape');
+  await expect(panel).toHaveAttribute('inert', '');
+  const closing = await readMask();
+  expect(closing.rate).toBe(-1.4);
+  expectClip(closing.frames[0], opener, 20);
+  expectClip(closing.frames[1], expandedPanel, 16);
+  await surface.evaluate(element => element.getAnimations()[0].finish());
+  await expect(surface).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+});
+
 for (const [width, height] of [[1440, 900], [1024, 768]]) {
   test(`modal covers the workspace at ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height });
@@ -151,10 +256,11 @@ for (const [width, height] of [[1440, 900], [1024, 768]]) {
     await expect(subject).toBeFocused();
     expect(await modal.evaluate(element => ({
       modal: element.matches(':modal'),
-      backdrop: getComputedStyle(element, '::backdrop').backgroundColor,
-      topLeft: document.elementFromPoint(12, 12) === element,
+      backdrop: getComputedStyle(element.querySelector('[data-question-backdrop]')!).backgroundColor,
+      topLeft: document.elementFromPoint(12, 12) === element.querySelector('[data-question-backdrop]'),
     }))).toEqual({ modal: true, backdrop: 'rgba(16, 29, 59, 0.36)', topLeft: true });
-    const box = (await modal.boundingBox())!;
+    expect(await modal.locator('[data-question-morph]').evaluate(element => element.getAnimations().length)).toBe(0);
+    const box = (await modal.locator('[data-question-surface]').boundingBox())!;
     expect(box.width).toBe(560);
     expect(box.x + box.width / 2).toBeCloseTo(width / 2, 0);
     expect(box.y + box.height / 2).toBeCloseTo(height / 2, 0);

@@ -1,5 +1,6 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useColumnDropdownExit } from '../../components/ColumnFilterMenu/useColumnDropdownExit';
 import { ReportFilterPanel } from '../../components/ReportFilterPanel/ReportFilterPanel';
 import { FilterValueList } from '../../components/FilterValueList/FilterValueList';
 import { shouldShowFilterSearch } from '../../components/FilterValueList/searchVisibility';
@@ -8,7 +9,10 @@ import { isSingleSourceAttribute, sourceAttributes, sourceFilterCount, sourceFil
 import s from './Sources.module.css';
 
 interface Field { id: SourceAttribute; anchor: HTMLButtonElement; query: string; width: 212 | 440; left: number; top: number }
-interface Overlay { kind: 'panel' | 'column'; opener: HTMLElement; draft: SourceFilters; attributes: readonly SourceAttribute[]; label: string; field?: Field; queries: Partial<Record<SourceAttribute,string>>; exit?: 'cancel' | 'apply' }
+type Overlay = { opener: HTMLElement; draft: SourceFilters; field?: Field; queries: Partial<Record<SourceAttribute,string>>; exit?: 'cancel' | 'apply' }
+  & ({ kind: 'panel' } | { kind: 'column'; attributes: readonly SourceAttribute[]; label: string });
+type ColumnOverlay = Extract<Overlay, { kind: 'column' }>;
+const columnBounds = (opener: HTMLElement) => (opener.parentElement ?? opener).getBoundingClientRect();
 const rows: readonly (readonly SourceAttribute[])[] = [['domain'], ['platform', 'layer'], ['masterSystem'], ['personalData', 'description'], ['analytics', 'similar']];
 const groups = { 0:'Расположение источника', 3:'Свойства данных', 4:'Использование и связи' };
 
@@ -19,17 +23,25 @@ export function useSourceFilterOverlay({ records, applied, onApply, onModalChang
   const root = useRef<HTMLDivElement>(null);
   const popup = useRef<HTMLDivElement>(null);
   const focusAfterClose = useRef<HTMLElement>(null);
+  const { exiting, startExit, clearExit, onExitAnimationEnd } = useColumnDropdownExit<{ menu: ColumnOverlay; bounds: DOMRect }>();
   function close() {
     if (state) focusAfterClose.current = state.opener;
     setState(undefined);
     onModalChange(false);
   }
   function dismiss() {
+    if (state?.kind === 'column') startExit({ menu: state, bounds: columnBounds(state.opener) });
     if (state?.kind !== 'panel') { close(); return; }
     setState(previous => previous && !previous.exit ? { ...previous, exit: 'cancel', field: undefined } : previous);
   }
-  function openPanel(opener: HTMLElement) { setState({kind:'panel',opener,draft:{...applied},attributes:sourceAttributes,label:'Фильтры источников',queries:{}}); onModalChange(true); }
-  function openColumn(label: string, attributes: readonly SourceAttribute[], opener: HTMLElement) { setState({kind:'column',label,attributes,opener,draft:{...applied},queries:{}}); onModalChange(false); }
+  const dismissFromEvent = useEffectEvent(dismiss);
+  function openPanel(opener: HTMLElement) { clearExit(); setState({kind:'panel',opener,draft:{...applied},queries:{}}); onModalChange(true); }
+  function openColumn(label: string, attributes: readonly SourceAttribute[], opener: HTMLElement) {
+    if (state?.kind === 'column' && state.opener === opener) { dismiss(); return; }
+    clearExit();
+    setState({kind:'column',label,attributes,opener,draft:{...applied},queries:{}});
+    onModalChange(false);
+  }
   function toggle(id: SourceAttribute, value: string) { setState(previous => previous && { ...previous, draft:value === 'all' ? {...previous.draft,[id]:undefined} : toggleSourceFilter(previous.draft,id,value) }); }
   function removeValue(id: SourceAttribute, value: string) {
     setState(previous => {
@@ -58,7 +70,7 @@ export function useSourceFilterOverlay({ records, applied, onApply, onModalChang
       return;
     }
     onApply(state.draft);
-    close();
+    dismiss();
   }
   function finishExit() {
     if (state?.exit === 'apply') onApply(state.draft);
@@ -69,7 +81,7 @@ export function useSourceFilterOverlay({ records, applied, onApply, onModalChang
       const next = { ...applied };
       for (const id of state.attributes) delete next[id];
       onApply(next);
-      close();
+      dismiss();
       return;
     }
     setState(previous => previous && { ...previous, draft: {}, field: undefined });
@@ -82,7 +94,7 @@ export function useSourceFilterOverlay({ records, applied, onApply, onModalChang
       if (state?.exit && (event.key === 'Escape' || event.key === 'Tab')) {
         event.preventDefault(); event.stopPropagation(); return;
       }
-      if (event.key === 'Escape') { if (document.querySelector('[data-multi-selected-popup]')) return; event.preventDefault(); event.stopPropagation(); if (state?.field) { const anchor = state.field.anchor; setState(previous => previous && {...previous,field:undefined}); anchor.focus(); } else dismiss(); }
+      if (event.key === 'Escape') { if (document.querySelector('[data-multi-selected-popup]')) return; event.preventDefault(); event.stopPropagation(); if (state?.field) { const anchor = state.field.anchor; setState(previous => previous && {...previous,field:undefined}); anchor.focus(); } else dismissFromEvent(); }
       if (event.key === 'Tab' && modal) {
         const buttons = Array.from(root.current?.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled)') ?? []).filter(node => node.getClientRects().length);
         const first = buttons[0], last = buttons.at(-1);
@@ -93,7 +105,7 @@ export function useSourceFilterOverlay({ records, applied, onApply, onModalChang
     function outside(event: PointerEvent) {
       const target = event.target as Node;
       if (state?.field && !popup.current?.contains(target) && !(state.field.anchor.closest('[data-multi-select]') ?? state.field.anchor).contains(target)) setState(previous => previous && {...previous,field:undefined});
-      if (!modal && !root.current?.contains(target) && !state?.opener.contains(target)) close();
+      if (!modal && !root.current?.contains(target) && !state?.opener.contains(target)) dismissFromEvent();
     }
     function geometry() {
       if (!modal) { setState(previous => previous && {...previous}); return; }
@@ -113,14 +125,15 @@ export function useSourceFilterOverlay({ records, applied, onApply, onModalChang
     focusAfterClose.current?.focus();
     focusAfterClose.current = null;
   }, [state?.opener]);
-  const values = (id: SourceAttribute) => state?.draft[id]?.length ? state.draft[id]! : isSingleSourceAttribute(id) ? ['all'] : [];
-  function list(id: SourceAttribute, query: string, width?: 212 | 440) {
-    return <FilterValueList label={sourceLabels[id]} width={width} options={options(id,query)} totalOptionsCount={options(id).length} selectedValues={values(id)} showSearch={hasSearch(id)} selectionMode={isSingleSourceAttribute(id) ? 'single' : 'multiple'} embedded={width === undefined}
+  function list(id: SourceAttribute, query: string, width?: 212 | 440, draft = state?.draft) {
+    const selected = draft?.[id];
+    const values = selected?.length ? selected : isSingleSourceAttribute(id) ? ['all'] : [];
+    return <FilterValueList label={sourceLabels[id]} width={width} options={options(id,query)} totalOptionsCount={options(id).length} selectedValues={values} showSearch={hasSearch(id)} selectionMode={isSingleSourceAttribute(id) ? 'single' : 'multiple'} embedded={width === undefined}
       searchValue={query} onSearchChange={value => setState(previous => previous && {...previous,queries:{...previous.queries,[id]:value},field:previous.field?.id === id ? {...previous.field,query:value} : previous.field})} onToggleValue={value => toggle(id,value)} />;
   }
   let overlay;
   if (state?.kind === 'panel') overlay = createPortal(<div ref={root} data-source-filter-panel>
-    <ReportFilterPanel<SourceAttribute> context="catalog" opener={state.opener} title="Фильтры источников" fieldRows={rows} groupLabels={groups}
+    <ReportFilterPanel<SourceAttribute> context="catalog" opener={state.opener} fieldRows={rows} groupLabels={groups}
       fields={sourceAttributes.map(id => ({ id,label:sourceLabels[id],selected:Boolean(state.draft[id]?.length),selectionMode:isSingleSourceAttribute(id) ? 'single' : 'multiple',selectedOptions:(state.draft[id] ?? []).map(value => sourceOptions(records,id).find(option => option.value === value) ?? {value,label:value}),value:state.draft[id]?.length ? state.draft[id]!.map(value => sourceOptions(records,id).find(option => option.value === value)?.label ?? value).join(', ') : id === 'analytics' || id === 'similar' ? 'Не важно' : 'Все' }))}
       activeFieldId={state.field?.id} draftAttributeCount={sourceFilterCount(state.draft)} canApply={!sourceFiltersEqual(applied,state.draft)} showReset={sourceFilterCount(state.draft)>0}
       closing={Boolean(state.exit)} onExitComplete={finishExit} onFieldOpen={openField} onFieldValueRemove={removeValue} onFieldClear={clearValues} onReset={reset} onApply={apply} onClose={dismiss} />
@@ -128,20 +141,23 @@ export function useSourceFilterOverlay({ records, applied, onApply, onModalChang
       {list(state.field.id,state.field.query,state.field.width)}
     </div>,root.current.querySelector('[data-report-filter-panel]')!)}
   </div>,document.body);
-  if (state?.kind === 'column') {
-    const bounds = (state.opener.parentElement ?? state.opener).getBoundingClientRect();
-    const grouped = state.attributes.length > 1;
-    const preferredWidth = grouped ? 320 : state.attributes[0] === 'analytics' ? 264 : 240;
+  const activeColumn = state?.kind === 'column' ? state : undefined;
+  const column = activeColumn ?? exiting?.menu;
+  if (column && state?.kind !== 'panel') {
+    const bounds = activeColumn ? columnBounds(activeColumn.opener) : exiting!.bounds;
+    const grouped = column.attributes.length > 1;
+    const preferredWidth = grouped ? 320 : column.attributes[0] === 'analytics' ? 264 : 240;
     const width = Math.min(preferredWidth, innerWidth - 16);
     const left = Math.max(8, Math.min(bounds.left, innerWidth - width - 8));
     const top = Math.max(8,Math.min(bounds.bottom+8,innerHeight-260));
-    overlay = createPortal(<div ref={root} role="dialog" aria-label={`Фильтр: ${state.label}`} className={s.columnMenu} style={{left,top,width,maxHeight:`calc(100vh - ${top+12}px)`}} data-source-column-menu>
-      <div className={s.columnContent}>{state.attributes.map(id => <section key={id}>
+    overlay = createPortal(<div key={column.label} ref={root} role="dialog" aria-label={`Фильтр: ${column.label}`} className={s.columnMenu} style={{left,top,width,maxHeight:`calc(100vh - ${top+12}px)`}} data-source-column-menu
+      data-column-dropdown-motion data-state={activeColumn ? 'open' : 'closed'} inert={!activeColumn} onAnimationEnd={onExitAnimationEnd}>
+      <div className={s.columnContent}>{column.attributes.map(id => <section key={id}>
         {grouped && <h3>{sourceLabels[id]}</h3>}
-        {list(id,state.queries[id] ?? '')}
+        {list(id,column.queries[id] ?? '',undefined,column.draft)}
       </section>)}</div>
-      <div className={s.columnActions}><button type="button" className={s.columnReset} onClick={reset}>Сбросить</button><button type="button" disabled={sourceFiltersEqual(applied,state.draft)} onClick={apply}>Применить</button></div>
+      <div className={s.columnActions}><button type="button" className={s.columnReset} onClick={reset}>Сбросить</button><button type="button" disabled={sourceFiltersEqual(applied,column.draft)} onClick={apply}>Применить</button></div>
     </div>,document.body);
   }
-  return { overlay,openPanel,openColumn,close,isOpen:Boolean(state),activeColumn:state?.kind === 'column' ? state.label : undefined };
+  return { overlay,openPanel,openColumn,close,isOpen:Boolean(state),activeColumn:activeColumn?.label };
 }

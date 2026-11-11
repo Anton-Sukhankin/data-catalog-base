@@ -1,5 +1,6 @@
 import { AttributeValue } from '../../components/AttributeValue/AttributeValue';
 import { useId, useLayoutEffect, useRef, useState, type Ref, type UIEventHandler } from 'react';
+import { Table2 } from 'lucide-react';
 import { DescriptionSeparator, DescriptionText } from '../../components/DescriptionText/DescriptionText';
 import { CatalogEntityIcon } from '../../components/CatalogEntityIcon/CatalogEntityIcon';
 import { Link, useSearchParams } from 'react-router';
@@ -194,8 +195,13 @@ function ReferenceTable({ rows, scrollRef, onScroll, paginated, compact, pinHead
       </tr></thead>
       <tbody>{rows.map(({ id, entity, attribute, relationships, options }) => <tr key={id} data-options-expanded={expandedRows.has(id)}>
         <td>
-          <OverflowText as="strong" className={s.value} fullText={entity.name}>{entity.name}</OverflowText>
-          <OverflowText className={s.secondary} fullText={entity.logicalName}>{entity.logicalName}</OverflowText>
+          <div className={s.entityCell}>
+            <span className={s.entityIcon} aria-hidden="true"><Table2 size={16} strokeWidth={1.5} /></span>
+            <div className={s.entityText}>
+              <OverflowText as="strong" className={s.value} fullText={entity.name}>{entity.name}</OverflowText>
+              <OverflowText className={s.secondary} fullText={entity.logicalName}>{entity.logicalName}</OverflowText>
+            </div>
+          </div>
         </td>
         <td>
           <OverflowText as="strong" className={s.value} fullText={attribute.name}>{attribute.name}</OverflowText>
@@ -236,13 +242,15 @@ function ReferenceDetailHeading({ reference, description, catalogSearch, compact
     <div className={s.header}>
       <div>
         <h1><SearchTargetText id={target} field="title" text={reference.title} /></h1>
-        <div className={s.context}>
-          <p className={s.description}>{description}</p>
-          <span>Информационная система <span className={s.systemTag}>
-            <SearchTargetText id={target} field="system-name" text={name} />
-            {code && <><DescriptionSeparator /><SearchTargetText id={target} field="system-code" text={code} /></>}
-          </span></span>
-        </div>
+        <DetailSecondary compact={compact}>
+          <div className={s.context}>
+            <p className={s.description}>{description}</p>
+            <span>Информационная система <span className={s.systemTag}>
+              <SearchTargetText id={target} field="system-name" text={name} />
+              {code && <><DescriptionSeparator /><SearchTargetText id={target} field="system-code" text={code} /></>}
+            </span></span>
+          </div>
+        </DetailSecondary>
       </div>
       <Link className={s.back} to={{ search: catalogSearch }} replace>К справочникам</Link>
     </div>

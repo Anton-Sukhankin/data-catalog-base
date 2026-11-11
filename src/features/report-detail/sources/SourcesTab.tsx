@@ -24,7 +24,7 @@ function SourceAttributes({ source }: { source: ReportDataSource }) {
 export function SourcesTab({ reportTitle, content, onOpenSource }: { reportTitle:string; content?:ReportDetailContent; onOpenSource:(id:string)=>void }) {
   const sources=content?.sources??[];
   if (!sources.length && !content?.lineage) {
-    return <EmptyDetail viewport title={content ? 'Источники отчёта не указаны' : 'Сведения об источниках недоступны'} description="Здесь отображаются источники отчёта и схема происхождения данных." />;
+    return <EmptyDetail viewport title={content?.sources ? 'Источники отчёта не указаны' : 'Сведения об источниках недоступны'} description="Здесь отображаются источники отчёта и схема происхождения данных." />;
   }
 
   return <div className={s.tab} data-sources-tab>

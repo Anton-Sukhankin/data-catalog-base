@@ -5,6 +5,7 @@ import { demoMetricsGateway } from './metrics';
 import { demoCatalogTitles } from './reportTable';
 import { demoSourcesGateway } from './sources';
 import { demoSystemReferencesGateway } from './systemReferences';
+import { demoMailingTasks } from './tasks';
 
 const dictionary = demoDictionaryGateway.read();
 
@@ -12,7 +13,7 @@ const dictionary = demoDictionaryGateway.read();
 export const navigationFixture: readonly SidebarItem[] = [
   { id: 'home', label: 'Главная', icon: '/icons/sidebar/home.svg' },
   { id: 'reports', label: 'Отчёты', icon: '/icons/sidebar/reports.svg', count: String(demoCatalogTitles.size) },
-  { id: 'tasks', label: 'Задачи', icon: '/icons/sidebar/tasks.svg' },
+  { id: 'tasks', label: 'Задачи', icon: '/icons/sidebar/tasks.svg', count: String(demoMailingTasks.length) },
   { id: 'metrics', label: 'Метрики и показатели', icon: '/icons/sidebar/metrics.svg', count: String(demoMetricsGateway.list().length) },
   { id: 'sources', label: 'Источники', icon: '/icons/sidebar/sources.svg', count: String(demoSourcesGateway.list().length) },
   { id: 'dictionary', label: 'Бизнес-словарь', icon: '/icons/sidebar/dictionary.svg', count: String(dictionary.terms.length + dictionary.domains.length) },

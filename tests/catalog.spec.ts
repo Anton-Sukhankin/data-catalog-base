@@ -29,7 +29,7 @@ test('catalog switches the same real page between views, preserves conditions an
   await page.getByRole('button',{name:'Табличный вид',exact:true}).click();
   await expect(table.locator('[data-table-report-id]')).toHaveAttribute('data-table-report-id','demo-report-finance-plan');
   await page.getByRole('button',{name:'Открыть фильтры отчётов',exact:true}).click();
-  const panel=page.getByRole('dialog',{name:'Фильтры отчётов',exact:true});
+  const panel=page.getByRole('dialog',{name:'Фильтры',exact:true});
   await panel.locator('[data-panel-field="domain"]').click();
   await page.locator('[data-panel-value-list]').getByRole('checkbox',{name:'Гостеприимство',exact:true}).check();
   await panel.getByRole('button',{name:'Применить',exact:true}).click();
@@ -52,7 +52,7 @@ test('browser history closes a pending filter draft without applying it to anoth
   const navigation=page.getByRole('navigation',{name:'Разделы каталога'});
   await navigation.getByRole('button',{name:'Отчёты',exact:true}).click();
   await page.getByRole('button',{name:'Открыть фильтры отчётов',exact:true}).click();
-  const panel=page.getByRole('dialog',{name:'Фильтры отчётов',exact:true});
+  const panel=page.getByRole('dialog',{name:'Фильтры',exact:true});
   await panel.locator('[data-panel-field="domain"]').click();
   await page.locator('[data-panel-value-list]').getByRole('checkbox',{name:'Финансы',exact:true}).check();
   await page.goBack();

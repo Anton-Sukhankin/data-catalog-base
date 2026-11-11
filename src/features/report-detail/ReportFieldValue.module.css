@@ -1,0 +1,3 @@
+.field { display:flex; flex-direction:column; min-width:0; gap:4px; padding:12px 20px; }
+.field dt { font-size:var(--report-field-label-size,13px); line-height:18px; color:#52627c; }
+.field dd { min-width:0; margin:0; overflow-wrap:anywhere; font-size:var(--report-field-value-size,18px); line-height:24px; font-weight:500; color:#34445d; }

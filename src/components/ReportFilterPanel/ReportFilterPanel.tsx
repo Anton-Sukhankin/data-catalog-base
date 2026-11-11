@@ -1,6 +1,7 @@
 import { OverflowText } from '../OverflowText/OverflowText';
-import { Fragment, useEffectEvent, useId, useLayoutEffect, useRef } from 'react';
+import { Fragment, useId, useRef, type ReactNode } from 'react';
 import styles from './ReportFilterPanel.module.css';
+import { useModalMorph } from '../useModalMorph';
 import { ReportRangeField, type ReportRangeFieldProps } from '../ReportRangeField/ReportRangeField';
 import type { ReportNumericAttribute } from '../../data/reportFilters';
 import { MultiSelectTrigger } from '../MultiSelectTrigger/MultiSelectTrigger';
@@ -24,9 +25,9 @@ export interface ReportFilterPanelProps<Id extends string = ReportFilterFieldId>
   fields: readonly ReportFilterField<Id>[];
   rangeFields?: Record<ReportNumericAttribute, ReportRangeFieldProps>;
   activeFieldId?: Id;
-  title?: string;
   fieldRows?: readonly (readonly Id[])[];
   groupLabels?: Readonly<Record<number, string>>;
+  children?: ReactNode;
   draftAttributeCount: number;
   canApply: boolean;
   showReset: boolean;
@@ -64,61 +65,12 @@ function PanelSingleFilter({ field, labelId, valueId, open, onOpen, onClear }: {
 }
 
 /** Controlled surface. The caller owns draft/apply, focus, Escape and the external popup portal. */
-export function ReportFilterPanel<Id extends string = ReportFilterFieldId>({ context, opener, fields, rangeFields, activeFieldId, title: customTitle, fieldRows, groupLabels, draftAttributeCount, canApply, showReset, closing = false, onExitComplete, onFieldOpen, onFieldValueRemove, onFieldClear, onReset, onApply, onClose }: ReportFilterPanelProps<Id>) {
+export function ReportFilterPanel<Id extends string = ReportFilterFieldId>({ context, opener, fields, rangeFields, activeFieldId, fieldRows, groupLabels, children, draftAttributeCount, canApply, showReset, closing = false, onExitComplete, onFieldOpen, onFieldValueRemove, onFieldClear, onReset, onApply, onClose }: ReportFilterPanelProps<Id>) {
   const id = useId();
   const backdrop = useRef<HTMLDivElement>(null);
   const reveal = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLElement>(null);
-  const motion = useRef<Animation[]>([]);
-  const finishExit = useEffectEvent(() => onExitComplete?.());
-  useLayoutEffect(() => {
-    const dimmer = backdrop.current;
-    const surface = reveal.current;
-    const content = panel.current;
-    if (!opener?.isConnected || !dimmer || !surface || !content || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const from = opener.getBoundingClientRect();
-    const to = content.getBoundingClientRect();
-    const bounds = surface.getBoundingClientRect();
-    if (!from.width || !from.height || !to.width || !to.height) return;
-
-    // Animate the viewport-sized mask so the real panel and its controls keep their final geometry.
-    const clip = (box: DOMRect, radius: string) => `inset(${box.top - bounds.top}px ${bounds.right - box.right}px ${bounds.bottom - box.bottom}px ${box.left - bounds.left}px round ${radius})`;
-    const { backgroundColor, borderTopLeftRadius } = getComputedStyle(content);
-    const timing = { duration: 300, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' } satisfies KeyframeAnimationOptions;
-    const animations = [
-      dimmer.animate([{ opacity: 0 }, { opacity: 1 }], timing),
-      surface.animate([
-        { clipPath: clip(from, `${Math.min(from.width, from.height) / 2}px`), backgroundColor },
-        { clipPath: clip(to, borderTopLeftRadius), backgroundColor },
-      ], timing),
-      content.animate([{ opacity: 0 }, { opacity: 0, offset: 0.57 }, { opacity: 1 }], { ...timing, easing: 'linear' }),
-    ];
-    motion.current = animations;
-    return () => {
-      animations.forEach(animation => animation.cancel());
-      motion.current = [];
-    };
-  }, [opener]);
-  useLayoutEffect(() => {
-    if (!closing) return;
-    const animations = motion.current.filter(animation => Number(animation.currentTime) > 0);
-    if (!animations.length || !opener?.isConnected || matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      finishExit();
-      return;
-    }
-    // Reverse from the current frame, including when dismissal interrupts the opening.
-    for (const animation of animations) {
-      animation.effect?.updateTiming({ fill: 'both' });
-      animation.reverse();
-      animation.updatePlaybackRate(-1.4);
-    }
-    let active = true;
-    void Promise.allSettled(animations.map(animation => animation.finished)).then(() => {
-      if (active) finishExit();
-    });
-    return () => { active = false; };
-  }, [closing, opener]);
-  const title = customTitle ?? (context === 'catalog' ? 'Фильтры отчётов' : 'Фильтры избранных отчётов');
+  useModalMorph({ opener, backdrop, reveal, panel, closing, onExitComplete });
   const visibleRows = fieldRows ?? rows as readonly (readonly Id[])[];
   return <div className={styles.layer}>
     <div ref={backdrop} className={styles.backdrop} data-panel-backdrop onClick={onClose} />
@@ -126,7 +78,7 @@ export function ReportFilterPanel<Id extends string = ReportFilterFieldId>({ con
     <section ref={panel} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} className={styles.panel} data-report-filter-panel data-context={context} inert={closing}>
       <header className={styles.header}>
         <div className={styles.headline}>
-          <h2 id={`${id}-title`}>{title}</h2>
+          <h2 id={`${id}-title`}>Фильтры</h2>
           {draftAttributeCount > 0 && <span className={styles.count} aria-label={`Настроено атрибутов: ${draftAttributeCount}`} data-panel-count>{draftAttributeCount}</span>}
         </div>
         <button type="button" className={styles.iconClose} aria-label="Закрыть панель фильтров" onClick={onClose}>
@@ -156,6 +108,7 @@ export function ReportFilterPanel<Id extends string = ReportFilterFieldId>({ con
               </div>;
             })}
           </div></Fragment>)}
+          {children}
         </div>
       </div>
       <footer className={styles.footer} data-panel-actions>

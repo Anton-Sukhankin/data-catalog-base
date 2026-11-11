@@ -6,15 +6,22 @@ export interface DetailCrumb {
   onSelect: () => void;
 }
 
-export function DetailBreadcrumbs({ ancestors, current }: {
-  ancestors: readonly DetailCrumb[];
+type BreadcrumbProps = {
   current: string;
-}) {
-  return <nav className={s.breadcrumbs} aria-label="Хлебные крошки">
-    {ancestors.map(({ label, onSelect }, index) => <Fragment key={index}>
-      <button type="button" onClick={onSelect}>{label}</button>
+} & (
+  { ancestors: readonly DetailCrumb[]; pathLabel?: undefined }
+  | { ancestors: readonly Pick<DetailCrumb, 'label'>[]; pathLabel: string }
+);
+
+export function DetailBreadcrumbs({ ancestors, current, pathLabel }: BreadcrumbProps) {
+  const Container = pathLabel ? 'div' : 'nav';
+  return <Container className={s.breadcrumbs} role={pathLabel ? 'group' : undefined} aria-label={pathLabel ?? 'Хлебные крошки'}>
+    {ancestors.map((crumb, index) => <Fragment key={index}>
+      {'onSelect' in crumb
+        ? <button type="button" onClick={crumb.onSelect}>{crumb.label}</button>
+        : <span className={s.crumbAncestor}>{crumb.label}</span>}
       <img src="/images/report-detail/chrome/breadcrumb-chevron.svg" width="16" height="16" alt="" />
     </Fragment>)}
-    <span aria-current="page">{current}</span>
-  </nav>;
+    <span aria-current={pathLabel ? 'location' : 'page'}>{current}</span>
+  </Container>;
 }

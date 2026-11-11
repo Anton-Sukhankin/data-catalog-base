@@ -31,7 +31,6 @@ export function Sidebar({ items, activeId, collapsed, onSelect, onCollapsedChang
   const drag = useRef<{ pointerId: number; startX: number; startWidth: number } | null>(null);
   const [width, setWidth] = useState(defaultWidth);
   const [resizing, setResizing] = useState(false);
-  const [boundaryHovered, setBoundaryHovered] = useState(false);
 
   function startResize(event: PointerEvent<HTMLDivElement>) {
     if (event.button !== 0 || drag.current || !sidebar.current) return;
@@ -73,7 +72,7 @@ export function Sidebar({ items, activeId, collapsed, onSelect, onCollapsedChang
 
   return (
     <aside ref={sidebar} className={styles.sidebar} data-collapsed={collapsed}
-      data-boundary={boundaryHovered || resizing} data-resizing={resizing}
+      data-resizing={resizing}
       style={{ '--sidebar-expanded-width': `${width}px` } as CSSProperties}>
       <nav id={menuId} aria-label="Разделы каталога" className={styles.menu}>
         <ul className={styles.list}>
@@ -96,9 +95,7 @@ export function Sidebar({ items, activeId, collapsed, onSelect, onCollapsedChang
           ))}
         </ul>
       </nav>
-      <div className={styles.boundary}
-        onMouseEnter={() => setBoundaryHovered(true)}
-        onMouseLeave={() => setBoundaryHovered(false)}>
+      <div className={styles.boundary}>
         {!collapsed && <div className={styles.resizeHandle} role="separator" tabIndex={0}
           aria-label="Ширина боковой панели" aria-orientation="vertical" aria-controls={menuId}
           aria-valuemin={minWidth} aria-valuemax={maxWidth} aria-valuenow={width}
@@ -113,7 +110,7 @@ export function Sidebar({ items, activeId, collapsed, onSelect, onCollapsedChang
           aria-expanded={!collapsed}
           onClick={togglePanel}
         >
-          <img src={`/icons/sidebar/${collapsed ? 'expand' : 'collapse'}.svg`} width="12" height="12" alt="" aria-hidden="true" />
+          <span className={styles.toggleIcon} aria-hidden="true" />
         </button>
       </div>
     </aside>

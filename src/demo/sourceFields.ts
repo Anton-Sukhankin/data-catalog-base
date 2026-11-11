@@ -1,6 +1,6 @@
 import type { SourceField } from '../data/sourceDetails';
 
-/** Authored prototype schemas, not recovered database dictionaries. */
+/** Prototype schemas combining observed fields with demonstration fields. */
 type FieldSeed = readonly [name:string, sqlType:string, nullable?:boolean, key?:boolean, relatedMetrics?:readonly string[]];
 function fields(seeds:readonly FieldSeed[]):readonly SourceField[] {
   return seeds.map(([name,sqlType,nullable=false,key=false,relatedMetrics])=>({
@@ -9,9 +9,30 @@ function fields(seeds:readonly FieldSeed[]):readonly SourceField[] {
   }));
 }
 
+// Field relationships observed for reportcrm20.dbo.dimdate in SRC-17 and SRC-18.
+const reportCrmDateMetrics = [
+  'Количество задач оформления и регистрации',
+  'Кол-во онлайн сделок, шт',
+  'Доля онлайн сделок, %',
+  'Срок подачи на регистрацию',
+  'Выполнение плана дополнительных доходов, %',
+  'Сборы страховок по рассрочке',
+  'Устная бронь',
+  'Устная бронь, перешедшая в платную',
+  'Устных броней снято',
+  'Платный резерв, перешедший в продажу',
+  'Платных броней снято',
+  'Площадь онлайн-продаж, м²',
+] as const;
+
+export const reportCrmObservedFields: readonly FieldSeed[] = [
+  ['DateKey','INTEGER',false,true,[]],
+  ['Date','DATE',true,false,reportCrmDateMetrics],
+  ['FullDate','VARCHAR(100) COLLATE Cyrillic_General_CI_AS',true,false,[]],
+  ['FullDateUSA','VARCHAR(100) COLLATE Cyrillic_General_CI_AS',true,false,[]],
+];
+
 const calendar:readonly FieldSeed[] = [
-  ['date_key','INT',false,true,['Количество рабочих дней','Количество выходных дней','Количество праздничных дней']],
-  ['full_date','DATE'], ['calendar_year','SMALLINT',false,false,['Количество дней в году']],
   ['calendar_quarter','TINYINT'], ['quarter_name','NVARCHAR'], ['month_number','TINYINT'],
   ['month_name','NVARCHAR'], ['month_short_name','NVARCHAR'], ['day_of_month','TINYINT'],
   ['day_of_year','SMALLINT'], ['day_of_week','TINYINT'], ['day_name','NVARCHAR'],
@@ -21,13 +42,66 @@ const calendar:readonly FieldSeed[] = [
   ['quarter_start','DATE'], ['quarter_end','DATE'], ['year_start','DATE'], ['year_end','DATE'],
 ];
 
+const calendarYearMetrics = ['Количество дней в году','Рабочие дни с начала года','Доля прошедшего года','Выполнение годового плана'];
+const calendarQuarterMetrics = ['Количество дней в квартале','Рабочие дни с начала квартала','Выполнение квартального плана','Продажи за квартал'];
+const calendarMonthMetrics = ['Количество дней в месяце','Рабочие дни с начала месяца','Доля прошедшего месяца','Выполнение месячного плана','Продажи за месяц'];
+const calendarDayMetrics = ['Сделки за день','Заявки за день','Продажи за день','Среднее число сделок в день','Доля продаж за день'];
+const calendarWeekMetrics = ['Сделки за неделю','Продажи за неделю','Количество рабочих дней недели','Среднее число сделок за неделю'];
+const workingDayMetrics = ['Количество рабочих дней','Продажи в рабочие дни','Среднее число заявок в рабочий день'];
+const holidayMetrics = ['Количество праздничных дней','Заявки в праздничные дни','Доля заявок в праздничные дни'];
+const fiscalYearMetrics = ['Продажи за финансовый год','Выполнение плана финансового года','Выручка с начала финансового года'];
+const fiscalQuarterMetrics = ['Продажи за финансовый квартал','Выручка за финансовый квартал','Выполнение плана финансового квартала'];
+const fiscalMonthMetrics = ['Продажи за финансовый месяц','Выручка за финансовый месяц','Выполнение плана финансового месяца'];
+
+/** Authored links for the dimdate prototype only. FullDateUSA has zero observed links in SRC-28. */
+const reportCrmDemoMetrics: Readonly<Partial<Record<string,readonly string[]>>> = {
+  FullDateUSA:calendarDayMetrics,
+  calendar_year:calendarYearMetrics,
+  calendar_quarter:calendarQuarterMetrics,
+  quarter_name:calendarQuarterMetrics,
+  month_number:calendarMonthMetrics,
+  month_name:calendarMonthMetrics,
+  month_short_name:calendarMonthMetrics,
+  day_of_month:calendarDayMetrics,
+  day_of_year:calendarYearMetrics,
+  day_of_week:calendarDayMetrics,
+  day_name:calendarDayMetrics,
+  week_of_year:calendarWeekMetrics,
+  iso_week:calendarWeekMetrics,
+  iso_year:calendarYearMetrics,
+  is_weekend:['Количество выходных дней','Заявки в выходные дни','Доля заявок в выходные дни'],
+  is_holiday:holidayMetrics,
+  holiday_name:holidayMetrics,
+  is_working_day:workingDayMetrics,
+  month_start:calendarMonthMetrics,
+  month_end:calendarMonthMetrics,
+  quarter_start:calendarQuarterMetrics,
+  quarter_end:calendarQuarterMetrics,
+  year_start:calendarYearMetrics,
+  year_end:calendarYearMetrics,
+  fiscal_year:fiscalYearMetrics,
+  fiscal_quarter:fiscalQuarterMetrics,
+  fiscal_month:fiscalMonthMetrics,
+  week_start:calendarWeekMetrics,
+  week_end:calendarWeekMetrics,
+  previous_year_date:['Продажи за аналогичный день прошлого года','Изменение продаж год к году','Изменение числа сделок год к году'],
+  created_at:['Добавленные записи календаря','Последняя дата добавления записи календаря','Дни с новыми записями календаря'],
+};
+
 export const demoSourceFields:Readonly<Record<string,readonly SourceField[]>> = {
-  'source-reportcrm-date':fields([...calendar,
+  'source-reportcrm-date':fields([
+    ...reportCrmObservedFields,
+    ['calendar_year','SMALLINT'], ...calendar,
     ['fiscal_year','SMALLINT'], ['fiscal_quarter','TINYINT'], ['fiscal_month','TINYINT'],
-    ['year_month','CHAR'], ['year_quarter','CHAR'], ['week_start','DATE'], ['week_end','DATE'],
+    ['week_start','DATE'], ['week_end','DATE'],
     ['previous_year_date','DATE',true], ['created_at','DATETIME2'],
-  ]),
-  'source-dwh-date':fields([...calendar,
+  ]).map(field => {
+    const relatedMetrics = reportCrmDemoMetrics[field.name];
+    return relatedMetrics ? { ...field, relatedMetrics } : field;
+  }),
+  'source-dwh-date':fields([
+    ['date_key','INT',false,true,['Количество рабочих дней','Количество выходных дней','Количество праздничных дней']],
+    ['full_date','DATE'], ['calendar_year','SMALLINT',false,false,['Количество дней в году']], ...calendar,
     ['reporting_period','CHAR'], ['financial_year','SMALLINT'], ['financial_period','TINYINT'],
     ['is_month_closed','BIT'], ['is_quarter_closed','BIT'], ['working_day_number','SMALLINT',true],
     ['etl_loaded_at','DATETIME2'], ['source_system','NVARCHAR'],

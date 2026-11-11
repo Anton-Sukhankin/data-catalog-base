@@ -23,6 +23,7 @@
 .indicator { --catalog-icon-mask:url('/icons/metrics/indicator.svg'); }
 .reference { --catalog-icon-mask:url('/icons/sidebar/systems.svg'); }
 .source { --catalog-icon-mask:url('/icons/sidebar/sources.svg'); }
+.task { --catalog-icon-mask:url('/icons/sidebar/tasks-collapsed.svg'); }
 .surface:hover {
   --catalog-icon-fill:var(--item-hover-icon-fill);
   --catalog-icon-ink:var(--item-hover-ink);

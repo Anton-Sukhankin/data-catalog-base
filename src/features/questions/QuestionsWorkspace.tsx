@@ -156,7 +156,7 @@ export function QuestionsWorkspace({ faq, appeals, onSubmitQuestion, onClearSear
       </div>
       <ListPagination {...page} label={isFaq ? 'Страницы FAQ' : 'Страницы обращений'} onPageChange={changePage} />
     </div>
-    {askOpen && <AskQuestionDialog onClose={() => {
+    {askOpen && <AskQuestionDialog opener={askTrigger.current} attachmentsEnabled onClose={() => {
       setAskOpen(false);
       askTrigger.current?.focus();
     }} onSubmit={draft => {

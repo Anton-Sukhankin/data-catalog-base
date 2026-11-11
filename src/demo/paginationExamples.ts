@@ -52,6 +52,10 @@ export function readPaginationReport(id: string, reports: readonly ReportSummary
 
 export const paginationReportDetails = {
   ...demoReportDetailSources,
+  mailings: {
+    ...demoReportDetailSources.mailings,
+    manual: (id: string) => demoReportDetailSources.mailings.manual?.(originId(id)),
+  },
   read(id: string) {
     const detail = demoReportDetailSources.read(originId(id));
     return detail && id !== originId(id) ? { ...detail, catalogId: undefined, demonstration: true } : detail;

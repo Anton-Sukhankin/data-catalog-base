@@ -3,6 +3,25 @@ import { listPageSize } from './pagination';
 
 export type DictionaryView = 'all' | 'terms' | 'processes' | 'domains';
 
+export interface DictionaryTermPerson {
+  name: string;
+  position: string;
+  avatar?: string;
+}
+
+export interface DictionaryTermDetails {
+  fullDescription?: string;
+  responsible?: string | null;
+  /** Paper examples supplement the prototype without changing source attributes. */
+  demoPeople?: { owner: DictionaryTermPerson; responsible: DictionaryTermPerson };
+  created?: string;
+  updated?: string;
+  changeAuthor?: string;
+  synonyms?: readonly string[];
+  /** An empty list is a confirmed absence of relationships. Omission means no detail data. */
+  relations?: readonly { kind: 'process' | 'term' | 'report' | 'source' | 'field' | 'metric' | 'indicator'; name: string }[];
+}
+
 export interface DictionaryTerm {
   id: string;
   name: string;
@@ -13,13 +32,21 @@ export interface DictionaryTerm {
   descriptionComplete: boolean;
   domain?: string;
   owner?: string;
+  details?: DictionaryTermDetails;
 }
 
 export interface DictionaryDomain { id: string; name: string }
 
+export interface DictionaryProcessCatalog {
+  reportedProcessCount: number;
+  reportedGroupCount: number;
+  groups: readonly { id: string; name: string; processCount: number }[];
+}
+
 export interface DictionaryCatalog {
   terms: readonly DictionaryTerm[];
   domains: readonly DictionaryDomain[];
+  businessProcesses?: DictionaryProcessCatalog;
   provenance: { kind: 'demo'; reference: string };
 }
 

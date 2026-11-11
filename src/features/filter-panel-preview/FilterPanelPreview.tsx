@@ -1,5 +1,6 @@
 import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { ListScrollIndicator } from '../../components/ListScrollIndicator/ListScrollIndicator';
 import { ReportFilterPanel, type ReportFilterField, type ReportFilterFieldId } from '../../components/ReportFilterPanel';
 import { FilterValueList } from '../../components/FilterValueList';
 import '../../styles/base.css';
@@ -74,4 +75,4 @@ function Preview() {
     </>}
   </main>;
 }
-createRoot(document.getElementById('root')!).render(<StrictMode><Preview /></StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode><Preview /><ListScrollIndicator /></StrictMode>);

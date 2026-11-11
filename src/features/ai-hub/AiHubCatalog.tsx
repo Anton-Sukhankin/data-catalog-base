@@ -1,78 +1,26 @@
-import { useId, useLayoutEffect, useRef, useState } from 'react';
-import { DescriptionText } from '../../components/DescriptionText/DescriptionText';
+import { useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { RefObject } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
-import { ExternalLink, Heart } from 'lucide-react';
 import motion from '../../components/Accordion/Accordion.module.css';
 import { DetailSecondary } from '../../components/DetailHeader/DetailSecondary';
 import { EmptyState } from '../../components/EmptyState/EmptyState';
 import { ListPagination } from '../../components/ListPagination/ListPagination';
 import { paginate } from '../../data/pagination';
 import { SearchPanelToggle } from '../../components/FilterButton/SearchPanelToggle';
+import { FilterButton } from '../../components/FilterButton/FilterButton';
 import { SearchField } from '../../components/Search/SearchField';
-import { SingleSelect } from '../../components/SingleSelect/SingleSelect';
-import { RoundIconButton } from '../../components/RoundIconButton/RoundIconButton';
-import { OverflowText } from '../../components/OverflowText/OverflowText';
-import type { AiAction, AiFlag, AiSolution } from '../../data/aiHub';
+import { ViewPicker } from '../../components/HomeControls/HomeControls';
+import type { AiSolution } from '../../data/aiHub';
+import { AiFilterDialog, AiQuickFilters } from './AiFilterDialog';
 import { AiSolutionDetail } from './AiSolutionDetail';
+import { AiSolutionsTable, SolutionCard } from './AiSolutions';
+import { aiFilterCount, aiFilterIds, aiKey as key, aiOptions, emptyAiFilters, readAiFilters, toggleAiValue, writeAiFilters, type AiColumn, type AiFilters, type AiSort } from './aiFilters';
 import s from './AiHubCatalog.module.css';
 
-const selects = [
-  { id:'type', label:'Тип', all:'Все типы' },
-  { id:'domain', label:'Домен', all:'Все домены' },
-  { id:'status', label:'Статус', all:'Все статусы' },
-  { id:'platform', label:'Платформа', all:'Все платформы' },
-] as const;
-const flags: readonly {id:AiFlag; label:string}[] = [
-  {id:'reuse',label:'Рекомендуются к переиспользованию'}, {id:'friday',label:'ИИ-пятница'},
-  {id:'talent',label:'Клуб талантов'}, {id:'ui',label:'Есть UI'},
-];
-const actions: readonly {id:AiAction; label:string}[] = [
-  {id:'recording',label:'Запись ИИ-пятницы'}, {id:'instructions',label:'Инструкции'}, {id:'tool',label:'Открыть инструмент'},
-];
-const plural = new Intl.PluralRules('ru');
-const key = (id:string) => `ai.${id}`;
-
-function SolutionCard({item, saved, onBookmark, onUnavailable, onOpen}:{
-  item:AiSolution; saved:boolean; onBookmark:()=>void; onUnavailable:(label:string)=>void; onOpen:(item:AiSolution)=>void;
-}) {
-  const extra = item.flags.includes('reuse') ? 'Можно переиспользовать' : item.flags.includes('friday') ? 'ИИ-пятница' : undefined;
-  return <article className={s.card} data-ai-solution={item.id} onClick={event => {
-    if (event.target instanceof Element && !event.target.closest('button, a')) onOpen(item);
-  }}>
-    <div className={s.tags}>
-      <span className={s.tag} data-tone={item.type === 'ИИ-помощник функций' ? 'purple' : 'blue'}>{item.type}</span>
-      <span className={s.tag} data-tone={item.status === 'Демо' ? undefined : 'green'}>{item.status}</span>
-      {extra && <span className={s.tag} data-tone={item.flags.includes('reuse') ? 'green' : undefined}>{extra}</span>}
-    </div>
-    <div className={s.cardBody}>
-      <div className={s.cardHeading}>
-        <h2><button type="button" className={s.titleButton} onClick={() => onOpen(item)}>{item.title}</button></h2>
-        <div className={s.stats}>
-          <span aria-label={`Просмотры: ${item.views}`}><img src="/images/source-catalog/eye.svg" width="16" height="16" alt=""/>{item.views}</span>
-          <span aria-label={`Отметки «Нравится»: ${item.likes}`}><Heart size={14} aria-hidden="true"/>{item.likes}</span>
-        </div>
-      </div>
-      <p className={s.domain}><DescriptionText text={`Домен · ${item.domain}`} /></p>
-      <OverflowText as="p" className={s.description} fullText={item.description}>{item.description}</OverflowText>
-    </div>
-    <footer className={s.cardFooter}>
-      <div className={s.actions}>{actions.map(({id,label}) => {
-        const action = item.actions[id];
-        if (!action) return null;
-        const content = <>{label}<ExternalLink size={14} aria-hidden="true"/></>;
-        return action.url
-          ? <a className={s.action} key={id} href={action.url} aria-label={`${label} — ${item.title}`}>{content}</a>
-          : <button className={s.action} key={id} type="button" aria-label={`${label} — ${item.title}`} onClick={()=>onUnavailable(label)}>{content}</button>;
-      })}</div>
-      <RoundIconButton icon="bookmark" aria-label={`Закладка — ${item.title}`} aria-pressed={saved} onClick={onBookmark}/>
-    </footer>
-  </article>;
-}
-
-export function AiHubCatalog({items, scrollPosition, bookmarks, onBookmark}:{
+export function AiHubCatalog({items, scrollPosition, bookmarks, onBookmark, onModalChange}:{
   items:readonly AiSolution[]; scrollPosition:RefObject<number>; bookmarks:ReadonlySet<string>;
   onBookmark:(id:string)=>void;
+  onModalChange:(open:boolean)=>void;
 }) {
   const [params,setParams] = useSearchParams();
   const location = useLocation();
@@ -80,12 +28,23 @@ export function AiHubCatalog({items, scrollPosition, bookmarks, onBookmark}:{
   const [notice,setNotice] = useState<string>();
   const [compact,setCompact] = useState(false);
   const [filtersCollapsed,setFiltersCollapsed] = useState(false);
+  const [filterOpener,setFilterOpener] = useState<HTMLButtonElement>();
+  const restoreFilterFocus = useRef<HTMLButtonElement>(null);
   const filterFieldsId = useId();
   const root = useRef<HTMLElement>(null);
   const lastOpened = useRef<string | undefined>(undefined);
+  const tableScroll = useRef<HTMLDivElement>(null);
+  const tablePosition = useRef({left:0, top:0});
   const selectedId = params.get(key('solution'));
   const selected = items.find(item=>item.id===selectedId);
   const isDetail = Boolean(selected);
+  const view = params.get(key('view')) === 'list' ? 'list' : 'cards';
+  useLayoutEffect(() => {
+    if (!filterOpener && restoreFilterFocus.current) {
+      restoreFilterFocus.current.focus({preventScroll:true});
+      restoreFilterFocus.current = null;
+    }
+  }, [filterOpener]);
   useLayoutEffect(()=>{
     const container = root.current?.closest('main');
     if (!container) return;
@@ -95,7 +54,7 @@ export function AiHubCatalog({items, scrollPosition, bookmarks, onBookmark}:{
     }
     container.scrollTop = scrollPosition.current;
     if (lastOpened.current) {
-      root.current?.querySelector<HTMLElement>(`[data-ai-solution="${CSS.escape(lastOpened.current)}"] h2 button`)?.focus({preventScroll:true});
+      root.current?.querySelector<HTMLElement>(`[data-ai-solution="${CSS.escape(lastOpened.current)}"] [data-ai-open]`)?.focus({preventScroll:true});
     }
     const record = () => {
       scrollPosition.current = container.scrollTop;
@@ -108,37 +67,51 @@ export function AiHubCatalog({items, scrollPosition, bookmarks, onBookmark}:{
 
   const query = params.get(key('query')) ?? '';
   const normalized = query.trim().toLocaleLowerCase('ru');
-  const fields = selects.map(field=>{
-    const values = [...new Set(items.map(item=>item[field.id]))];
-    const value = params.get(key(field.id)) ?? '';
-    return {...field, values, selected:values.includes(value) ? value : ''};
-  });
-  const activeFlags = flags.filter(flag=>params.get(key(flag.id)) === '1');
+  const options = useMemo(() => aiOptions(items), [items]);
+  const filters = readAiFilters(params, options);
+  const [column, direction] = (params.get(key('sort')) ?? '').split(':');
+  const sort: AiSort | undefined = (column === 'type' || column === 'domain' || column === 'status') && (direction === 'asc' || direction === 'desc')
+    ? {column, direction} : undefined;
   const shown = items.filter(item =>
-    fields.every(field=>!field.selected || item[field.id] === field.selected) &&
-    activeFlags.every(flag=>item.flags.includes(flag.id)) &&
+    aiFilterIds.every(id => !filters.fields[id]?.length || filters.fields[id]?.includes(item[id])) &&
+    filters.flags.every(flag=>item.flags.includes(flag)) &&
     [item.title,item.description,item.owner,item.developer].some(value=>value?.toLocaleLowerCase('ru').includes(normalized))
   );
-  const conditionCount = activeFlags.length + fields.filter(field=>field.selected).length;
+  if (sort) shown.sort((a,b) => a[sort.column].localeCompare(b[sort.column], 'ru') * (sort.direction === 'asc' ? 1 : -1));
+  const conditionCount = aiFilterCount(filters);
   const hasFilters = Boolean(query || conditionCount);
-  const noun = plural.select(shown.length);
   const page = paginate(shown, Number(params.get(key('page'))));
   const update = (id:string,value:string) => {
-    if (id === 'page' || id !== 'solution' && page.pageIndex > 0) root.current?.closest('main')?.scrollTo(0, 0);
+    const updatesResults = id !== 'solution' && id !== 'view';
+    if (updatesResults) {
+      tablePosition.current.top = 0;
+      tableScroll.current?.scrollTo({top:0});
+      if (id === 'page' || page.pageIndex > 0) root.current?.closest('main')?.scrollTo(0, 0);
+    }
     setParams(previous=>{
       const next = new URLSearchParams(previous);
-      if (id !== 'page' && id !== 'solution') next.delete(key('page'));
+      if (updatesResults && id !== 'page') next.delete(key('page'));
       if (value) next.set(key(id),value); else next.delete(key(id));
       return next;
     },{replace:true,state:location.state});
   };
-  const reset = (includeQuery:boolean) => setParams(previous=>{
-    const next = new URLSearchParams(previous);
-    next.delete(key('page'));
-    if (includeQuery) next.delete(key('query'));
-    for (const id of [...selects.map(field=>field.id),...flags.map(flag=>flag.id)]) next.delete(key(id));
-    return next;
-  },{replace:true,state:location.state});
+  function applyFilters(filters: AiFilters, nextSort: AiSort | undefined, includeQuery = false) {
+    tablePosition.current.top = 0;
+    tableScroll.current?.scrollTo({top:0});
+    if (page.pageIndex > 0) root.current?.closest('main')?.scrollTo(0,0);
+    setParams(previous=>{
+      const next = new URLSearchParams(previous);
+      next.delete(key('page'));
+      if (includeQuery) next.delete(key('query'));
+      writeAiFilters(next, filters);
+      if (nextSort) next.set(key('sort'), `${nextSort.column}:${nextSort.direction}`);
+      else next.delete(key('sort'));
+      return next;
+    },{replace:true,state:location.state});
+  }
+  const reset = (includeQuery:boolean) => applyFilters(emptyAiFilters, sort, includeQuery);
+  const onColumnChange = (id: AiColumn, values: readonly string[], nextSort?: AiSort) =>
+    applyFilters({ ...filters, fields: { ...filters.fields, [id]: values } }, nextSort);
 
   function openSolution(item:AiSolution) {
     if (item.id===selectedId) return;
@@ -162,14 +135,25 @@ export function AiHubCatalog({items, scrollPosition, bookmarks, onBookmark}:{
     }
     update('solution','');
   }
+  function notifyUnavailable(item: AiSolution, label: string) {
+    setNotice(`«${label}» недоступно в прототипе. Адрес для «${item.title}» не указан.`);
+  }
 
   return <section ref={root} className={s.catalog} aria-label="Каталог AI Hub"
     data-ai-view={isDetail ? 'detail' : 'catalog'} data-detail-compact={!isDetail && compact}
+    data-ai-list={!isDetail && view === 'list' && shown.length > 0}
     data-paginated={!isDetail && page.pageCount > 1}>
     <div className={s.chrome}>
       <header className={s.heading}>
-        <h1>AI Hub</h1>
+        <div className={s.titleRow}>
+          <h1>AI Hub</h1>
+          {!isDetail && items.length > 0 && <span className={s.resultCount} role="status" aria-label="Количество решений">{shown.length}</span>}
+        </div>
         <DetailSecondary compact={!isDetail && compact}><p>Корпоративный каталог ИИ-решений</p></DetailSecondary>
+        {!isDetail && items.length > 0 && <div className={s.viewPicker}><ViewPicker selection={{
+          value:view, onChange:value=>{ if (value !== view) update('view', value === 'list' ? value : ''); },
+        }} /><FilterButton count={conditionCount} label="Открыть фильтры AI Hub"
+          onOpen={event=>setFilterOpener(event.currentTarget)} onClear={()=>reset(false)} /></div>}
       </header>
       {items.length > 0 && <div className={s.filters} aria-label="Фильтры AI Hub" role="group">
         <div className={s.searchRow}>
@@ -178,17 +162,13 @@ export function AiHubCatalog({items, scrollPosition, bookmarks, onBookmark}:{
               value={query} onValueChange={value=>update('query',value)}/>
           </div>
           <SearchPanelToggle panelId={filterFieldsId} visible={!filtersCollapsed} labels={['Свернуть', 'Развернуть']}
-            conditionCount={conditionCount} onToggle={()=>setFiltersCollapsed(previous=>!previous)} onClear={()=>reset(false)}/>
+            conditionCount={isDetail ? conditionCount : 0} onToggle={()=>setFiltersCollapsed(previous=>!previous)} onClear={()=>reset(false)}/>
         </div>
         <div id={filterFieldsId} className={motion.reveal} data-open={!filtersCollapsed} inert={filtersCollapsed}>
           <div className={s.filterClip}>
             <div className={s.filterFields}>
-              <div className={s.selects}>{fields.map(field=><SingleSelect key={field.id} label={field.label}
-                value={field.selected} resetValue="" onValueChange={value=>update(field.id,value)}
-                options={[{value:'',label:field.all},...field.values.map(value=>({value,label:value==='Все домены'?'Применимо ко всем доменам':value}))]} className={s.select}/>)}</div>
               <div className={s.filterFooter}>
-                <div className={s.quick}>{flags.map(flag=><button type="button" className={s.chip} key={flag.id}
-                  aria-pressed={activeFlags.includes(flag)} onClick={()=>update(flag.id,activeFlags.includes(flag)?'':'1')}>{flag.label}</button>)}</div>
+                <AiQuickFilters active={filters.flags} onToggle={id=>applyFilters({...filters, flags:toggleAiValue(filters.flags,id)}, sort)}/>
                 {hasFilters && <button type="button" className={s.reset} onClick={()=>reset(true)}>Сбросить фильтры</button>}
               </div>
             </div>
@@ -198,19 +178,24 @@ export function AiHubCatalog({items, scrollPosition, bookmarks, onBookmark}:{
     </div>
     {selected ? <AiSolutionDetail item={selected} items={shown} saved={bookmarks.has(selected.id)}
       onBookmark={()=>onBookmark(selected.id)} onSelect={openSolution} onBack={backToCatalog} onNotice={setNotice}/>
-    : <div data-ai-results data-detail-tab-content>
+    : <div className={s.results} data-ai-results data-detail-tab-content>
     {selectedId && <div className={s.empty} role="status"><p>Решение не найдено. Показан каталог.</p>
       <button type="button" className={s.reset} onClick={()=>update('solution','')}>К каталогу</button>
     </div>}
-    {items.length > 0 && <p className={s.summary} role="status">Найдено {shown.length} {noun==='one'?'решение':noun==='few'?'решения':'решений'}</p>}
-    {shown.length ? <div className={s.grid} data-ai-grid>
-      {page.rows.map(item=><SolutionCard key={item.id} item={item} saved={bookmarks.has(item.id)} onBookmark={()=>onBookmark(item.id)}
-        onUnavailable={label=>setNotice(`«${label}» недоступно в прототипе. Адрес для «${item.title}» не указан.`)} onOpen={openSolution}/>)}
+    {shown.length ? view === 'list' ? <AiSolutionsTable rows={page.rows} bookmarks={bookmarks} onBookmark={onBookmark}
+      onUnavailable={notifyUnavailable} onOpen={openSolution} scrollRef={tableScroll} scrollPosition={tablePosition}
+      filters={filters} options={options} sort={sort} onColumnChange={onColumnChange} />
+    : <div className={s.grid} data-ai-grid data-catalog-view-results>
+      {page.rows.map(item=><SolutionCard key={item.id} item={item} saved={bookmarks.has(item.id)} onBookmark={onBookmark}
+        onUnavailable={notifyUnavailable} onOpen={openSolution}/>)}
     </div> : items.length
       ? <EmptyState title="Решения не найдены" description="Измените запрос или сбросьте фильтры." />
       : <EmptyState title="ИИ-решений пока нет" description="Здесь будут отображаться доступные решения каталога." />}
     <ListPagination {...page} sticky label="Страницы решений AI Hub" onPageChange={index => update('page', index ? String(index) : '')} />
     </div>}
+    {filterOpener && <AiFilterDialog opener={filterOpener} applied={filters} options={options}
+      onApply={next=>applyFilters(next, sort)} onModalChange={onModalChange}
+      onClose={()=>{restoreFilterFocus.current = filterOpener; onModalChange(false); setFilterOpener(undefined);}} />}
     {notice && <div className={s.notice}><p role="status">{notice}</p>
       <button type="button" className={s.chip} onClick={()=>setNotice(undefined)}>Закрыть</button>
     </div>}

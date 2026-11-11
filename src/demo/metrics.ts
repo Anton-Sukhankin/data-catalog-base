@@ -1,5 +1,6 @@
 import type { MetricSummary, MetricsGateway } from '../data/metrics';
 import { createDemoMetricProfiles } from './metricDetails';
+import { sourceMetricProfiles } from './sourceMetrics';
 
 // Nine rows from Figma 794:14896, approved for both catalog views on 3 November.
 // The two visually identical revenues retain separate local keys.
@@ -206,5 +207,5 @@ const profiles = createDemoMetricProfiles(allMetrics);
 export const demoMetricsGateway: MetricsGateway = {
   list: () => metricCatalogFixture,
   read: id => allMetrics.find(item => item.id === id),
-  readDetail: id => profiles.get(id),
+  readDetail: id => profiles.get(id) ?? sourceMetricProfiles.get(id),
 };

@@ -12,6 +12,19 @@
   animation:catalog-dropdown-enter var(--dropdown-enter-duration) var(--dropdown-enter-easing);
 }
 
+@keyframes catalog-column-dropdown-exit {
+  from { opacity:1; }
+  to { opacity:0; }
+}
+[data-column-dropdown-motion][data-state='open'] {
+  animation:catalog-dropdown-enter var(--dropdown-enter-duration) var(--dropdown-enter-easing) both;
+}
+[data-column-dropdown-motion][data-state='closed'] {
+  animation:catalog-column-dropdown-exit var(--dropdown-enter-duration) ease-out both;
+  pointer-events:none;
+}
+[data-column-dropdown-motion] > [data-dropdown-surface='true'] { animation:none; }
+
 /* Preserve native selection and keyboard behavior while animating supported pickers. */
 @supports (appearance:base-select) {
   select:not([multiple]):not([size]), select:not([multiple]):not([size])::picker(select) {
@@ -48,6 +61,6 @@
 
 @media (prefers-reduced-motion:reduce) {
   :root { --dropdown-enter-duration:0ms; }
-  [data-dropdown-surface='true'] { animation:none; }
+  [data-dropdown-surface='true'], [data-column-dropdown-motion][data-state] { animation:none; }
   select:open::picker(select) { transition:none; }
 }

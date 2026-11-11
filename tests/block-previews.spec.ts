@@ -47,7 +47,7 @@ test('delivered feature previews load with assets and preserve their interaction
   await expect(page.locator('[data-intent-log]')).toContainText('segment: subscriptions');
   await page.goto('/');
   await page.getByRole('link', { name: 'Проверить общую панель фильтров · I08' }).click();
-  const panel = page.getByRole('dialog', { name: 'Фильтры отчётов', exact: true });
+  const panel = page.getByRole('dialog', { name: 'Фильтры', exact: true });
   await expect(panel.locator('[data-panel-field]')).toHaveCount(8);
   await panel.getByRole('button', { name: 'Закрыть', exact: true }).click();
   await expect(panel).toHaveCount(0);

@@ -151,6 +151,40 @@ test('Home news shows a tooltip only when a sidebar title exceeds two lines', as
   await expect(titles.nth(twoLineIndex)).not.toHaveAttribute('data-overflow-clipped', 'true');
 });
 
+test('subscription domain headers toggle independently and keep their state across views', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/preview/navigation?segment=subscriptions&paginationDemo=0');
+  const groups = page.locator('[data-subscription-domain]');
+  const first = groups.first();
+  const toggle = first.locator('button[aria-expanded]');
+  const chevron = toggle.locator('[data-group-chevron]');
+  const contentId = await toggle.getAttribute('aria-controls');
+  const content = first.locator(`[id="${contentId}"]`);
+  const badge = toggle.locator('span').nth(1);
+  const count = await badge.innerText();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(chevron).toHaveCSS('transform', 'matrix(-1, 0, 0, -1, 0, 0)');
+  await expect(content.locator('[data-subscription-row-id]').first()).toBeVisible();
+
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(chevron).toHaveCSS('transform', 'none');
+  await expect(badge).toHaveText(count);
+  await expect(badge).toHaveCSS('background-color', 'rgb(0, 123, 252)');
+  await expect(content).toHaveAttribute('inert', '');
+  await expect(content).toBeHidden();
+  await expect(groups.nth(1).locator('[data-subscription-row-id]').first()).toBeVisible();
+
+  await page.getByRole('button', { name: 'Карточный вид', exact: true }).click();
+  await expect(content).toBeHidden();
+  await expect(groups.nth(1).locator('[data-subscription-id]').first()).toBeVisible();
+  await toggle.press('Enter');
+  await expect(toggle).toBeFocused();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(content.locator('[data-subscription-id]').first()).toBeVisible();
+});
+
 test('subscriptions and contribution switch the same objects and route distinct report links', async ({ page }, testInfo)=>{
   await page.setViewportSize({width:1440,height:900});
   await page.emulateMedia({ reducedMotion: 'reduce' });

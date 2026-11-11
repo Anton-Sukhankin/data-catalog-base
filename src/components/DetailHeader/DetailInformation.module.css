@@ -1,0 +1,8 @@
+.heading { margin:0; padding:14px 16px; font-size:16px; line-height:20px; font-weight:500; }
+.heading small { display:block; color:#6d84a6; font-size:12px; line-height:16px; font-weight:400; }
+.person { display:flex; align-items:center; gap:12px; padding:16px; font-size:14px; }
+.person + .person { border-block-start:var(--information-divider); }
+.person img { flex:none; border-radius:50%; }
+.person div { flex:1; min-width:0; overflow-wrap:anywhere; }
+.person small { display:block; color:#6d84a6; font-size:12px; }
+.role { flex:none; padding:3px 8px; border-radius:6px; background:#e6f3ff; color:#007bfc; font-size:12px; font-weight:500; }

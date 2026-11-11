@@ -18,8 +18,9 @@ export interface QuestionAppeal {
   id: string;
   subject: string;
   message: string;
+  attachments?: readonly File[];
   status: AppealStatus;
   lastMessageAt: string;
 }
 
-export type QuestionDraft = Pick<QuestionAppeal, 'subject' | 'message'>;
+export type QuestionDraft = Pick<QuestionAppeal, 'subject' | 'message' | 'attachments'>;

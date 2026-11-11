@@ -1,0 +1,41 @@
+.search { flex:0 1 516px; min-width:min(100%, 220px); }
+.clear { display:grid; place-items:center; width:24px; height:24px; padding:0; border:0; border-radius:6px; background:transparent; cursor:pointer; }
+.clear:hover { background:var(--table-heading-hover); }
+
+.surface { display:flex; flex:0 1 auto; min-height:0; container-type:inline-size; border-radius:16px; background:var(--sidebar-surface); }
+.scroll { width:100%; min-height:0; padding:16px; overflow:auto; scrollbar-width:none; }
+.scroll:focus-visible { outline:2px solid #007bfc; outline-offset:-2px; border-radius:inherit; }
+.group + .group { margin-top:16px; }
+.heading { margin:0; }
+.toggle {
+  display:flex; align-items:center; justify-content:space-between; gap:8px 16px; flex-wrap:wrap;
+  width:100%; min-height:20px; padding:0; border:0; border-radius:4px; background:transparent;
+  color:#52698c; font:500 14px/20px 'CoFo Sans', sans-serif; text-align:left; cursor:pointer;
+}
+.identity { display:flex; flex:none; align-items:center; gap:8px; }
+.identity > span { display:flex; align-items:center; }
+.description { margin-inline-start:auto; color:#5e708a; font-size:12px; font-weight:400; line-height:18px; text-align:right; }
+.reveal { composes:reveal from '../../components/Accordion/Accordion.module.css'; }
+.clip { composes:clip from '../../components/Accordion/Accordion.module.css'; }
+.cards {
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px 12px;
+  margin:0; padding:8px 0 0; list-style:none;
+}
+.card {
+  composes:surface from '../../components/CatalogEntityIcon/CatalogEntityIcon.module.css';
+  display:flex; align-items:center; gap:10px; width:100%; min-height:72px; padding:10px 12px;
+  border:1px solid #d7e6f5; border-radius:12px; background:#fff; color:#101d3b;
+  text-align:left; cursor:pointer; transition:border-color var(--navigation-hover-duration) ease;
+}
+.information { display:grid; gap:2px; min-width:0; overflow-wrap:anywhere; }
+.title { font-size:14px; font-weight:500; line-height:18px; transition:color var(--navigation-hover-duration) ease; }
+.count { color:#52698c; font-size:13px; line-height:18px; }
+.card:hover { border-color:var(--item-hover-border); }
+.card:hover .title { color:var(--item-hover-ink); }
+/* Keep the shared focus ring inside the card's animated clip. */
+.scroll .card:focus-visible { outline-offset:-3px; }
+@container (max-width:900px) { .cards { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@container (max-width:570px) {
+  .cards { grid-template-columns:minmax(0,1fr); }
+  .description { margin-inline-start:0; text-align:left; }
+}

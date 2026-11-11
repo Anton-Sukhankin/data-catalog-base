@@ -1,6 +1,7 @@
 import { StrictMode, useState } from 'react';
 import { SingleSelect } from '../../components/SingleSelect/SingleSelect';
 import { createRoot } from 'react-dom/client';
+import { ListScrollIndicator } from '../../components/ListScrollIndicator/ListScrollIndicator';
 import { ColumnFilterMenu } from '../../components/ColumnFilterMenu/ColumnFilterMenu';
 import '../../styles/base.css';
 import { filterExamples, type FilterPreviewExample } from './fixtures';
@@ -63,4 +64,4 @@ function ColumnFiltersPreview() {
   );
 }
 
-createRoot(document.getElementById('root')!).render(<StrictMode><ColumnFiltersPreview /></StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode><ColumnFiltersPreview /><ListScrollIndicator /></StrictMode>);

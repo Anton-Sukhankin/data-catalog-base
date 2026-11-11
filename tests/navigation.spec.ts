@@ -98,7 +98,7 @@ test('every main section uses the same spacing above and below its heading block
   const sections = [
     ['home', 'h1', '[data-home-controls]'],
     ['reports', 'h1', '[data-catalog-view-results]'],
-    ['tasks', 'h1', 'section[aria-label="Содержимое раздела"]'],
+    ['tasks', 'header p', '[aria-label="Прокрутка задач"]'],
     ['metrics', 'h1', '[data-metrics-toolbar]'],
     ['sources', 'h1', '[data-source-toolbar]'],
     ['dictionary', 'header p', '[role="tablist"]'],
@@ -119,7 +119,7 @@ test('every main section uses the same spacing above and below its heading block
       const bottom = await header.evaluate((element, useRow) =>
         (useRow ? element.parentElement! : element).getBoundingClientRect().bottom, section === 'reports');
       const top = await first.evaluate((element, useWorkspace) =>
-        (useWorkspace ? element.parentElement! : element).getBoundingClientRect().top, section === 'questions');
+        (useWorkspace ? element.parentElement! : element).getBoundingClientRect().top, section === 'questions' || section === 'tasks');
       const topInset = headingTop - (await main.boundingBox())!.y;
       expect(topInset).toBe(16);
       expect(top - bottom).toBe(topInset);
@@ -284,6 +284,40 @@ test('sidebar resizes from its edge and restores the default width', async ({ pa
   await expect(page).toHaveURL(initialUrl);
 });
 
+test('sidebar hover matches the selected background and keeps the collapsed highlight under the icon', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/preview/navigation?section=ai');
+  const sidebar = page.locator('aside[data-collapsed]');
+  const nav = sidebar.getByRole('navigation', { name: 'Разделы каталога' });
+  const current = nav.getByRole('button', { name: 'AI Hub', exact: true });
+  const reports = nav.getByRole('button', { name: 'Отчёты', exact: true });
+  const highlight = 'rgb(226, 230, 236)';
+  const transparent = 'rgba(0, 0, 0, 0)';
+  await expect(current).toHaveAttribute('aria-current', 'page');
+  await expect(current).toHaveCSS('background-color', highlight);
+  await expect(reports).toHaveCSS('background-color', transparent);
+
+  await reports.hover();
+  await expect(reports).toHaveCSS('background-color', highlight);
+  await expect(reports).not.toHaveAttribute('aria-current');
+  await sidebar.screenshot({ path: testInfo.outputPath('sidebar-hover.png') });
+
+  await current.hover();
+  await expect(current).toHaveCSS('background-color', highlight);
+  await expect(reports).toHaveCSS('background-color', transparent);
+
+  await sidebar.getByRole('button', { name: 'Свернуть панель' }).click();
+  await expect(sidebar).toHaveCSS('width', '64px');
+  const iconHighlight = (button: typeof reports) =>
+    button.evaluate(element => getComputedStyle(element, '::before').backgroundColor);
+  await expect.poll(() => iconHighlight(current)).toBe(transparent);
+  await reports.hover();
+  await expect.poll(() => iconHighlight(reports)).toBe(highlight);
+  await expect(reports).toHaveCSS('background-color', transparent);
+  await current.hover();
+  await expect.poll(() => iconHighlight(current)).toBe(highlight);
+});
+
 test('navigation matches documented geometry and keeps selected identity across collapse/expand', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   const errors: string[] = [];
@@ -301,7 +335,7 @@ test('navigation matches documented geometry and keeps selected identity across 
   await expect(page.getByRole('heading', { name: 'Главная', exact: true })).toBeVisible();
   expect(await sidebar.boundingBox()).toEqual({ x: 0, y: 48, width: 280, height: 852 });
   const labels = await nav.getByRole('button').allTextContents();
-  expect(labels).toEqual(['Главная', 'Отчёты35', 'Задачи', 'Метрики и показатели9', 'Источники9', 'Бизнес-словарь20', 'AI Hub9', 'Справочники ИС15', 'Вопросы и ответы']);
+  expect(labels).toEqual(['Главная', 'Отчёты35', 'Задачи6', 'Метрики и показатели9', 'Источники9', 'Бизнес-словарь20', 'AI Hub9', 'Справочники ИС15', 'Вопросы и ответы']);
   await page.evaluate(() => document.fonts.ready);
   expect(await home.evaluate((button) => ({ family: getComputedStyle(button).fontFamily, weight: getComputedStyle(button).fontWeight })))
     .toEqual({ family: '"CoFo Sans", sans-serif', weight: '500' });
@@ -317,10 +351,22 @@ test('navigation matches documented geometry and keeps selected identity across 
   await page.mouse.move(700, 700);
   await expect(reports).toHaveCSS('background-color', 'rgb(226, 230, 236)');
   await sidebar.screenshot({ path: 'verification/current/navigation/expanded-reports.png' });
-  await page.mouse.move(279, 400);
   const collapse = page.getByRole('button', { name: 'Свернуть панель', exact: true });
+  const edgeColor = () => sidebar.evaluate(element => getComputedStyle(element, '::after').backgroundColor);
   await expect(collapse).toHaveCSS('opacity', '1');
-  expect(await collapse.boundingBox()).toEqual({ x: 268, y: 72, width: 24, height: 24 });
+  expect(await collapse.boundingBox()).toEqual({ x: 268, y: 80, width: 24, height: 24 });
+  await expect.poll(edgeColor).toBe('rgb(220, 226, 234)');
+  await expect(collapse).toHaveCSS('border-top-color', 'rgb(220, 226, 234)');
+  await expect(collapse).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(collapse.locator('span')).toHaveCSS('background-color', 'rgb(104, 115, 132)');
+  await reports.hover();
+  await expect.poll(edgeColor).toBe('rgb(0, 122, 255)');
+  await expect(collapse).toHaveCSS('border-top-color', 'rgb(0, 122, 255)');
+  await expect(collapse.locator('span')).toHaveCSS('background-color', 'rgb(0, 122, 255)');
+  await page.mouse.move(286, 400);
+  await expect.poll(edgeColor).toBe('rgb(0, 122, 255)');
+  await collapse.hover();
+  await expect(collapse).toHaveCSS('background-color', 'rgb(229, 241, 255)');
   await collapse.click();
   await expect.poll(() => sidebar.boundingBox()).toEqual({ x: 0, y: 48, width: 64, height: 836 });
   await expect(reports).toHaveAttribute('aria-current', 'page');
@@ -336,6 +382,9 @@ test('navigation matches documented geometry and keeps selected identity across 
   await sidebar.screenshot({ path: 'verification/current/navigation/collapsed.png' });
   await page.screenshot({ path: 'verification/current/navigation/context-collapsed.png', fullPage: true });
   const expand = page.getByRole('button', { name: 'Развернуть панель', exact: true });
+  await page.mouse.move(700, 700);
+  await expect.poll(edgeColor).toBe('rgb(220, 226, 234)');
+  await expect(expand.locator('span')).toHaveCSS('background-color', 'rgb(104, 115, 132)');
   await expand.focus();
   await expect(expand).toHaveCSS('opacity', '1');
   await expand.press('Enter');
@@ -344,7 +393,7 @@ test('navigation matches documented geometry and keeps selected identity across 
   await nav.getByRole('button', { name: 'Задачи', exact: true }).click();
   await expect(nav.getByRole('button', { name: 'Задачи', exact: true })).toHaveAttribute('aria-current', 'page');
   await expect(page.getByRole('heading', { name: 'Задачи', exact: true })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Содержимое раздела' })).toContainText('Раздел «Задачи» недоступен');
+  await expect(page.getByRole('list', { name: 'Очередь заявок на рассылку' }).getByRole('listitem')).toHaveCount(6);
   for (const name of ['Главная', 'Отчёты', 'Задачи', 'Метрики и показатели', 'Источники', 'Бизнес-словарь', 'AI Hub', 'Справочники ИС', 'Вопросы и ответы']) {
     await nav.getByRole('button', { name, exact: true }).click();
     await expect(nav.locator('[aria-current="page"]')).toHaveCount(1);
@@ -372,8 +421,8 @@ test('navigation matches documented geometry and keeps selected identity across 
       await expect(catalog.getByRole('link', { name: /Открыть справочник/ })).toHaveCount(15);
     } else if (name === 'Вопросы и ответы') {
       await expect(page.getByRole('tabpanel', { name: /^FAQ/ })).toBeVisible();
-    } else {
-      await expect(page.getByRole('heading', { name: `Раздел «${name}» недоступен` })).toBeVisible();
+    } else if (name === 'Задачи') {
+      await expect(page.getByRole('list', { name: 'Очередь заявок на рассылку' }).getByRole('listitem')).toHaveCount(6);
     }
   }
   await page.mouse.move(279, 400);

@@ -5,7 +5,6 @@ import { RoundIconButton } from '../../components/RoundIconButton/RoundIconButto
 import { SearchTargetText } from '../../components/Search/SearchMatch';
 import { searchId } from '../../data/catalogSearch';
 import type { AiSolution } from '../../data/aiHub';
-import catalogStyles from './AiHubCatalog.module.css';
 import s from './AiSolutionDetail.module.css';
 
 const actions = [
@@ -17,13 +16,13 @@ function Passport({item}:{item:AiSolution}) {
   const fields = [
     ['Тип',item.type], ['Статус',item.status],
     ['Домен',item.domain], ['Платформа',item.platform],
-    ['Для кого',item.detail?.audience], ['Что на выходе',item.detail?.output],
     ['Создано',item.detail?.created], ['Обновлено',item.detail?.updated],
-  ];
+    ['Для кого',item.detail?.audience,true], ['Что на выходе',item.detail?.output,true],
+  ] as const;
   const people = item.detail?.people ?? [];
   return <section className={s.passport} aria-label="Паспорт решения">
     <h3>Паспорт решения</h3>
-    <dl className={s.attributes}>{fields.map(([label,value])=><div key={label}>
+    <dl className={s.attributes}>{fields.map(([label,value,fullWidth])=><div key={label} className={fullWidth ? s.fullWidthAttribute : undefined}>
       <dt>{label}</dt><dd><AttributeValue value={value} /></dd>
     </div>)}</dl>
     {people.length ? people.map(person=><div className={s.person} key={person.role}>
@@ -53,11 +52,10 @@ export function AiSolutionDetail({item, items, saved, onBookmark, onSelect, onBa
         <div className={s.toolbar}>{actions.map(({id,label})=>{
           const action = item.actions[id];
           if (!action) return null;
-          const className = catalogStyles.action;
           const content = <>{label}<ExternalLink size={14} aria-hidden="true"/></>;
           return action.url
-            ? <a key={id} className={className} href={action.url}>{content}</a>
-            : <button key={id} type="button" className={className} onClick={()=>onNotice(`Адрес для действия «${label}» не предоставлен.`)}>{content}</button>;
+            ? <a key={id} className={s.action} href={action.url}>{content}</a>
+            : <button key={id} type="button" className={s.action} onClick={()=>onNotice(`Адрес для действия «${label}» не предоставлен.`)}>{content}</button>;
         })}
           {item.detail?.hasEditAction && <RoundIconButton icon="edit" aria-label="Редактировать решение"
             onClick={()=>onNotice('Редактор решения не подключён.')}/>}

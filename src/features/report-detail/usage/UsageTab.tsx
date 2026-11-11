@@ -3,6 +3,7 @@ import { CalendarDays } from 'lucide-react';
 import { Accordion } from '../../../components/Accordion/Accordion';
 import { SegmentedControl } from '../../../components/HomeControls/HomeControls';
 import { EmptyDetail } from '../EmptyDetail';
+import { ReportFieldValue } from '../ReportFieldValue';
 import { UsageChart } from './UsageChart';
 import { UsageHistoryTable } from './UsageHistoryTable';
 import { usageMetrics } from './model';
@@ -14,7 +15,7 @@ function Statistics({ title, description, fields, classifications = false }: { t
   return <div className={s.statisticsGroup}>
     <div className={s.period}><h3>{title}</h3>{description && <p>{description}</p>}</div>
     <dl className={s.statistics} aria-label={title} data-summary-classifications={classifications || undefined}>
-      {fields.map(field => <div key={field.label}><dt>{field.label}</dt><dd>{field.value}</dd></div>)}
+      {fields.map(field => <ReportFieldValue key={field.label} {...field} />)}
       {Array.from({ length: emptyCells }, (_, index) => <div className={s.emptyStatistic} aria-hidden="true" key={`empty-${index}`} />)}
     </dl>
   </div>;
