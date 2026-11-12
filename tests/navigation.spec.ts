@@ -242,6 +242,10 @@ test('sidebar resizes from its edge and restores the default width', async ({ pa
   const initialUrl = page.url();
   const sidebar = page.locator('aside[data-collapsed]');
   const handle = sidebar.getByRole('separator', { name: 'Ширина боковой панели' });
+  const collapse = sidebar.getByRole('button', { name: 'Свернуть панель' });
+  await expect(handle).toHaveCSS('cursor', 'col-resize');
+  await collapse.hover();
+  await expect(collapse).toHaveCSS('cursor', 'pointer');
   const current = sidebar.getByRole('button', { name: 'Отчёты', exact: true });
   const expectWidth = (width: number) => expect.poll(async () => (await sidebar.boundingBox())?.width).toBe(width);
   const moveToEdge = async () => {
@@ -250,6 +254,7 @@ test('sidebar resizes from its edge and restores the default width', async ({ pa
   };
   await expectWidth(280);
   await moveToEdge();
+  expect(await handle.evaluate(node => node.matches(':hover'))).toBe(true);
   await page.mouse.down();
   await page.mouse.move(344, 208);
   await expectWidth(344);
@@ -275,7 +280,7 @@ test('sidebar resizes from its edge and restores the default width', async ({ pa
   await page.mouse.up();
   await expectWidth(240);
 
-  await sidebar.getByRole('button', { name: 'Свернуть панель' }).click();
+  await collapse.click();
   await expectWidth(64);
   await expect(handle).toHaveCount(0);
   await sidebar.getByRole('button', { name: 'Развернуть панель' }).click();

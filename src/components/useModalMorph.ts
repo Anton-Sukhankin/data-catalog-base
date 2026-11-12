@@ -3,22 +3,23 @@ import { useEffectEvent, useLayoutEffect, useRef, type RefObject } from 'react';
 const duration = 300;
 const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-export function useModalMorph({ opener, backdrop, reveal, panel, closing, onExitComplete }: {
+export function useModalMorph({ opener, backdrop, reveal, panel, closing, onExitComplete, morphFromOpenerStyle }: {
   opener?: HTMLElement | null;
-  backdrop: RefObject<HTMLElement | null>;
+  backdrop?: RefObject<HTMLElement | null>;
   reveal: RefObject<HTMLElement | null>;
   panel: RefObject<HTMLElement | null>;
   closing: boolean;
   onExitComplete?: () => void;
+  morphFromOpenerStyle?: boolean;
 }) {
   const motion = useRef<{ animations: Animation[]; maskFrames: () => Keyframe[] }>(null);
   const finishExit = useEffectEvent(() => onExitComplete?.());
 
   useLayoutEffect(() => {
-    const dimmer = backdrop.current;
+    const dimmer = backdrop?.current;
     const surface = reveal.current;
     const content = panel.current;
-    if (!opener?.isConnected || !dimmer || !surface || !content || reduceMotion()) return;
+    if (!opener?.isConnected || !surface || !content || (backdrop && !dimmer) || reduceMotion()) return;
     const from = opener.getBoundingClientRect();
     const to = content.getBoundingClientRect();
     if (!from.width || !from.height || !to.width || !to.height) return;
@@ -29,9 +30,10 @@ export function useModalMorph({ opener, backdrop, reveal, panel, closing, onExit
       const destination = content.getBoundingClientRect();
       const bounds = surface.getBoundingClientRect();
       const { backgroundColor, borderTopLeftRadius } = getComputedStyle(content);
+      const openerStyle = morphFromOpenerStyle ? getComputedStyle(opener) : undefined;
       const clip = (box: DOMRect, radius: string) => `inset(${box.top - bounds.top}px ${bounds.right - box.right}px ${bounds.bottom - box.bottom}px ${box.left - bounds.left}px round ${radius})`;
       return [
-        { clipPath: clip(origin, `${Math.min(origin.width, origin.height) / 2}px`), backgroundColor },
+        { clipPath: clip(origin, openerStyle?.borderTopLeftRadius ?? `${Math.min(origin.width, origin.height) / 2}px`), backgroundColor: openerStyle?.backgroundColor ?? backgroundColor },
         { clipPath: clip(destination, borderTopLeftRadius), backgroundColor },
       ];
     };
@@ -40,7 +42,7 @@ export function useModalMorph({ opener, backdrop, reveal, panel, closing, onExit
     const mask = surface.animate(maskFrames(), timing);
     const animations = [
       mask,
-      dimmer.animate([{ opacity: 0 }, { opacity: 1 }], timing),
+      ...(dimmer ? [dimmer.animate([{ opacity: 0 }, { opacity: 1 }], timing)] : []),
       content.animate([{ opacity: 0 }, { opacity: 0, offset: 0.57 }, { opacity: 1 }], { ...timing, easing: 'linear' }),
     ];
     motion.current = { animations, maskFrames };
@@ -48,7 +50,7 @@ export function useModalMorph({ opener, backdrop, reveal, panel, closing, onExit
       animations.forEach(animation => animation.cancel());
       motion.current = null;
     };
-  }, [opener, backdrop, reveal, panel]);
+  }, [opener, backdrop, reveal, panel, morphFromOpenerStyle]);
 
   useLayoutEffect(() => {
     if (!closing) return;

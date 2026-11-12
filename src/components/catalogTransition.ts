@@ -14,7 +14,9 @@ export function transitionCatalog(update: () => void, kind: CatalogTransition = 
   cancelCatalogTransition();
   const root = document.documentElement;
   if (kind === 'tab' || !enabled || !document.startViewTransition || !document.querySelector(selector)
+    || document.querySelector('[data-catalog-persistent-overlay]')
     || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // Keep live overlays above the catalog. The workspace can animate its content in place.
     update();
     return;
   }

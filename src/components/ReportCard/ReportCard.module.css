@@ -1,5 +1,7 @@
 .card { composes:surface from '../CatalogEntityIcon/CatalogEntityIcon.module.css'; position: relative; min-width: 0; border: 1px solid #d7e6f5; border-radius: 12px; background: #fff; color: #101d3b; transition:border-color 160ms ease; }
 .open { display: flex; align-items: center; gap: 16px; width: 100%; min-height: 96px; padding: 24px 76px 24px 24px; border: 0; border-radius: 11px; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.open.domainOpen { padding-inline-end:24px; }
+.domainIcon { --catalog-icon-mask:url('/icons/reports/domain-group.svg'); }
 .document { composes:badge from '../CatalogEntityIcon/CatalogEntityIcon.module.css'; }
 .verifiedBadge { position: absolute; left: 24px; top: -2px; }
 .defaultGlyph, .hoverGlyph { grid-area:1 / 1; width:16px; height:16px; transition:opacity 160ms ease; }
