@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { applyReportColumnDraft, applyReportRangeDraft, copyReportFilters, isReportNumericAttribute, reportFilterActive, reportFilterValues, reportFiltersValid, reportRangeScale, reportFilterAttributes, reportFilterCount, reportFilterLabels, reportFilterOptions, reportFiltersEqual, searchReportFilterOptions, type ReportFilterAttribute, type ReportFilters, type ReportNumberRange, type ReportNumericAttribute } from '../data/reportFilters';
-import type { ReportTableRow } from '../data/reportTable';
-import type { ReportFilterField } from '../components/ReportFilterPanel';
-import { filterValueListHeight, placePanelValueList } from './filterPanelPosition';
-import { shouldShowFilterSearch } from '../components/FilterValueList/searchVisibility';
+import { applyReportColumnDraft, applyReportRangeDraft, copyReportFilters, isReportNumericAttribute, reportFilterActive, reportFilterValues, reportFiltersValid, reportRangeScale, reportFilterAttributes, reportFilterCount, reportFilterLabels, reportFilterOptions, reportFiltersEqual, searchReportFilterOptions, type ReportFilterAttribute, type ReportFilters, type ReportNumberRange, type ReportNumericAttribute } from '@data-catalog/ui/source/data/reportFilters';
+import type { ReportTableRow } from '@data-catalog/ui/source/data/reportTable';
+import type { ReportFilterField } from '@data-catalog/ui/source/components/ReportFilterPanel/index';
+import { filterValueListHeight, placePanelValueList } from '@data-catalog/ui/source/components/filterPanelPosition';
+import { shouldShowFilterSearch } from '@data-catalog/ui/source/components/FilterValueList/searchVisibility';
 
 interface PanelState {
   opener: HTMLElement;

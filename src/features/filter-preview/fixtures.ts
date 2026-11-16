@@ -1,4 +1,4 @@
-import type { ColumnFilterOption } from '../../components/ColumnFilterMenu/ColumnFilterMenu';
+import type { ColumnFilterOption } from '@data-catalog/ui/source/components/ColumnFilterMenu/ColumnFilterMenu';
 
 export interface FilterPreviewExample {
   key: string;

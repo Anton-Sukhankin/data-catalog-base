@@ -1,0 +1,24 @@
+.card { composes:surface from '../CatalogEntityIcon/CatalogEntityIcon.module.css'; position: relative; min-width: 0; border: 1px solid #d7e6f5; border-radius: 12px; background: #fff; color: #101d3b; transition:border-color 160ms ease; }
+.open { display: flex; align-items: center; gap: 16px; width: 100%; min-height: 96px; padding: 24px 76px 24px 24px; border: 0; border-radius: 11px; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.open.openWithoutActions { padding-inline-end:24px; }
+.domainIcon { --catalog-icon-mask:url('data:image/svg+xml,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Cpath%20d%3D%22M4.66667%205.33333C4.66667%204.96514%204.96514%204.66667%205.33333%204.66667H6.66667C7.03486%204.66667%207.33333%204.96514%207.33333%205.33333V6.66667C7.33333%207.03486%207.03486%207.33333%206.66667%207.33333H5.33333C4.96514%207.33333%204.66667%207.03486%204.66667%206.66667V5.33333Z%22%20fill%3D%22%238098BD%22%2F%3E%0A%3Cpath%20d%3D%22M5.33333%208.66667C4.96514%208.66667%204.66667%208.96514%204.66667%209.33333V10.6667C4.66667%2011.0349%204.96514%2011.3333%205.33333%2011.3333H6.66667C7.03486%2011.3333%207.33333%2011.0349%207.33333%2010.6667V9.33333C7.33333%208.96514%207.03486%208.66667%206.66667%208.66667H5.33333Z%22%20fill%3D%22%238098BD%22%2F%3E%0A%3Cpath%20d%3D%22M8.66667%205.33333C8.66667%204.96514%208.96514%204.66667%209.33333%204.66667H10.6667C11.0349%204.66667%2011.3333%204.96514%2011.3333%205.33333V6.66667C11.3333%207.03486%2011.0349%207.33333%2010.6667%207.33333H9.33333C8.96514%207.33333%208.66667%207.03486%208.66667%206.66667V5.33333Z%22%20fill%3D%22%238098BD%22%2F%3E%0A%3Cpath%20d%3D%22M9.33333%208.66667C8.96514%208.66667%208.66667%208.96514%208.66667%209.33333V10.6667C8.66667%2011.0349%208.96514%2011.3333%209.33333%2011.3333H10.6667C11.0349%2011.3333%2011.3333%2011.0349%2011.3333%2010.6667V9.33333C11.3333%208.96514%2011.0349%208.66667%2010.6667%208.66667H9.33333Z%22%20fill%3D%22%238098BD%22%2F%3E%0A%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M4.66667%202C3.19391%202%202%203.19391%202%204.66667V11.3333C2%2012.8061%203.19391%2014%204.66667%2014H11.3333C12.8061%2014%2014%2012.8061%2014%2011.3333V4.66667C14%203.19391%2012.8061%202%2011.3333%202H4.66667ZM11.3333%203.33333H4.66667C3.93029%203.33333%203.33333%203.93029%203.33333%204.66667V11.3333C3.33333%2012.0697%203.93029%2012.6667%204.66667%2012.6667H11.3333C12.0697%2012.6667%2012.6667%2012.0697%2012.6667%2011.3333V4.66667C12.6667%203.93029%2012.0697%203.33333%2011.3333%203.33333Z%22%20fill%3D%22%238098BD%22%2F%3E%0A%3C%2Fsvg%3E'); }
+.document { composes:badge from '../CatalogEntityIcon/CatalogEntityIcon.module.css'; }
+.verifiedBadge { position: absolute; left: 24px; top: -2px; }
+.defaultGlyph, .hoverGlyph { grid-area:1 / 1; width:16px; height:16px; transition:opacity 160ms ease; }
+.defaultGlyph { opacity:1; }
+.hoverGlyph { opacity:0; }
+.information { display: flex; flex:1; flex-direction: column; gap: 4px; min-width: 0; }
+.title { display: block; overflow: hidden; min-width: 0; font-size: 16px; font-weight: 400; line-height: 22px; text-overflow: ellipsis; white-space: nowrap; transition:color var(--navigation-hover-duration) ease; }
+.description { display: flex; align-items: center; gap: var(--description-separator-gap); width: 100%; min-width: 0; height: 18px; overflow: hidden; color: #52698c; font-size: 12px; font-weight: 400; line-height: 18px; letter-spacing: -.12px; white-space: nowrap; }
+.domain { flex: 0 0 auto; white-space: nowrap; }
+.separator { flex: 0 0 3px; width: 3px; height: 3px; border-radius: 50%; background: #52698c; }
+.verification { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.verification > span:first-child { flex:none; }
+.descriptionValue { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.edit { position:absolute; top:50%; right:24px; transform:translateY(-50%); }
+.card:hover { border-color: var(--item-hover-border); }
+.card:hover .title { color:var(--item-hover-ink); }
+.card:hover .defaultGlyph { opacity:0; }
+.card:hover .hoverGlyph { opacity:1; }
+.card button:not([data-round-action]):focus-visible { outline: 2px solid #007aff; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .card, .defaultGlyph, .hoverGlyph { transition:none; } }

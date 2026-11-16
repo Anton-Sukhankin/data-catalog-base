@@ -1,6 +1,6 @@
 import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { SubscriptionCard, SubscriptionGroup } from './SubscriptionCard';
+import { SubscriptionCard, SubscriptionGroup } from '@data-catalog/ui/source/features/subscriptions/SubscriptionCard';
 import { previewMaster, previewSubscriptions } from './previewFixture';
 import { SubscriptionsContentPreview } from './SubscriptionsContentPreview';
 import styles from './SubscriptionsPreview.module.css';

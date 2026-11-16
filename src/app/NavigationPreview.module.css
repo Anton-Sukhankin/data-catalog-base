@@ -17,7 +17,6 @@
 .pageHeader { display: flex; align-items: center; gap: 8px; height: 28px; margin-block-end:var(--section-heading-gap); }
 .review[data-table-preview='true'] { padding-right: 24px; }
 .review[data-table-preview='true'] .pageHeader { height: 40px; }
-.reportTotal { composes:sectionTotal from '../components/CountBadge/CountBadge.module.css'; }
 .searchContextNote + .reportTable { margin-top: 8px; }
 .catalogEmpty { min-block-size: min(480px, calc(100dvh - 210px)); border-radius:16px; background:#f3f4f9; }
 .eyebrow { color: #616675; font-size: 14px; }
@@ -26,10 +25,10 @@
 .objectData dt { color: #616675; }
 .objectData dd { margin: 0; }
 .cards { margin-top: 16px; }
-.filterPopup { position: fixed; z-index: 50; width: 320px; }
+.filterPopup { position: fixed; z-index: 50; width: min(320px, 100vw); }
 .panelValuePopup { position: fixed; z-index: 110; }
 .catalogActions { display: flex; gap: 8px; margin-left: auto; }
-.catalogCards { composes: catalogSurface from '../components/ReportCard/ReportCardGroups.module.css'; position: relative; height: calc(100vh - 104px - var(--section-heading-gap)); }
+.catalogCards { position: relative; height: calc(100vh - 104px - var(--section-heading-gap)); }
 .returnLink { color: #007bfc; font: inherit; cursor: pointer; }
 .searchContextNote { margin: 8px 0 0; color: #52698c; font-size: 13px; }
 .review[data-home-preview='true'] .pageHeader { height: 24px; }
@@ -38,9 +37,6 @@
 .newsResults { margin-top: 16px; }
 .homeResults { margin-top: 16px; }
 .domainBreadcrumb { margin-block-end:16px; }
-.notice { position: fixed; z-index: 60; right: 24px; bottom: 24px; display: flex; align-items: center; gap: 16px; max-width: 520px; padding: 16px; margin: 0; border: 1px solid #d7e6f5; border-radius: 12px; background: #fff; color: #101d3b; font-size: 14px; box-shadow: 0 4px 16px #101d3b1f; }
-.notice button { border: 0; background: transparent; font: inherit; cursor: pointer; }
-.notice p { margin: 0; }
 .review[data-news-reading='true'] .newsResults { margin-top: 24px; }
 .favoriteCards { position: relative; }
 

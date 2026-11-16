@@ -1,0 +1,9 @@
+.trigger { position: relative; flex: 0 0 40px; width: 40px; height: 40px; }
+.open { display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 1px solid #d7e6f5; border-radius: 20px; background: #fff; cursor: pointer; backdrop-filter: blur(20px); }
+.open img { display: block; }
+.count { position:absolute; inset-inline-start:calc(100% - 14px); inset-block-start:-6px; display:grid; place-items:center; width:20px; height:20px; padding:0; border:0; border-radius:50%; background:transparent; color:#fff; font:inherit; cursor:pointer; }
+.value { display:grid; place-items:center; min-width:16px; height:16px; padding:0 3px; border-radius:999px; outline:2px solid #fff; background:#007bfc; font:inherit; font-size:10px; font-weight:500; line-height:10px; letter-spacing:-.05px; }
+.count .reset { display:none; }
+.count:is(:hover,:focus-visible) .value { display:none; }
+.count:is(:hover,:focus-visible) .reset { display:grid; }
+.open:focus-visible, .count:focus-visible { outline: 2px solid #007bfc; outline-offset: 2px; }

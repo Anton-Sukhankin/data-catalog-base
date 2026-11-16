@@ -5,10 +5,10 @@ import { demoSourcesGateway } from '../../demo/sources';
 import { technicalReportDetail, technicalReportSummary } from '../../demo/technicalReport';
 import { demoMetricsSource } from './metrics/demoSource';
 import { demoMailingsSource } from './mailings/source';
-import type { ReportDetailContent, ReportDetailSources, ReportOverviewContent } from './source';
+import type { ReportDetailContent, ReportDetailSources, ReportOverviewContent } from '@data-catalog/ui/source/features/report-detail/source';
 import { demoReportUsageSource } from './usage/demoSource';
 import { paperSources, paperLineage } from './sources/demoSource';
-import { lineageRow } from './sources/lineageGeometry';
+import { lineageRow } from '@data-catalog/ui/source/features/report-detail/sources/lineageGeometry';
 
 const text = (suffix: string) => raw.find(item => item.id.endsWith(suffix))?.text ?? '';
 const overview: ReportOverviewContent = {

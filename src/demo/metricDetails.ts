@@ -1,4 +1,4 @@
-import type { MetricDetailProfile, MetricDetailSection, MetricSummary } from '../data/metrics';
+import type { MetricDetailProfile, MetricDetailSection, MetricSummary } from '@data-catalog/ui/source/data/metrics';
 import { metricDetailSections } from '../features/metrics/detail/source';
 
 type Example = {
@@ -116,9 +116,9 @@ function sourcedProfile(): MetricDetailProfile {
   });
   return { metricId: '4', displayId: '4', provenance: { kind: 'figma', reference: '1167:28009' }, unitLabel: 'квадратный метр', created: '08.07.2026', updated: '11.08.2026', sections,
     people: [
-      { name: 'Лапова Юлия Владимировна', role: 'Проверил', description: '11.08.2026 · Бизнес-аналитик' },
-      { name: 'Горбунь Анастасия Юрьевна', role: 'Бизнес-владелец', description: 'Управляющий директор · contact-1@example.invalid' },
-      { name: 'Лапова Юлия Владимировна', role: 'Аналитик', description: 'Бизнес-аналитик · contact-2@example.invalid', placeholder: true },
+      { name: 'Лапова Юлия Владимировна', role: 'Проверил', description: '11.08.2026 · Бизнес-аналитик', avatar: '/images/metrics/detail/person.png' },
+      { name: 'Горбунь Анастасия Юрьевна', role: 'Бизнес-владелец', description: 'Управляющий директор · a.gorbun@samolet.ru', avatar: '/images/metrics/detail/person.png' },
+      { name: 'Лапова Юлия Владимировна', role: 'Аналитик', description: 'Бизнес-аналитик · yu.lapova@samolet.ru', placeholder: true },
     ] };
 }
 

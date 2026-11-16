@@ -1,4 +1,4 @@
-import type { MetricSummary, MetricsGateway } from '../data/metrics';
+import type { MetricSummary, MetricsGateway } from '@data-catalog/ui/source/data/metrics';
 import { createDemoMetricProfiles } from './metricDetails';
 import { sourceMetricProfiles } from './sourceMetrics';
 

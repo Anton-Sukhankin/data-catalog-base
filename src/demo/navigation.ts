@@ -1,4 +1,4 @@
-import type { SidebarItem } from '../components/Sidebar/Sidebar';
+import type { SidebarItem } from '@data-catalog/ui/source/components/Sidebar/Sidebar';
 import { demoAiSolutions } from './aiHub';
 import { demoDictionaryGateway } from './dictionary';
 import { demoMetricsGateway } from './metrics';

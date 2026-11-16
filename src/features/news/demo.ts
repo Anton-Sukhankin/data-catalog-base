@@ -1,4 +1,4 @@
-import type { NewsSummary } from './types';
+import type { NewsSummary } from '@data-catalog/ui/source/features/news/types';
 
 // The first nine entries come from the original design. The last five extend the demo catalogue.
 const examples: ReadonlyArray<readonly [NewsSummary['label'], string, string, number, number?]> = [

@@ -1,9 +1,9 @@
 import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../../styles/base.css';
-import { HomeControls } from '../../components/HomeControls/HomeControls';
-import { SingleSelect } from '../../components/SingleSelect/SingleSelect';
-import type { HomeControlsProps, HomeViewMode } from '../../components/HomeControls/HomeControls';
+import { HomeControls } from '@data-catalog/ui/source/components/HomeControls/HomeControls';
+import { SingleSelect } from '@data-catalog/ui/source/components/SingleSelect/SingleSelect';
+import type { HomeControlsProps, HomeViewMode } from '@data-catalog/ui/source/components/HomeControls/HomeControls';
 import { contributionTypes, newsCategories, presets } from './fixtures';
 import type { PreviewPreset } from './fixtures';
 import styles from './Preview.module.css';

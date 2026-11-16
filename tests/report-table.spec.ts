@@ -1,63 +1,71 @@
 import { expect, test } from '@playwright/test';
 
-test('sidebar resizing keeps report actions aligned and MAU charts beside their values', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.setViewportSize({ width: 1760, height: 900 });
-  await page.goto('/preview/navigation?section=reports&paginationDemo=0');
-  const sidebar = page.getByRole('complementary');
-  const handle = sidebar.getByRole('separator', { name: 'Ширина боковой панели' });
-  const body = page.getByLabel('Прокрутка таблицы отчётов', { exact: true });
-  const row = body.locator('[data-table-report-id="demo-report-summary"]');
-  await expect(row).toBeVisible();
+for (const width of [1024, 1440, 1760]) {
+  test(`sidebar resizing keeps report actions aligned and MAU charts beside their values at ${width}px`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/preview/navigation?section=reports&paginationDemo=0');
+    const sidebar = page.getByRole('complementary');
+    const handle = sidebar.getByRole('separator', { name: 'Ширина боковой панели' });
+    const table = page.getByRole('table', { name: 'Список отчётов' });
+    const header = table.getByRole('columnheader', { name: 'Действия' });
+    const body = table.getByLabel('Прокрутка таблицы отчётов', { exact: true });
+    const rows = body.locator('[data-table-report-id]:not([inert] *)');
+    await expect(rows.first()).toBeVisible();
 
-  const measure = () => body.evaluate(element => {
-    const row = element.querySelector('[data-table-report-id="demo-report-summary"]')!;
-    const action = row.lastElementChild!.getBoundingClientRect();
-    const mau = row.querySelector('[data-mau-trend]')!;
-    const values = mau.firstElementChild!.getBoundingClientRect();
-    const chart = mau.lastElementChild!.getBoundingClientRect();
-    return { rightInset: element.getBoundingClientRect().right - action.right, gap: chart.left - values.right };
+    const box = (await handle.boundingBox())!;
+    const x = box.x + box.width / 2;
+    const y = box.y + box.height / 2;
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    for (const shift of [24, 48, 72, 96, 120]) {
+      await page.mouse.move(x + shift, y);
+      const viewport = (await body.boundingBox())!;
+      const actions = (await rows.first().locator(':scope > :last-child').boundingBox())!;
+      expect(actions.x + actions.width).toBeCloseTo(viewport.x + viewport.width, 2);
+    }
+    await page.mouse.up();
+    await expect(handle).toHaveAttribute('aria-valuenow', '400');
+
+    for (const name of ['Свернуть панель', 'Развернуть панель']) {
+      const scroll = await body.evaluate(element => {
+        element.scrollLeft = element.scrollWidth;
+        return element.scrollLeft;
+      });
+      if (name === 'Свернуть панель') expect(scroll).toBeGreaterThan(0);
+
+      const frames = await sidebar.getByRole('button', { name, exact: true }).evaluate(async button => {
+        const table = document.querySelector('[role="table"][aria-label="Список отчётов"]')!;
+        const body = table.querySelector('[data-list-scroll]')!;
+        const header = table.querySelector('[role="columnheader"][aria-label="Действия"]')!;
+        const rows = Array.from(body.querySelectorAll('[data-table-report-id]:not([inert] *)'));
+        const charts = Array.from(body.querySelectorAll('[data-mau-trend] img'));
+        const frames: { width: number; inset: number; gaps: number[] }[] = [];
+        (button as HTMLButtonElement).click();
+        const start = performance.now();
+        while (performance.now() - start < 420) {
+          await new Promise(requestAnimationFrame);
+          const viewport = body.getBoundingClientRect();
+          const inset = Math.max(
+            Math.abs(viewport.right - header.getBoundingClientRect().right),
+            ...rows.map(row => Math.abs(viewport.right - row.lastElementChild!.getBoundingClientRect().right))
+          );
+          const gaps = charts.map(chart => {
+            const values = chart.parentElement!.previousElementSibling!;
+            return chart.getBoundingClientRect().left - values.getBoundingClientRect().right;
+          });
+          frames.push({ width: viewport.width, inset, gaps });
+        }
+        return frames;
+      });
+      expect(new Set(frames.map(frame => frame.width)).size).toBeGreaterThan(2);
+      expect(Math.max(...frames.map(frame => frame.inset))).toBeLessThanOrEqual(0.05);
+      expect(frames[0].gaps.length).toBeGreaterThan(1);
+      expect(new Set(frames.flatMap(frame => frame.gaps))).toEqual(new Set([8]));
+      await expect(header).toBeVisible();
+    }
   });
-  const box = (await handle.boundingBox())!;
-  const x = box.x + box.width / 2;
-  const y = box.y + box.height / 2;
-  await page.mouse.move(x, y);
-  await page.mouse.down();
-  const drag = [];
-  for (const shift of [24, 48, 72, 96, 120]) {
-    await page.mouse.move(x + shift, y);
-    drag.push(await measure());
-  }
-  await page.mouse.up();
-  await expect(handle).toHaveAttribute('aria-valuenow', '400');
-  expect(drag.map(sample => sample.rightInset)).toEqual([0, 0, 0, 0, 0]);
-
-  await body.evaluate(element => { element.scrollLeft = element.scrollWidth; });
-  await expect.poll(() => body.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
-  for (const name of ['Свернуть панель', 'Развернуть панель']) {
-    const frames = await sidebar.getByRole('button', { name, exact: true }).evaluate(async button => {
-      const body = document.querySelector('[aria-label="Прокрутка таблицы отчётов"]')!;
-      const row = body.querySelector('[data-table-report-id="demo-report-summary"]')!;
-      const frames: { width: number; inset: number }[] = [];
-      (button as HTMLButtonElement).click();
-      const start = performance.now();
-      while (performance.now() - start < 420) {
-        await new Promise(requestAnimationFrame);
-        const viewport = body.getBoundingClientRect();
-        frames.push({ width: viewport.width, inset: viewport.right - row.lastElementChild!.getBoundingClientRect().right });
-      }
-      return frames;
-    });
-    expect(new Set(frames.map(frame => frame.width)).size).toBeGreaterThan(2);
-    expect(Math.max(...frames.map(frame => Math.abs(frame.inset)))).toBeLessThanOrEqual(0.05);
-  }
-  expect([...drag.map(sample => sample.gap), (await measure()).gap]).toEqual([8, 8, 8, 8, 8, 8]);
-  const mauCells = body.locator('[data-mau-trend]').filter({ has: page.locator('img') });
-  const chartInsets = await mauCells.evaluateAll(cells => cells.map(cell =>
-    cell.lastElementChild!.getBoundingClientRect().left - cell.getBoundingClientRect().left));
-  expect(chartInsets.length).toBeGreaterThan(1);
-  expect(chartInsets.every(inset => inset === 64)).toBe(true);
-});
+}
 
 test('the report table header divider spans the full surface while scrolling', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 620 });
@@ -135,7 +143,7 @@ test('report table preserves the documented fixed edges and scrolls real records
   await first.hover();
   await expect.poll(() => first.evaluate(row => getComputedStyle(row, '::after').borderColor)).toBe('rgb(64, 143, 231)');
   await expect(first.getByText('Сводный отчёт Гостеприимства', { exact: true })).toHaveCSS('color', 'rgb(0, 103, 220)');
-  await expect(first.locator('img[src$="document-hover.svg"]')).toBeVisible();
+  await expect(first.locator('[data-report-document="hover"]')).toBeVisible();
   await first.screenshot({ path: 'verification/current/table/row-hover.png' });
   await first.getByRole('button', { name: 'Редактировать отчёт «Сводный отчёт Гостеприимства»' }).click();
   await expect(page.getByRole('status')).toContainText('Редактирование отчёта');

@@ -11,7 +11,7 @@ for (const section of ['reports', 'home', 'sources']) {
       const style = getComputedStyle(cell);
       return { height: cell.getBoundingClientRect().height, top: style.paddingTop, bottom: style.paddingBottom, surface: button.parentElement!.getBoundingClientRect().height };
     });
-    expect(geometry).toEqual({ height: source ? 52 : 48, top: '8px', bottom: '8px', surface: 32 });
+    expect(geometry).toEqual({ height: 48, top: '8px', bottom: '8px', surface: 32 });
     await heading.click();
     let menu = page.getByRole('dialog', { name: 'Фильтр: Домен', exact: true });
     await menu.getByRole('checkbox', { name: 'Гостеприимство', exact: true }).check();

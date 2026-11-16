@@ -1,4 +1,4 @@
-import type { ReportSummary, ReportsGateway } from '../data/reports';
+import type { ReportSummary, ReportsGateway } from '@data-catalog/ui/source/data/reports';
 import { demoReportPlatforms } from './reportDiversity';
 
 // Documented search examples and the favorite-card instances in Figma 471:1246.

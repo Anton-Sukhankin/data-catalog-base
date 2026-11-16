@@ -176,6 +176,7 @@ test('opens the file picker and shows, validates and removes optional attachment
   await modal.getByRole('button', { name: 'Отправить вопрос' }).click();
   await expect(trigger).toBeFocused();
   await expect(page.getByRole('heading', { name: 'Вопрос с вложениями', exact: true })).toBeVisible();
+  await page.setViewportSize({ width: 1440, height: 900 });
   await trigger.click();
   await expect(list).toHaveCount(0);
   await expect(modal.getByRole('alert')).toHaveCount(0);

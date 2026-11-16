@@ -32,8 +32,8 @@ test('cards match the reference within domain groups and preserve their chosen i
   const reviewer = verified.getByText('Губина Екатерина Игоревна', { exact: true });
   await expect(reviewer).toHaveCSS('font-size', '12px');
   await expect(reviewer).toHaveCSS('color', await verifiedLabel.evaluate(label => getComputedStyle(label).color));
-  const badge = verified.locator('img[src$="verified-badge.svg"]');
-  const documentGlyph = verified.locator('img[src$="report-document.svg"]');
+  const badge = verified.getByRole('img', { name: 'Проверенный отчёт' });
+  const documentGlyph = verified.locator('[data-report-document="default"]');
   expect((await badge.boundingBox())!.y).toBeLessThan((await documentGlyph.boundingBox())!.y);
   const description = verified.locator('[data-card-description]');
   expect((await description.boundingBox())!.y).toBeGreaterThan((await verified.getByText('Сводный отчёт Гостеприимства', { exact: true }).boundingBox())!.y);
@@ -66,8 +66,9 @@ test('cards match the reference within domain groups and preserve their chosen i
   await expect(verified).toHaveCSS('border-color', 'rgb(64, 143, 231)');
   await expect(mainTitle).toHaveCSS('color', 'rgb(0, 103, 220)');
   await expect(documentGlyph.locator('..')).toHaveCSS('background-color', 'rgb(231, 242, 255)');
-  await expect(verified.locator('img[src$="report-document-hover.svg"]')).toHaveCSS('opacity', '1');
-  expect((await verified.locator('img[src$="report-document-hover.svg"]').boundingBox())?.width).toBe(16);
+  const hoverGlyph = verified.locator('[data-report-document="hover"]');
+  await expect(hoverGlyph).toHaveCSS('opacity', '1');
+  expect((await hoverGlyph.boundingBox())?.width).toBe(16);
   await expect(reviewer).toHaveText('Губина Екатерина Игоревна');
   await verified.screenshot({ path: 'verification/current/cards/hover.png' });
   await verified.getByRole('button', { name: 'Редактировать отчёт «Сводный отчёт Гостеприимства»' }).click();

@@ -1,4 +1,4 @@
-import type { MailingTask } from '../data/tasks';
+import type { MailingTask } from '@data-catalog/ui/source/data/tasks';
 
 // Paper examples with local report IDs and fictional requesters and analysts.
 export const demoMailingTasks: readonly MailingTask[] = [

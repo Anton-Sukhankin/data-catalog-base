@@ -1,5 +1,5 @@
-import type { SourceDetailData } from '../data/sourceDetails';
-import type { ReportSummary } from '../data/reports';
+import type { SourceDetailData } from '@data-catalog/ui/source/data/sourceDetails';
+import type { ReportSummary } from '@data-catalog/ui/source/data/reports';
 
 export const reportCrmDateSourceId = 'source-reportcrm-date';
 

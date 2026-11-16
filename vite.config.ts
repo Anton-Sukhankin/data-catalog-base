@@ -5,7 +5,12 @@ import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  resolve: { alias: { '@':fileURLToPath(new URL('./src',import.meta.url)) } },
+  resolve: {
+    alias: { '@':fileURLToPath(new URL('./src',import.meta.url)) },
+    dedupe: ['react', 'react-dom', 'react-router', 'radix-ui'],
+  },
+  optimizeDeps: { exclude: ['@data-catalog/ui'] },
+  server: { fs: { allow: ['.'] } },
   build: {
     rollupOptions: {
       input: {

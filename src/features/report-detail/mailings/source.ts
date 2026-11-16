@@ -1,18 +1,6 @@
 import { reportPassportExamples, summaryReportSlides } from '../../../demo/reportPassports';
-import type { ManualDeliveryData } from './deliveryModel';
-
-export interface ReportMailing {
-  id: string;
-  name: string;
-  subscribed: boolean;
-  dateTime: string;
-  displayDate: string;
-}
-
-export interface MailingsSource {
-  list(reportId: string): readonly ReportMailing[] | undefined;
-  manual?(reportId: string): ManualDeliveryData | undefined;
-}
+import type { ManualDeliveryData } from '@data-catalog/ui/source/features/report-detail/mailings/deliveryModel';
+import type { MailingsSource, ReportMailing } from '@data-catalog/ui/source/features/report-detail/mailings/types';
 
 const summaryMailings: readonly ReportMailing[] = [
   { id: 'sales-today', name: 'Мои продажи сегодня', subscribed: true, dateTime: '2026-10-06T09:00:00+03:00', displayDate: '06.10.2026, 09:00:00' },

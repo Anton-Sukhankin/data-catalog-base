@@ -1,5 +1,5 @@
-import type { SourceDetailData, SourceDetailsGateway } from '../data/sourceDetails';
-import { demoSourcesGateway, rewedoSourceId } from './sources';
+import type { SourceDetailData, SourceDetailsGateway } from '@data-catalog/ui/source/data/sourceDetails';
+import { demoSourcesGateway, reportCrmDateSimilarSources, rewedoSourceId } from './sources';
 import { demoSourceFields, reportCrmObservedFields } from './sourceFields';
 import { demoSourceContent } from './sourceContent';
 import { reportCrmDateReports, reportCrmDateSourceId } from './relatedSourceReports';
@@ -14,18 +14,6 @@ const reportCrmDateLineageReports = [
   { id: 'contact-center-metrics', title: 'Ключевые метрики КЦ' },
   { id: 'contact-center-indicators', title: 'Ключевые показатели КЦ' },
 ] satisfies NonNullable<SourceDetailData['lineageReports']>;
-
-// SRC-33 shows eight complete rows out of ten similar sources.
-const reportCrmDateSimilarSources = [
-  { technicalName: 'dwh2crm.material.visiology_инструменты_оценщика_показатели', businessMetricCount: 5 },
-  { technicalName: 'dwh2crm.visiology.онлайн_продажи', businessMetricCount: 4 },
-  { technicalName: 'dwh2crm.dbo.отчет_планфакт_долякорпусов_vi_до_этапа', businessMetricCount: 2 },
-  { technicalName: 'dwh2crm.tableau.договор', businessMetricCount: 2 },
-  { technicalName: 'reportcrm20.model.продажи', businessMetricCount: 2 },
-  { technicalName: 'dwh2crm.tableau.v_task', businessMetricCount: 1 },
-  { technicalName: 'dwh2crm.tableau.объект недвижимости', businessMetricCount: 1 },
-  { technicalName: 'reportcrm20.calculate.deadlines_rpt', businessMetricCount: 1 },
-] satisfies NonNullable<SourceDetailData['similarSources']>;
 
 /** Approved Paper composition: historical technical metadata, six visible fields, and explicitly demo responsibility assignments. */
 const rewedo:SourceDetailData = {

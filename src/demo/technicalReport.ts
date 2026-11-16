@@ -1,5 +1,5 @@
-import type { ReportSummary } from '../data/reports';
-import type { ReportDetailContent } from '../features/report-detail/source';
+import type { ReportSummary } from '@data-catalog/ui/source/data/reports';
+import type { ReportDetailContent } from '@data-catalog/ui/source/features/report-detail/source';
 
 export const technicalReportSummary: ReportSummary = {
   // Local navigation key. The dashboard GUID and catalog report ID are distinct.
@@ -27,17 +27,17 @@ export const technicalReportDetail: ReportDetailContent = {
       syncSource: 'visiology',
     },
     dashboard: {
-      guid: '11111111111141118111111111111111',
+      guid: '9609591d4baf423a8f048655b3744d83',
       name: 'Навес свод и детализация',
       lastEditor: 'admin',
       updatedAt: '30.10.2026, 16:54:29',
       portal: true,
       publicLink: false,
     },
-    workspace: { guid: '22222222-2222-4222-8222-222222222222', name: 'Строительство' },
+    workspace: { guid: '2716a879-958a-4552-8742-b1f8a5222852', name: 'Строительство' },
     datasets: {
-      datasetGuids: ['33333333-3333-4333-8333-333333333333'],
-      sourceGuids: ['44444444-4444-4444-8444-444444444444'],
+      datasetGuids: ['062e9c29-b0dc-4d7f-9345-58910bc8e552'],
+      sourceGuids: ['64a17810-33b0-4800-a437-6d3fd7103d72'],
       sourceTypes: ['db'],
       tables: [
         'cdm_live_house_accepted_status',

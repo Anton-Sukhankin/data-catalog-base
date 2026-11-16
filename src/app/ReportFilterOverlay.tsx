@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
-import { ReportFilterPanel } from '../components/ReportFilterPanel';
-import { FilterValueList } from '../components/FilterValueList';
-import { reportFilterLabels } from '../data/reportFilters';
+import { ReportFilterPanel } from '@data-catalog/ui/source/components/ReportFilterPanel/index';
+import { FilterValueList } from '@data-catalog/ui/source/components/FilterValueList/index';
+import { reportFilterLabels } from '@data-catalog/ui/source/data/reportFilters';
 import type { useReportFilterPanel } from './useReportFilterPanel';
 import styles from './NavigationPreview.module.css';
 

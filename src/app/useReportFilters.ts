@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
-import { useColumnDropdownExit } from '../components/ColumnFilterMenu/useColumnDropdownExit';
-import { applyReportColumnDraft, applyReportRangeDraft, copyReportFilters, isReportNumericAttribute, isReportRangeValid, reportFilterValues, reportFilterColumns, reportFilterLabels, type ReportFilterColumn, type ReportFilters, type ReportNumberRange } from '../data/reportFilters';
-import type { ReportSort } from '../data/reportSort';
+import { useColumnDropdownExit } from '@data-catalog/ui/source/components/ColumnFilterMenu/useColumnDropdownExit';
+import { applyReportColumnDraft, applyReportRangeDraft, copyReportFilters, isReportNumericAttribute, isReportRangeValid, reportFilterValues, reportFilterColumns, reportFilterLabels, type ReportFilterColumn, type ReportFilters, type ReportNumberRange } from '@data-catalog/ui/source/data/reportFilters';
+import type { ReportSort } from '@data-catalog/ui/source/data/reportSort';
 
 interface OpenColumn {
   column: ReportFilterColumn;

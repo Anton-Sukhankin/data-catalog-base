@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readDemoReportRows } from '../demo/reportTable';
-import { applyReportColumnDraft, applyReportRangeDraft, copyReportFilters, filterReportRows, reportFilterCount, reportFilterOptions, reportFiltersEqual, reportFiltersValid, searchReportFilterOptions } from './reportFilters';
+import { applyReportColumnDraft, applyReportRangeDraft, copyReportFilters, filterReportRows, reportFilterCount, reportFilterOptions, reportFiltersEqual, reportFiltersValid, searchReportFilterOptions } from '@data-catalog/ui/source/data/reportFilters';
 
 describe('agreed demo report filtering', () => {
   it('combines inclusive and open numerical bounds before pagination and keeps missing values unknown', async () => {
@@ -13,6 +13,8 @@ describe('agreed demo report filtering', () => {
     expect(filterReportRows([missing],{})).toHaveLength(1);
     expect(filterReportRows([missing],{mau:{min:0}})).toHaveLength(0);
     expect(filterReportRows([missing],{lastViewed:{max:30}})).toHaveLength(0);
+    const boundaryRows = [49, 50, 200, 201].map(mau => ({ ...rows[0], mau: String(mau) }));
+    expect(filterReportRows(boundaryRows, { domain: [rows[0].domain], mau: { min: 50, max: 200 } }).map(row => row.mau)).toEqual(['50', '200']);
   });
   it('counts each range once, copies its draft independently and removes only its own condition', () => {
     const applied = { mau:{min:50,max:100},lastViewed:{max:7},domain:['Гостеприимство'] };

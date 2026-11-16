@@ -1,0 +1,24 @@
+:root {
+  --sidebar-surface: #f3f4f9;
+  --table-heading-hover: #e2e6ec;
+  --table-header-line: #e2e4ea;
+  --item-hover-border: #408fe7;
+  --item-hover-ink: #0067dc;
+  --item-hover-icon-fill: #e7f2ff;
+  --catalog-card-gap: 8px;
+  --description-separator-gap: 5px;
+  --horizontal-tab-gap: 24px;
+  --active-tab-underline-height: 4px;
+  --tab-label-weight: 400;
+  --navigation-duration: 320ms;
+  --navigation-easing: cubic-bezier(.22, 1, .36, 1);
+  --navigation-hover-duration: 160ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --navigation-duration:0ms; --navigation-hover-duration:0ms; }
+}
+
+:where(.catalog-ui, .catalog-ui *, .catalog-ui *::before, .catalog-ui *::after) { box-sizing: border-box; }
+.catalog-ui { font-family: var(--catalog-ui-font, 'CoFo Sans', Arial, sans-serif); color: #20242b; line-height: 1.5; }
+:where(.catalog-ui) :is(button, input, select, textarea) { font: inherit; }

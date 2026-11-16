@@ -14,7 +14,7 @@ test('metric and indicator icons follow report spacing and change color with the
       await expect(icon).toHaveCSS('background-color', 'rgb(238, 242, 246)');
       await expect(icon).toHaveCSS('color', 'rgb(113, 134, 165)');
       await expect.poll(() => icon.evaluate(element => getComputedStyle(element, '::before').maskImage))
-        .toContain(kind === 'metric' ? '/icons/sidebar/metrics.svg' : '/icons/metrics/indicator.svg');
+        .toMatch(kind === 'metric' ? /metrics(?:-[\w-]+)?\.svg|data:image\/svg\+xml/ : /indicator(?:-[\w-]+)?\.svg|data:image\/svg\+xml/);
       const box = (await icon.boundingBox())!;
       const itemBox = (await item.boundingBox())!;
       expect(box.width).toBe(40);

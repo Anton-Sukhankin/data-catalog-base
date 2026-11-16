@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { SubscriptionsContent, type SubscriptionsIntent } from './SubscriptionsContent';
+import { SubscriptionsContent, type SubscriptionsIntent } from '@data-catalog/ui/source/features/subscriptions/SubscriptionsContent';
 import { subscriptionContentFixture } from './contentFixture';
 import styles from './SubscriptionsContentPreview.module.css';
-import { DEFAULT_VIEW_MODE } from '../../components/HomeControls/HomeControls';
-import { listPageSize } from '../../data/pagination';
+import { DEFAULT_VIEW_MODE } from '@data-catalog/ui/source/components/HomeControls/HomeControls';
+import { listPageSize } from '@data-catalog/ui/source/data/pagination';
 
 export function SubscriptionsContentPreview() {
   const params = new URLSearchParams(location.search);

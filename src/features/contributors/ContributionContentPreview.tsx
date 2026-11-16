@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { ContributionContent, type ContributionIntent } from './ContributionContent';
+import { ContributionContent, type ContributionIntent } from '@data-catalog/ui/source/features/contributors/ContributionContent';
 import { contributionContentFixture } from './contentFixture';
 import styles from './ContributionContentPreview.module.css';
-import { DEFAULT_VIEW_MODE } from '../../components/HomeControls/HomeControls';
-import { listPageSize } from '../../data/pagination';
+import { DEFAULT_VIEW_MODE } from '@data-catalog/ui/source/components/HomeControls/HomeControls';
+import { listPageSize } from '@data-catalog/ui/source/data/pagination';
 
 export function ContributionContentPreview() {
   const params = new URLSearchParams(location.search);

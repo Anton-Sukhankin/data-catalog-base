@@ -330,6 +330,7 @@ test('shows four aligned metadata columns and reaches the last row above paginat
   expect(scrollOffset).toBeGreaterThan(0);
   await expect(breadcrumbs).toBeHidden();
   await expect(description).toBeHidden();
+  await expect(detailHeading).toHaveCSS('box-shadow', 'rgb(191, 196, 204) 0px -1px 0px 0px inset');
   await expect(systemLabel).toBeHidden();
   await expect(systemValue).toBeHidden();
   await expect(title).toBeVisible();

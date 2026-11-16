@@ -1,8 +1,8 @@
-import { searchId, type SearchEntry } from '../data/catalogSearch';
-import type { AiSolution } from '../data/aiHub';
-import type { FaqEntry, QuestionAppeal } from '../data/questions';
-import type { ReportSummary } from '../data/reports';
-import type { SystemReference } from '../data/systemReferences';
+import { searchId, type SearchEntry } from '@data-catalog/ui/source/data/catalogSearch';
+import type { AiSolution } from '@data-catalog/ui/source/data/aiHub';
+import type { FaqEntry, QuestionAppeal } from '@data-catalog/ui/source/data/questions';
+import type { ReportSummary } from '@data-catalog/ui/source/data/reports';
+import type { SystemReference } from '@data-catalog/ui/source/data/systemReferences';
 import { demoDictionaryGateway } from './dictionary';
 import { demoFavoriteTitles } from './favorites';
 import { demoMetricsGateway } from './metrics';

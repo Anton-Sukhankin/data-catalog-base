@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { SingleSelect } from '../../components/SingleSelect/SingleSelect';
-import { NewsContent, filterNewsByCategory } from './NewsContent';
+import { SingleSelect } from '@data-catalog/ui/source/components/SingleSelect/SingleSelect';
+import { NewsContent, filterNewsByCategory } from '@data-catalog/ui/source/features/news/NewsContent';
 import { demoNewsArticles } from './articles';
-import type { NewsCategoryId } from './types';
+import type { NewsCategoryId } from '@data-catalog/ui/source/features/news/types';
 import styles from './NewsContentPreview.module.css';
 
 /** Isolated technical controller; the real root owns URL/history and list position. */

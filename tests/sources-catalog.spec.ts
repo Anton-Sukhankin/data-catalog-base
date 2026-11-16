@@ -31,7 +31,7 @@ test('source modal drafts apply once and synchronize table headers, count, view 
   await expect(icon).toHaveCSS('background-color', 'rgb(238, 242, 246)');
   await expect(icon).toHaveCSS('color', 'rgb(113, 134, 165)');
   await expect.poll(() => icon.evaluate(element => getComputedStyle(element, '::before').maskImage))
-    .toContain('/icons/sidebar/sources.svg');
+    .toMatch(/sources(?:-[\w-]+)?\.svg|data:image\/svg\+xml/);
   await firstRow.getByRole('cell').nth(1).hover();
   await expect(firstRow.getByRole('button').first()).toHaveCSS('color', 'rgb(0, 103, 220)');
   await expect(icon).toHaveCSS('color', 'rgb(0, 103, 220)');

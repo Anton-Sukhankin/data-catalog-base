@@ -32,12 +32,12 @@ test('the technical reference passport shows sourced rows and independent relate
     'Дата создания отчёта', 'Дата изменения дашборда', 'Портальный дашборд', 'Дашборд с публичной ссылкой',
   ]);
   await expect(dashboard.locator('dd')).toHaveText([
-    '11111111111141118111111111111111', 'Навес свод и детализация', 'admin',
+    '9609591d4baf423a8f048655b3744d83', 'Навес свод и детализация', 'admin',
     '—', '30.10.2026, 16:54:29', 'Да', 'Нет',
   ]);
-  await expect(workspace.locator('dd')).toHaveText(['22222222-2222-4222-8222-222222222222', 'Строительство']);
+  await expect(workspace.locator('dd')).toHaveText(['2716a879-958a-4552-8742-b1f8a5222852', 'Строительство']);
   await expect(datasets.locator('dd:not(:has(ul))')).toHaveText([
-    '33333333-3333-4333-8333-333333333333', '—', '44444444-4444-4444-8444-444444444444', 'db',
+    '062e9c29-b0dc-4d7f-9345-58910bc8e552', '—', '64a17810-33b0-4800-a437-6d3fd7103d72', 'db',
   ]);
   expect(await groups.locator('dt').evaluateAll(elements => [...new Set(elements.map(el => getComputedStyle(el).fontSize))])).toEqual(['12px']);
   expect(await groups.locator('dd, dd span, dd li').evaluateAll(elements => [...new Set(elements.map(el => getComputedStyle(el).fontSize))])).toEqual(['16px']);
@@ -148,26 +148,47 @@ test('all report tabs share the pinned information panel', async ({ page }) => {
   }).toEqual([0, 8]);
 });
 
-test('overview accordions, question form and responsive content work without server claims', async ({ page }) => {
+test('overview accordions, question form and responsive content work without server claims', async ({ page }, testInfo) => {
   const errors:string[]=[]; page.on('pageerror',e=>errors.push(e.message));
   await page.setViewportSize({ width:1440,height:900 }); await page.goto(entry);
   const accordion=page.getByRole('button',{name:/Об отчёте Назначение/});
+  const surface = accordion.locator('xpath=../..');
+  await expect(surface).toHaveCSS('border-bottom-left-radius', '0px');
+  await expect(surface).toHaveCSS('border-bottom-right-radius', '0px');
+  await expect(surface).toHaveCSS('border-bottom-style', 'solid');
+  await expect(surface.locator('[data-accordion-body]')).toHaveCSS('border-top-left-radius', '0px');
+  const businessQuestions = page.getByRole('button', { name: /^На какие вопросы отвечает отчёт/ });
+  const questionCount = (await businessQuestions.getByText('8', { exact: true }).boundingBox())!;
+  const ai = (await businessQuestions.locator('[data-accordion-indicator] img').boundingBox())!;
+  expect(questionCount.x + questionCount.width).toBeLessThan(ai.x);
+  await page.evaluate(() => document.fonts.ready);
+  await page.screenshot({ path: testInfo.outputPath('overview-accordion-1440.png'), animations: 'disabled' });
   const initial=await accordion.boundingBox();
   await accordion.click(); await expect(accordion).toHaveAttribute('aria-expanded','false');
   await accordion.press('Space'); await expect(accordion).toHaveAttribute('aria-expanded','true');
   await page.setViewportSize({width:1920,height:1080});
   expect((await accordion.boundingBox())!.width-initial!.width).toBe(480);
   const ask = page.getByRole('button',{name:'Задать вопрос',exact:true});
-  await expect(ask.locator('img')).toHaveAttribute('src', '/icons/sidebar/questions.svg');
+  await expect(ask.locator('img')).toHaveAttribute('src', /questions(?:-[\w-]+)?\.svg(?:\?.*)?$|^data:image\/svg\+xml/);
   await ask.click();
   const dialog=page.getByRole('dialog',{name:'Задать вопрос'});
   await expect(dialog).toBeVisible();
   const subject = dialog.getByRole('textbox', { name: 'Тема', exact: true });
   await expect(subject).toBeFocused();
+  const attach = dialog.getByRole('button', { name: 'Прикрепить файл', exact: true });
+  const formats = 'Необязательно. Форматы: PDF, DOC, DOCX, XLS, XLSX, CSV, TXT, PNG, JPG, JPEG.';
+  await expect(attach).toHaveAccessibleDescription(formats);
+  await expect(dialog.getByText(formats, { exact: true })).toBeVisible();
+  const [chooser] = await Promise.all([page.waitForEvent('filechooser'), attach.click()]);
+  expect(chooser.isMultiple()).toBe(true);
+  await chooser.setFiles({ name: 'Описание.txt', mimeType: 'text/plain', buffer: Buffer.from('Тест') });
+  const attachments = dialog.getByRole('list', { name: 'Прикреплённые файлы' });
+  await expect(attachments.getByText('Описание.txt', { exact: true })).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await expect(ask).toBeFocused();
   await ask.click();
+  await expect(attachments).toHaveCount(0);
   const submit = dialog.getByRole('button',{name:'Отправить вопрос',exact:true});
   await expect(submit).toBeEnabled();
   await dialog.getByRole('textbox',{name:'Ваш вопрос'}).fill('Как рассчитывается показатель?');
@@ -176,9 +197,15 @@ test('overview accordions, question form and responsive content work without ser
   await expect(subject).toBeFocused();
   await expect(dialog.getByRole('alert')).toHaveText('Поле «Тема» обязательно для заполнения.');
   await subject.fill('Расчёт показателя');
+  await dialog.locator('input[type="file"]').setInputFiles({
+    name: 'Расчёт.csv', mimeType: 'text/csv', buffer: Buffer.from('значение,10'),
+  });
+  await expect(attachments.getByText('Расчёт.csv', { exact: true })).toBeVisible();
   await submit.click();
   await expect(dialog).toHaveCount(0);
   await expect(page.getByRole('status')).toContainText('Серверная доставка не подключена');
+  await page.getByRole('button', { name: 'Закрыть уведомление', exact: true }).click();
+  await expect(page.getByText('Серверная доставка не подключена', { exact: false })).toHaveCount(0);
   const myQuestions = page.getByRole('tab', { name: 'Мои вопросы 0', exact: true });
   const count = myQuestions.locator('span');
   await expect(count).toHaveText('0');

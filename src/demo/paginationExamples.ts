@@ -1,5 +1,5 @@
-import type { ReportTableRow } from '../data/reportTable';
-import type { ReportSummary } from '../data/reports';
+import type { ReportTableRow } from '@data-catalog/ui/source/data/reportTable';
+import type { ReportSummary } from '@data-catalog/ui/source/data/reports';
 import { demoDictionaryGateway } from './dictionary';
 import { demoMetricsGateway } from './metrics';
 import { demoSourcesGateway } from './sources';
@@ -75,7 +75,7 @@ export const paginationMetricsGateway = {
 const sources = paginationExamples(demoSourcesGateway.list(), (item, number) => ({
   technicalName: `${item.technicalName}_demo_${number}`, provenance: 'demo' as const,
 }));
-export const paginationSourcesGateway = { list: () => sources };
+export const paginationSourcesGateway = { ...demoSourcesGateway, list: () => sources };
 export const paginationSourceDetailsGateway = {
   read(id: string) {
     const detail = demoSourceDetailsGateway.read(originId(id));

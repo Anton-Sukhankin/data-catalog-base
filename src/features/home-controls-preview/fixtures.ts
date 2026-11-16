@@ -1,4 +1,4 @@
-import type { HomeControlOption, HomeViewMode } from '../../components/HomeControls/HomeControls';
+import type { HomeControlOption, HomeViewMode } from '@data-catalog/ui/source/components/HomeControls/HomeControls';
 
 const labels = [
   { id: 'reports', label: 'Отчёты' }, { id: 'sources', label: 'Источники' },

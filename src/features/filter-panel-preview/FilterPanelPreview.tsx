@@ -1,12 +1,12 @@
 import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ListScrollIndicator } from '../../components/ListScrollIndicator/ListScrollIndicator';
-import { ReportFilterPanel, type ReportFilterField, type ReportFilterFieldId } from '../../components/ReportFilterPanel';
-import { FilterValueList } from '../../components/FilterValueList';
+import { ListScrollIndicator } from '@data-catalog/ui/source/components/ListScrollIndicator/ListScrollIndicator';
+import { ReportFilterPanel, type ReportFilterField, type ReportFilterFieldId } from '@data-catalog/ui/source/components/ReportFilterPanel/index';
+import { FilterValueList } from '@data-catalog/ui/source/components/FilterValueList/index';
 import '../../styles/base.css';
 import styles from './FilterPanelPreview.module.css';
-import { hasReportRange, reportFiltersValid, reportRangeScale, type ReportNumericAttribute, type ReportNumberRange } from '../../data/reportFilters';
-import { shouldShowFilterSearch } from '../../components/FilterValueList/searchVisibility';
+import { hasReportRange, reportFiltersValid, reportRangeScale, type ReportNumericAttribute, type ReportNumberRange } from '@data-catalog/ui/source/data/reportFilters';
+import { shouldShowFilterSearch } from '@data-catalog/ui/source/components/FilterValueList/searchVisibility';
 
 const params = new URLSearchParams(location.search);
 const context = params.get('context') === 'favorites' ? 'favorites' : 'catalog';

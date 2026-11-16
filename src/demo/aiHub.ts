@@ -1,4 +1,4 @@
-import type { AiSolution } from '../data/aiHub';
+import type { AiSolution } from '@data-catalog/ui/source/data/aiHub';
 
 // Paper cards in reference order. Platforms, example roles and flags for
 // exercising filters are demo data. Action slots have no confirmed URLs.

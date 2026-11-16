@@ -1,10 +1,11 @@
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { DescriptionSeparator } from '../DescriptionText/DescriptionText';
-import { findCatalogHits, hasSearchDetail, normalizeSearch, searchGroupByKind, type SearchEntry, type SearchGroup, type SearchHit, type SearchKind, type SearchSection } from '../../data/catalogSearch';
-import { DropdownItem } from '../DropdownItem/DropdownItem';
-import { RoundIconButton } from '../RoundIconButton/RoundIconButton';
-import { SearchField } from './SearchField';
-import { MatchedText } from './SearchMatch';
+import { DescriptionSeparator } from '@data-catalog/ui/source/components/DescriptionText/DescriptionText';
+import { findCatalogHits, hasSearchDetail, normalizeSearch, searchGroupByKind, type SearchEntry, type SearchGroup, type SearchHit, type SearchKind, type SearchSection } from '@data-catalog/ui/source/data/catalogSearch';
+import { DropdownItem } from '@data-catalog/ui/source/components/DropdownItem/DropdownItem';
+import { RoundIconButton } from '@data-catalog/ui/source/components/RoundIconButton/RoundIconButton';
+import { SearchField } from '@data-catalog/ui/source/components/Search/SearchField';
+import choice from '@data-catalog/ui/source/components/ChoiceChip/ChoiceChip.module.css';
+import { MatchedText } from '@data-catalog/ui/source/components/Search/SearchMatch';
 import styles from './CatalogSearch.module.css';
 
 const plurals = new Intl.PluralRules('ru');
@@ -191,7 +192,7 @@ export function CatalogSearch({ entries, sections, loading, error, routeKey, res
               <span className={styles.next} aria-hidden="true" />
             </button>
           </div>}
-          <button className={styles.clear} type="button" aria-label="Очистить запрос"
+          <button className={choice.clear} type="button" aria-label="Очистить запрос"
             onClick={() => { input.current?.focus({ preventScroll: true }); updateQuery('', false); }}>
             <img src="/icons/search/clear.svg" width="16" height="16" alt="" aria-hidden="true" />
           </button>
@@ -202,7 +203,7 @@ export function CatalogSearch({ entries, sections, loading, error, routeKey, res
             {matchingGroups.map(({ id, title, matches }) => {
               const countId = hasQuery && (id !== 'reports' || !(loading || error) || matches.length > 0)
                 ? `${listId}-count-${id}` : undefined;
-              return <button key={id} type="button" className={`${styles.chip} ${styles.typeChip}`} aria-pressed={kinds.includes(id)}
+              return <button key={id} type="button" className={`${choice.chip} ${styles.typeChip}`} aria-pressed={kinds.includes(id)}
                 aria-label={title} aria-describedby={countId}
                 onClick={() => {
                   setKinds(current => current.includes(id) ? current.filter(kind => kind !== id) : [...current, id]);

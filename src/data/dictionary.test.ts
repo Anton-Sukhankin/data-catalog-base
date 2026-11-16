@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { dictionaryFilterOptions, filterDictionaryDomains, filterDictionaryTerms, readDictionaryFilters, type DictionaryTerm } from './dictionary';
+import { dictionaryFilterOptions, filterDictionaryDomains, filterDictionaryTerms, readDictionaryFilters, type DictionaryTerm } from '@data-catalog/ui/source/data/dictionary';
 
 it('uses actual dictionary attributes and preserves a search target outside the active filters', () => {
   const term = { name: 'Пример', type: 'Бизнес-термин', description: '', descriptionComplete: true };

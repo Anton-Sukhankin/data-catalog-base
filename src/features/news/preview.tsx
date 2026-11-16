@@ -1,9 +1,9 @@
 import { StrictMode, useState } from 'react';
-import { SingleSelect } from '../../components/SingleSelect/SingleSelect';
+import { SingleSelect } from '@data-catalog/ui/source/components/SingleSelect/SingleSelect';
 import { createRoot } from 'react-dom/client';
 import '../../styles/base.css';
-import { NewsList } from './NewsList';
-import { NewsCard } from './NewsCard';
+import { NewsList } from '@data-catalog/ui/source/features/news/NewsList';
+import { NewsCard } from '@data-catalog/ui/source/features/news/NewsCard';
 import { demoNews, longNews } from './demo';
 import styles from './preview.module.css';
 import { NewsContentPreview } from './NewsContentPreview';

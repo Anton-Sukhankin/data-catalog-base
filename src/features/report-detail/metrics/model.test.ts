@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { demoMetricsSource } from './demoSource';
-import { filterMetrics, metricPage } from './model';
+import { filterMetrics, metricPage } from '@data-catalog/ui/source/features/report-detail/metrics/model';
 import { demoMetricsGateway } from '../../../demo/metrics';
 
 describe('related report metrics', () => {

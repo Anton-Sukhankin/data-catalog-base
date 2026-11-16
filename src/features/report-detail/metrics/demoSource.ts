@@ -1,4 +1,4 @@
-import type { MetricsSource, RelatedMetric } from './model';
+import type { MetricsSource, RelatedMetric } from '@data-catalog/ui/source/features/report-detail/metrics/model';
 import { demoMetricsGateway, reportMetricIds } from '../../../demo/metrics';
 import { reportPassportExamples } from '../../../demo/reportPassports';
 

@@ -24,6 +24,17 @@ test('wheel input at the detail scroll boundaries keeps the shell and detail hea
 
     await scroll.evaluate(el => { el.scrollTop = el.scrollHeight; });
     await expect(card).toHaveAttribute('data-detail-compact', 'true');
+    const tabStrip = header.getByRole('tablist');
+    if (await tabStrip.count()) {
+      await expect(tabStrip).toHaveCSS('box-shadow', 'rgb(191, 196, 204) 0px -1px 0px 0px inset');
+      const activeTab = tabStrip.getByRole('tab', { selected: true });
+      expect(await activeTab.evaluate(tab => {
+        const underline = getComputedStyle(tab, '::after');
+        return [underline.backgroundColor, underline.height, underline.bottom];
+      })).toEqual(['rgb(0, 123, 252)', '4px', '0px']);
+    } else {
+      await expect(header).toHaveCSS('box-shadow', 'rgb(191, 196, 204) 0px -1px 0px 0px inset');
+    }
     await scroll.evaluate(el => { el.scrollTop = el.scrollHeight; });
     for (const delta of [700, -700]) {
       if (delta < 0) {
@@ -113,7 +124,7 @@ test('detail titles share report typography and compact text breadcrumbs',async(
     expect(typography).toEqual({family:'"CoFo Sans", sans-serif',size:'20px',weight:'500',lineHeight:'28px',tracking:'normal',color:'rgb(16, 29, 59)'});
     const description=title.locator('..').locator('xpath=following-sibling::*[1]');
     expect((await description.boundingBox())!.y-titleBox.y-titleBox.height).toBe(0);
-    const separators = description.locator('img[src$="/dot.svg"], [data-description-separator]');
+    const separators = description.locator('img[width="3"], img[class*="_dot_"], [data-description-separator]');
     expect(await separators.count()).toBeGreaterThan(0);
     for (const separator of await separators.all()) {
       const gaps = await separator.evaluate(dot => {
@@ -210,7 +221,7 @@ test('report, source and metric details keep their controls above the scroll sur
       const titleBox = (await title.boundingBox())!;
       expect((await description.boundingBox())!.y - titleBox.y - titleBox.height).toBe(0);
       await expect(header).toHaveCSS('padding-block-end', '16px');
-      await expect(header).toHaveCSS('box-shadow', /rgb\(220, 226, 234\)/);
+      await expect(header).toHaveCSS('box-shadow', /rgb\(191, 196, 204\)/);
     }
     const boundary = tabs ? (await tabs.boundingBox())! : compact;
     expect((await scroll.boundingBox())!.y).toBeCloseTo(boundary.y + boundary.height, 0);
@@ -223,7 +234,10 @@ test('report, source and metric details keep their controls above the scroll sur
     await expect(crumbs).toBeVisible();
     await expect(description).toBeVisible();
     await expect.poll(async () => (await header.boundingBox())!.height).toBe(expanded.height);
-    if (tabs) await expect(tabs).toHaveCSS('margin-block-start', `${expandedTabGap}px`);
+    if (tabs) {
+      await expect(tabs).toHaveCSS('margin-block-start', `${expandedTabGap}px`);
+      await expect(tabs).toHaveCSS('box-shadow', /rgb\(215, 230, 245\)/);
+    }
     else await expect(header).toHaveCSS('box-shadow', /rgba\(0, 0, 0, 0\)/);
   }
 });

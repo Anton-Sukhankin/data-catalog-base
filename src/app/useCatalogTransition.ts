@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, type RefObject } from 'react';
-import { cancelCatalogTransition } from '../components/catalogTransition';
+import { cancelCatalogTransition } from '@data-catalog/ui/source/components/catalogTransition';
 
 export function useCatalogTransition(main: RefObject<HTMLElement | null>, screen: string, view: string | null, tab: string | null) {
   const previous = useRef({ screen, view, tab });

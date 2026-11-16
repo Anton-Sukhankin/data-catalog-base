@@ -1,5 +1,5 @@
 import { previewContributors } from './previewFixture';
-import type { ContributionListItem } from './ContributionContent';
+import type { ContributionListItem } from '@data-catalog/ui/source/features/contributors/ContributionContent';
 
 // Synthetic profiles for the integrated demo. Preserve the original reference fixture separately.
 const demoProfiles = [

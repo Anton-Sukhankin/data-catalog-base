@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filterValueListHeight, placePanelValueList } from './filterPanelPosition';
+import { filterValueListHeight, placePanelValueList } from '@data-catalog/ui/source/components/filterPanelPosition';
 
 describe('agreed panel popup placement', () => {
   it('keeps the eight pixel gap, flips upward when needed, and contains the right edge', () => {

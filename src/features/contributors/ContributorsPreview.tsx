@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../../styles/base.css';
-import { ContributorCard } from './ContributorCard';
+import { ContributorCard } from '@data-catalog/ui/source/features/contributors/ContributorCard';
 import { ContributionContentPreview } from './ContributionContentPreview';
 import { previewContributors } from './previewFixture';
 import styles from './ContributorsPreview.module.css';

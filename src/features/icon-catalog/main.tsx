@@ -1,5 +1,5 @@
-import { OverflowText } from '../../components/OverflowText/OverflowText';
-import searchStyles from '../../components/Search/SearchField.module.css';
+import { OverflowText } from '@data-catalog/ui/source/components/OverflowText/OverflowText';
+import searchStyles from '@data-catalog/ui/source/components/Search/SearchField.module.css';
 import { StrictMode, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { createRoot } from 'react-dom/client';
 import { icons, ArrowLeft, ChevronLeft, ChevronRight, Copy, Download, X } from 'lucide-react';

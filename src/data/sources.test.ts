@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { demoSourcesGateway } from '../demo/sources';
-import { filterSources, readSourceFilters, sourceFilterCount, sourceFiltersEqual, sourceOptions, toggleSourceFilter, writeSourceFilters } from './sources';
+import { filterSources, readSourceFilters, sourceFilterCount, sourceFiltersEqual, sourceOptions, toggleSourceFilter, writeSourceFilters } from '@data-catalog/ui/source/data/sources';
 const rows = demoSourcesGateway.list();
 describe('source catalog conditions',()=>{
   it('combines values with OR and attributes with AND',()=>{

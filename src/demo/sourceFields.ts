@@ -1,4 +1,4 @@
-import type { SourceField } from '../data/sourceDetails';
+import type { SourceField } from '@data-catalog/ui/source/data/sourceDetails';
 
 /** Prototype schemas combining observed fields with demonstration fields. */
 type FieldSeed = readonly [name:string, sqlType:string, nullable?:boolean, key?:boolean, relatedMetrics?:readonly string[]];

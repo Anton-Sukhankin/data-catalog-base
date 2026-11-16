@@ -1,5 +1,5 @@
-@import './dropdown-motion.css';
-@import './catalog-motion.css';
+@import '@data-catalog/ui/source/styles/dropdown-motion.css';
+@import '@data-catalog/ui/source/styles/catalog-motion.css';
 
 @font-face {
   font-family: 'CoFo Sans';

@@ -1,4 +1,5 @@
-import type { SourceSummary, SourcesGateway } from '../data/sources';
+import type { SourceSummary, SourcesGateway } from '@data-catalog/ui/source/data/sources';
+import type { SourceDetailData } from '@data-catalog/ui/source/data/sourceDetails';
 import { demoSourceContent } from './sourceContent';
 import { reportCrmDateMetricCount } from './sourceMetrics';
 export const rewedoSourceId = 'source-demo-rewedo-versions';
@@ -39,4 +40,19 @@ const records:readonly SourceSummary[] = [...reference, ...demo, rewedo].map(sou
   if(!source.analyst)demoAttributes.push('analyst');
   return {...source,description:content.description,masterSystem:source.masterSystem??content.masterSystem,analyst:source.analyst??content.analyst,demoAttributes,treePath};
 });
-export const demoSourcesGateway: SourcesGateway = { list: () => records };
+// SRC-33 shows eight complete rows out of ten similar sources.
+export const reportCrmDateSimilarSources = [
+  { id: 'source-dwh-appraiser-metrics', technicalName: 'dwh2crm.material.visiology_инструменты_оценщика_показатели', businessMetricCount: 5 },
+  { id: 'source-dwh-online-sales', technicalName: 'dwh2crm.visiology.онлайн_продажи', businessMetricCount: 4 },
+  { id: 'source-dwh-phase-plan', technicalName: 'dwh2crm.dbo.отчет_планфакт_долякорпусов_vi_до_этапа', businessMetricCount: 2 },
+  { id: 'source-dwh-contract', technicalName: 'dwh2crm.tableau.договор', businessMetricCount: 2 },
+  { id: 'source-reportcrm-sales', technicalName: 'reportcrm20.model.продажи', businessMetricCount: 2 },
+  { id: 'source-dwh-task', technicalName: 'dwh2crm.tableau.v_task', businessMetricCount: 1 },
+  { id: 'source-dwh-property', technicalName: 'dwh2crm.tableau.объект недвижимости', businessMetricCount: 1 },
+  { id: 'source-reportcrm-deadlines', technicalName: 'reportcrm20.calculate.deadlines_rpt', businessMetricCount: 1 },
+] satisfies NonNullable<SourceDetailData['similarSources']>;
+
+export const demoSourcesGateway: SourcesGateway = {
+  list: () => records,
+  read: id => reportCrmDateSimilarSources.find(source => source.id === id),
+};

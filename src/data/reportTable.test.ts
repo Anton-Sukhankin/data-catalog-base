@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { reportTableLayout, reportTablePage } from './reportTable';
+import { reportTableLayout, reportTablePage } from '@data-catalog/ui/source/data/reportTable';
 import { readDemoReportTable } from '../demo/reportTable';
 
 describe('documented report table constraints', () => {

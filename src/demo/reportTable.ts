@@ -1,5 +1,5 @@
-import type { ReportTableRow } from '../data/reportTable';
-import { reportTablePage } from '../data/reportTable';
+import type { ReportTableRow } from '@data-catalog/ui/source/data/reportTable';
+import { reportTablePage } from '@data-catalog/ui/source/data/reportTable';
 import { demoReportsGateway } from './reports';
 import { demoReportUsage } from './reportDiversity';
 

@@ -14,7 +14,7 @@ test('single select uses one DS check, shared hover and keyboard commit without 
   await expect(chevron).toHaveCSS('transform',chevronUp);
   await expect(popup.locator('[data-selection-check]')).toHaveCount(1);
   const check=popup.locator('[data-selection-check]');
-  await expect(check).toHaveAttribute('src','/images/dropdown/check.svg');
+  await expect(check).toHaveAttribute('src', /check(?:-[\w-]+)?\.svg(?:\?.*)?$|^data:image\/svg\+xml/);
   expect(await check.evaluate(image=>({width:image.getBoundingClientRect().width,height:image.getBoundingClientRect().height,loaded:(image as HTMLImageElement).naturalWidth}))).toEqual({width:24,height:24,loaded:24});
   const option=popup.getByRole('option',{name:'Метрика',exact:true});
   await option.hover();

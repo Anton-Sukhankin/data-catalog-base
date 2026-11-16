@@ -1,4 +1,4 @@
-import type { SubscriptionCardData } from './SubscriptionCard';
+import type { SubscriptionCardData } from '@data-catalog/ui/source/features/subscriptions/SubscriptionCard';
 
 // Display values transcribed from group 1366:40376. IDs are preview identities,
 // not backend identifiers. The component never imports these fixtures.

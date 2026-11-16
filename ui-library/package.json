@@ -1,0 +1,63 @@
+{
+  "name": "@data-catalog/ui",
+  "version": "0.1.0",
+  "type": "module",
+  "files": ["dist", "src", "README.md", "LICENSES"],
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./styles.css": "./dist/styles.css",
+    "./source/*.css": "./src/*.css",
+    "./source/components/FilterValueList/index": "./src/components/FilterValueList/index.ts",
+    "./source/components/ReportFilterPanel/index": "./src/components/ReportFilterPanel/index.ts",
+    "./source/components/catalogTransition": "./src/components/catalogTransition.ts",
+    "./source/components/useModalMorph": "./src/components/useModalMorph.ts",
+    "./source/components/filterPanelPosition": "./src/components/filterPanelPosition.ts",
+    "./source/components/DetailHeader/useDetailScroll": "./src/components/DetailHeader/useDetailScroll.ts",
+    "./source/components/ColumnFilterMenu/useColumnDropdownExit": "./src/components/ColumnFilterMenu/useColumnDropdownExit.ts",
+    "./source/components/Search/descriptionVisibility": "./src/components/Search/descriptionVisibility.ts",
+    "./source/components/FilterValueList/searchVisibility": "./src/components/FilterValueList/searchVisibility.ts",
+    "./source/components/MultiSelectTrigger/packTags": "./src/components/MultiSelectTrigger/packTags.ts",
+    "./source/components/*.css": "./src/components/*.css",
+    "./source/components/*": "./src/components/*.tsx",
+    "./source/data/*": "./src/data/*.ts",
+    "./source/features/ai-assistant/assistantChats": "./src/features/ai-assistant/assistantChats.ts",
+    "./source/features/news/types": "./src/features/news/types.ts",
+    "./source/features/report-detail/source": "./src/features/report-detail/source.ts",
+    "./source/features/report-detail/mailings/deliveryModel": "./src/features/report-detail/mailings/deliveryModel.ts",
+    "./source/features/report-detail/mailings/types": "./src/features/report-detail/mailings/types.ts",
+    "./source/features/report-detail/metrics/model": "./src/features/report-detail/metrics/model.ts",
+    "./source/features/report-detail/sources/lineageGeometry": "./src/features/report-detail/sources/lineageGeometry.ts",
+    "./source/features/report-detail/sources/model": "./src/features/report-detail/sources/model.ts",
+    "./source/features/report-detail/usage/model": "./src/features/report-detail/usage/model.ts",
+    "./source/features/*": "./src/features/*.tsx"
+  },
+  "sideEffects": ["**/*.css"],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "storybook": "storybook dev --host 127.0.0.1 -p 6006",
+    "build:storybook": "storybook build --disable-telemetry",
+    "check": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router": "^7.0.0"
+  },
+  "dependencies": {
+    "@tanstack/react-table": "9.3.1",
+    "lucide-react": "1.68.0",
+    "radix-ui": "1.8.1"
+  },
+  "devDependencies": {
+    "@storybook/react-vite": "10.6.7",
+    "@vitejs/plugin-react": "6.2.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-router": "7.18.5",
+    "storybook": "10.6.7",
+    "typescript": "7.0.2",
+    "vite": "8.3.5"
+  }
+}

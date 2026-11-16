@@ -1,6 +1,6 @@
-import type { ReportOverviewContent, ReportSlide } from '../features/report-detail/source';
+import type { ReportOverviewContent, ReportSlide } from '@data-catalog/ui/source/features/report-detail/source';
 import { demoReportSource } from '../features/report-detail/sources/demoSource';
-import type { ReportDataSource } from '../features/report-detail/sources/model';
+import type { ReportDataSource } from '@data-catalog/ui/source/features/report-detail/sources/model';
 import { reportMetricIds } from './metrics';
 
 interface ReportPassportExample {

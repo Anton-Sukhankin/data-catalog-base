@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { demoReportsGateway } from '../demo/reports';
-import { searchReports } from './reports';
+import { searchReports } from '@data-catalog/ui/source/data/reports';
 
 describe('agreed local report search', () => {
   it('matches names without case sensitivity and ignores outer whitespace', async () => {

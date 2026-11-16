@@ -1,0 +1,3 @@
+.surface[data-list-scroll-boundary] { position:relative; height:calc(100vh - 154px); min-height:0; }
+.surface:has(.empty) { padding:0; }
+.empty { flex:1; }

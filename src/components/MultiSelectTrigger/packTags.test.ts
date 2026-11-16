@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { packTags } from './packTags';
+import { packTags } from '@data-catalog/ui/source/components/MultiSelectTrigger/packTags';
 
 describe('selected tag packing', () => {
   it('shows all values without a counter when they fit, including the exact boundary', () => {

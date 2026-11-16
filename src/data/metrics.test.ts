@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filterMetricCatalog } from './metrics';
+import { filterMetricCatalog } from '@data-catalog/ui/source/data/metrics';
 import { demoMetricsGateway, reportMetricIds } from '../demo/metrics';
 
 describe('approved metric catalog data', () => {

@@ -1,4 +1,4 @@
-import type { ContributorCardData } from './ContributorCard';
+import type { ContributorCardData } from '@data-catalog/ui/source/features/contributors/ContributorCard';
 
 // Display values from group478:8878. IDs identify technical examples only.
 export const previewContributors: readonly ContributorCardData[] = [

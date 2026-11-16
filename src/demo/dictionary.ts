@@ -1,4 +1,4 @@
-import type { DictionaryCatalog, DictionaryGateway, DictionaryTerm } from '../data/dictionary';
+import type { DictionaryCatalog, DictionaryGateway, DictionaryTerm } from '@data-catalog/ui/source/data/dictionary';
 
 function exampleTerm(id: string, name: string, description: string): DictionaryTerm {
   return { id, name, description, type: 'Бизнес-термин', status: 'Демонстрационный', descriptionComplete: true };

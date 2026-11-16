@@ -1,5 +1,5 @@
-import type { ReportDataSource, ReportLineage } from './model';
-import { lineageRow } from './lineageGeometry';
+import type { ReportDataSource, ReportLineage } from '@data-catalog/ui/source/features/report-detail/sources/model';
+import { lineageRow } from '@data-catalog/ui/source/features/report-detail/sources/lineageGeometry';
 
 const demoPlatforms = {
   mssql: 'SQL Server',

@@ -1,4 +1,4 @@
-import type { FaqEntry, QuestionAppeal } from '../data/questions';
+import type { FaqEntry, QuestionAppeal } from '@data-catalog/ui/source/data/questions';
 
 // Demonstration copy for the FAQ pilot.
 export const demoFaq: readonly FaqEntry[] = [

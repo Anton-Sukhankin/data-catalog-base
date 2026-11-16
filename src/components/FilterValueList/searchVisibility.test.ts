@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { shouldShowFilterSearch } from './searchVisibility';
+import { shouldShowFilterSearch } from '@data-catalog/ui/source/components/FilterValueList/searchVisibility';
 
 test('multiple-choice search starts at seven complete options', () => {
   expect(shouldShowFilterSearch(0)).toBe(false);

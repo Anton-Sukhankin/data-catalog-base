@@ -1,4 +1,4 @@
-import type { ReferenceOption, ReferenceRow, SystemReference, SystemReferencesGateway } from '../data/systemReferences';
+import type { ReferenceOption, ReferenceRow, SystemReference, SystemReferencesGateway } from '@data-catalog/ui/source/data/systemReferences';
 
 const crm: SystemReference = {
   id: 'crm',

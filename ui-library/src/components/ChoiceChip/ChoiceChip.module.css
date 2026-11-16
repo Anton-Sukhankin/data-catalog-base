@@ -1,0 +1,4 @@
+.clear { display: grid; place-items: center; flex: 0 0 16px; width: 16px; height: 16px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.clear img { filter: grayscale(1); }
+.chip { height: 32px; padding: 0 12px; border: 1px solid transparent; border-radius: 16px; background: #f0f1f4; color: #202028; font-size: 14px; font-weight: 500; line-height: 14px; cursor: pointer; }
+.chip[aria-pressed='true'] { color: #007bfc; border-color: #60adff; background: #007bfc1a; }

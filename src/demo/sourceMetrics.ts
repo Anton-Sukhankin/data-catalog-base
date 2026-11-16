@@ -1,4 +1,4 @@
-import type { MetricDetailIdentity, MetricDetailProfile } from '../data/metrics';
+import type { MetricDetailIdentity, MetricDetailProfile } from '@data-catalog/ui/source/data/metrics';
 
 // SRC-31 and SRC-34 provide the total and the first six entries, but no business IDs or full passports.
 export const reportCrmDateMetricCount = 16;

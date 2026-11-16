@@ -246,7 +246,7 @@ test('dictionary counters follow available results without changing object ident
   await expect(workspace.locator('[data-dictionary-filters]')).toHaveCount(0);
   for(const row of await workspace.locator('[data-dictionary-domain]').all()){
     expect((await row.boundingBox())?.height).toBe(40);
-    await expect(row.locator('img')).toHaveAttribute('src','/icons/reports/domain-group.svg');
+    await expect(row.locator('img')).toHaveAttribute('src', /domain-group(?:-[\w-]+)?\.svg(?:\?.*)?$|^data:image\/svg\+xml/);
     await expect(row.locator('img')).toHaveCSS('width','16px');
     await expect(row.locator('span').first()).toHaveCSS('background-color','rgba(0, 0, 0, 0)');
     const spacing = await row.evaluate(element => {

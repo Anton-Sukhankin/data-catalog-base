@@ -1,5 +1,5 @@
 import { demoNews } from './demo';
-import type { NewsArticle, NewsArticleBlock } from './types';
+import type { NewsArticle, NewsArticleBlock } from '@data-catalog/ui/source/features/news/types';
 
 // Exact text from visible native Figma article799:15171; the hidden bitmap is not used.
 const sourceArticle: readonly NewsArticleBlock[] = [

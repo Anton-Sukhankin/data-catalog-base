@@ -1,6 +1,6 @@
 import { reportPassportExamples } from '../../../demo/reportPassports';
-import { formatUsageChange, formatUsageDecimal } from './model';
-import type { ReportUsage, ReportUsageSource, UsageMonth } from './model';
+import { formatUsageChange, formatUsageDecimal } from '@data-catalog/ui/source/features/report-detail/usage/model';
+import type { ReportUsage, ReportUsageSource, UsageMonth } from '@data-catalog/ui/source/features/report-detail/usage/model';
 
 // Approved Paper screen fixture. These monthly values were authored for the mockup,
 // not extracted from production; they must never be assigned to arbitrary reports.

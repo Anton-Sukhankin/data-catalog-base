@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readDemoReportRows } from '../demo/reportTable';
-import { sortReportRows } from './reportSort';
+import { sortReportRows } from '@data-catalog/ui/source/data/reportSort';
 
 describe('agreed local sorting inside domain groups', () => {
   it('matches the title pilot and restores source order without mutating rows', async () => {

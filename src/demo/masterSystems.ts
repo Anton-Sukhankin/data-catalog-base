@@ -1,4 +1,4 @@
-export interface MasterSystem { id: string; name: string; count: number }
+import type { MasterSystem } from '@data-catalog/ui/source/features/sources/MasterSystems';
 
 // Display counts from the Paper snapshot of CMDB. Linked records come from SourcesGateway.
 export const demoMasterSystemGroups = [

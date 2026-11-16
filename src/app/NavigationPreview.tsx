@@ -4,67 +4,74 @@ import { createPortal } from 'react-dom';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useCatalogTransition } from './useCatalogTransition';
 import { detailTrailParam, readDetail, readDetailTrail, withoutDetail, type DetailKind } from './detailTrail';
-import { transitionCatalog, type CatalogTransition } from '../components/catalogTransition';
-import { DetailBreadcrumbs, type DetailCrumb } from '../components/DetailHeader/DetailBreadcrumbs';
-import { Sidebar } from '../components/Sidebar/Sidebar';
+import { transitionCatalog, type CatalogTransition } from '@data-catalog/ui/source/components/catalogTransition';
+import { DetailBreadcrumbs, type DetailCrumb } from '@data-catalog/ui/source/components/DetailHeader/DetailBreadcrumbs';
+import { Sidebar } from '@data-catalog/ui/source/components/Sidebar/Sidebar';
 import { Header } from '../components/Header/Header';
-import { EmptyState } from '../components/EmptyState/EmptyState';
+import { EmptyState } from '@data-catalog/ui/source/components/EmptyState/EmptyState';
 import { CatalogSearch } from '../components/Search/CatalogSearch';
-import { SearchLandingContext } from '../components/Search/SearchMatch';
-import { isDescriptionMatchClipped } from '../components/Search/descriptionVisibility';
-import { catalogSearchPage, findPageMatches, hasSearchDetail, isSearchGroup, normalizeSearch, searchId, type SearchDestination, type SearchEntry, type SearchHit } from '../data/catalogSearch';
-import { metricCatalogPage, readMetricCatalogState } from '../data/metrics';
-import { readSourceCatalogView, sourceCatalogPage } from '../data/sources';
-import { readSourceDetailTab } from '../data/sourceDetails';
+import { SearchLandingContext } from '@data-catalog/ui/source/components/Search/SearchMatch';
+import { isDescriptionMatchClipped } from '@data-catalog/ui/source/components/Search/descriptionVisibility';
+import { catalogSearchPage, findPageMatches, hasSearchDetail, isSearchGroup, normalizeSearch, searchId, type SearchDestination, type SearchEntry, type SearchHit } from '@data-catalog/ui/source/data/catalogSearch';
+import { metricCatalogPage, readMetricCatalogState } from '@data-catalog/ui/source/data/metrics';
+import { readSourceCatalogView, sourceCatalogPage } from '@data-catalog/ui/source/data/sources';
+import { readSourceDetailTab } from '@data-catalog/ui/source/data/sourceDetails';
+import { demoSourceDetailsGateway } from '../demo/sourceDetails';
+import { demoMasterSystemGroups } from '../demo/masterSystems';
+import { replyFromCatalogDemo } from '../demo/assistant';
 import { demoMetricsGateway } from '../demo/metrics';
-import { demoSourcesGateway } from '../demo/sources';
+import { demoSourcesGateway, rewedoSourceId } from '../demo/sources';
 import { readRelatedSourceReportSummary } from '../demo/relatedSourceReports';
 import { demoAdditionalSearchEntries, demoAiSearchEntries, demoQuestionSearchEntries, demoReferenceSearchEntries, demoReportSearchEntries } from '../demo/catalogSearch';
-import type { ReportSummary } from '../data/reports';
+import type { ReportSummary } from '@data-catalog/ui/source/data/reports';
 import { demoReportsGateway } from '../demo/reports';
 import { technicalReportSummary } from '../demo/technicalReport';
-import { ReportCardGroups } from '../components/ReportCard/ReportCardGroups';
-import { ReportDomainCards } from '../components/ReportCard/ReportDomainCards';
-import { ReportTable } from '../components/ReportTable/ReportTable';
+import { ReportCardGroups } from '@data-catalog/ui/source/components/ReportCard/ReportCardGroups';
+import { ReportDomainCards } from '@data-catalog/ui/source/components/ReportCard/ReportDomainCards';
+import { ReportTable } from '@data-catalog/ui/source/components/ReportTable/ReportTable';
 import { readDemoReportRows } from '../demo/reportTable';
-import { reportTablePage, type ReportTableRow } from '../data/reportTable';
-import { filterReportRows, reportFilterLabels, reportFilterOptions, searchReportFilterOptions } from '../data/reportFilters';
-import { ColumnFilterMenu } from '../components/ColumnFilterMenu/ColumnFilterMenu';
+import { reportTablePage, type ReportTableRow } from '@data-catalog/ui/source/data/reportTable';
+import { filterReportRows, reportFilterLabels, reportFilterOptions, searchReportFilterOptions } from '@data-catalog/ui/source/data/reportFilters';
+import { ColumnFilterMenu } from '@data-catalog/ui/source/components/ColumnFilterMenu/ColumnFilterMenu';
 import { useReportFilters } from './useReportFilters';
 import { useReportFilterPanel } from './useReportFilterPanel';
 import { ReportFilterOverlay } from './ReportFilterOverlay';
-import { DEFAULT_VIEW_MODE, HomeControls, ViewPicker, type HomeViewMode } from '../components/HomeControls/HomeControls';
-import { FilterButton } from '../components/FilterButton/FilterButton';
-import { ListPagination } from '../components/ListPagination/ListPagination';
-import { listPageSize } from '../data/pagination';
+import { DEFAULT_VIEW_MODE, HomeControls, ViewPicker, type HomeViewMode } from '@data-catalog/ui/source/components/HomeControls/HomeControls';
+import { FilterButton } from '@data-catalog/ui/source/components/FilterButton/FilterButton';
+import { ListPagination } from '@data-catalog/ui/source/components/ListPagination/ListPagination';
+import { listPageSize } from '@data-catalog/ui/source/data/pagination';
 import { readDemoFavoriteRows } from '../demo/favorites';
 import { homeTabs, homeReportSegments, homeContributionTypes, homeNewsCategories } from '../demo/homeNavigation';
-import { isReportNumericAttribute, reportRangeScale, reportFilterCount } from '../data/reportFilters';
-import type { ReportCardData } from '../components/ReportCard/ReportCard';
+import { isReportNumericAttribute, reportRangeScale, reportFilterCount } from '@data-catalog/ui/source/data/reportFilters';
+import type { ReportCardData } from '@data-catalog/ui/source/components/ReportCard/ReportCard';
 import { navigationFixture } from '../demo/navigation';
 import styles from './NavigationPreview.module.css';
-import { sortReportRows } from '../data/reportSort';
+import badges from '@data-catalog/ui/source/components/CountBadge/CountBadge.module.css';
+import reportCardGroups from '@data-catalog/ui/source/components/ReportCard/ReportCardGroups.module.css';
+import feedback from '@data-catalog/ui/source/styles/notice.module.css';
+import { sortReportRows } from '@data-catalog/ui/source/data/reportSort';
 import { NewsContent, demoNewsArticles, filterNewsByCategory, type NewsCategoryId } from '../features/news';
 import { SubscriptionsContent, subscriptionContentFixture, type SubscriptionsIntent } from '../features/subscriptions';
 import { ContributionContent, contributionContentFixture } from '../features/contributors';
 import { EmptyFavorites } from './EmptyFavorites';
 import { demoReportDetailSources } from '../features/report-detail/demoSource';
-import { ReportDetail } from '../features/report-detail/ReportDetail';
-import { MetricWorkspace } from '../features/metrics/MetricWorkspace';
-import { SourcesWorkspace } from '../features/sources/SourcesWorkspace';
-import { DictionaryWorkspace } from '../features/dictionary/DictionaryWorkspace';
+import { ReportDetail } from '@data-catalog/ui/source/features/report-detail/ReportDetail';
+import { MetricWorkspace } from '@data-catalog/ui/source/features/metrics/MetricWorkspace';
+import { SourcesWorkspace } from '@data-catalog/ui/source/features/sources/SourcesWorkspace';
+import { DictionaryWorkspace } from '@data-catalog/ui/source/features/dictionary/DictionaryWorkspace';
 import { demoDictionaryGateway } from '../demo/dictionary';
-import { AiHubCatalog } from '../features/ai-hub/AiHubCatalog';
-import { AiAssistant } from '../features/ai-assistant/AiAssistant';
-import { SystemReferencesWorkspace } from '../features/system-references/SystemReferencesWorkspace';
+import { AiHubCatalog } from '@data-catalog/ui/source/features/ai-hub/AiHubCatalog';
+import { HomeFavoriteCards, type HomeFavoritePosition } from '@data-catalog/ui/source/features/home-favorites/HomeFavoriteCards';
+import { AiAssistant } from '@data-catalog/ui/source/features/ai-assistant/AiAssistant';
+import { SystemReferencesWorkspace } from '@data-catalog/ui/source/features/system-references/SystemReferencesWorkspace';
 import { demoSystemReferencesGateway } from '../demo/systemReferences';
-import { QuestionsWorkspace } from '../features/questions/QuestionsWorkspace';
+import { QuestionsWorkspace } from '@data-catalog/ui/source/features/questions/QuestionsWorkspace';
 import { demoAppeals, demoFaq } from '../demo/questions';
-import type { QuestionAppeal, QuestionDraft } from '../data/questions';
-import { TasksWorkspace } from '../features/tasks/TasksWorkspace';
+import type { QuestionAppeal, QuestionDraft } from '@data-catalog/ui/source/data/questions';
+import { TasksWorkspace } from '@data-catalog/ui/source/features/tasks/TasksWorkspace';
 import { demoMailingTasks } from '../demo/tasks';
 import { demoAiSolutions } from '../demo/aiHub';
-import { dictionaryFilterOptions, dictionaryTermsPage, readDictionaryFilters } from '../data/dictionary';
+import { dictionaryFilterOptions, dictionaryTermsPage, readDictionaryFilters } from '@data-catalog/ui/source/data/dictionary';
 import { paginationDemoParam, paginationExampleCount, paginationExamples, paginationExampleLabel, paginationReportRows, readPaginationReport, paginationReportDetails,
   paginationMetricsGateway, paginationSourcesGateway, paginationSourceDetailsGateway, paginationDictionaryGateway, paginationReferencesGateway } from '../demo/paginationExamples';
 
@@ -76,7 +83,7 @@ type SearchSelection = {
   highlightDescription?: true;
 };
 type DetailOriginState = { searchSelection?: SearchSelection; restoreCatalogSearch?: boolean; report?: ReportSummary; returnTo?: string; reportOrigin?: 'tasks' | 'domains' };
-type NavigationState = DetailOriginState & { detailHistoryDepth?: number; detailOrigin?: DetailOriginState | null };
+type NavigationState = DetailOriginState & { detailHistoryDepth?: number; detailOrigin?: DetailOriginState | null; fromHomeFavorite?: 'source' | 'ai' };
 
 const defaultHomeViews = { favorites: DEFAULT_VIEW_MODE, domains: DEFAULT_VIEW_MODE, subscriptions: DEFAULT_VIEW_MODE, contribution: DEFAULT_VIEW_MODE };
 const additionalDomainReportIds = new Set(['demo-report-construction', 'demo-report-team-workload']);
@@ -97,7 +104,15 @@ const searchSections = navigationFixture.flatMap(({ id, label }) => isSearchGrou
 const aiSearchEntries = demoAiSearchEntries(demoAiSolutions);
 const paginatedAiSearchEntries = demoAiSearchEntries(paginatedAi);
 const referenceSearchEntries = demoReferenceSearchEntries(demoSystemReferencesGateway.list());
+const referencesWithDetail = new Set(['crm']);
 const paginatedReferenceSearchEntries = demoReferenceSearchEntries(paginationReferencesGateway.list());
+
+function toggleBookmark(bookmarks: ReadonlySet<string>, id: string) {
+  const next = new Set(bookmarks);
+  if (next.has(id)) next.delete(id);
+  else next.add(id);
+  return next;
+}
 
 function createHighlightToken() {
   return crypto.getRandomValues(new Uint32Array(2)).join('-');
@@ -173,7 +188,12 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
   const main = useRef<HTMLElement>(null);
   const aiScrollPosition = useRef(0);
   const sourceDetailScroll = useRef(new Map<string, number>());
-  const [aiBookmarks, setAiBookmarks] = useState<ReadonlySet<string>>(() => new Set());
+  const [aiBookmarks, setAiBookmarks] = useState<ReadonlySet<string>>(() => new Set(emptyHome === 'ai-hub' ? [] : ['failik', 'n8n']));
+  const [sourceBookmarks, setSourceBookmarks] = useState<ReadonlySet<string>>(() => new Set(emptyHome === 'sources' ? [] : [rewedoSourceId]));
+  const [homeFavoritePositions, setHomeFavoritePositions] = useState<ReadonlyMap<string, HomeFavoritePosition>>(() => new Map());
+  const aiSolutions = paginationDemo ? paginatedAi : demoAiSolutions;
+  const favoriteSolutions = aiSolutions.filter(item => aiBookmarks.has(item.id));
+  const favoriteSources = sourcesGateway.list().filter(item => sourceBookmarks.has(item.id));
   const [submittedAppeals, setSubmittedAppeals] = useState<readonly QuestionAppeal[]>([]);
   const activeId = navigationFixture.some(item => item.id === params.get('section')) ? params.get('section')! : 'home';
   const activeSection = navigationFixture.find(item => item.id === activeId)!;
@@ -191,7 +211,8 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
   const favoriteFilters = useReportFilters(() => { setFavoritePageIndex(0); clearSearchSelection(); });
   const homeTab = homeTabs.some(item => item.id === params.get('tab')) ? params.get('tab')! : 'reports';
   const homeSegment = homeReportSegments.some(item => item.id === params.get('segment')) ? params.get('segment')! : 'favorites';
-  const isDomains = activeId === 'home' && homeTab === 'reports' && homeSegment === 'domains' && !hasDetail;
+  const isHomeReports = activeId === 'home' && homeTab === 'reports' && !hasDetail;
+  const isDomains = isHomeReports && homeSegment === 'domains';
   const homeDomain = params.get('reportDomain');
   const domainFilters = useReportFilters(() => {
     if (params.has('domainPage')) updateLocation({ domainPage: undefined }, { replace: true }, 'tab');
@@ -215,11 +236,11 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
     enabled: activeId === 'home' && !selectedReportId });
   const favoriteRows = emptyHome === 'favorites' ? [] : favoriteRecords.data && (expandFavorites ? paginationReportRows(favoriteRecords.data) : favoriteRecords.data);
   const tableRecords = useQuery({ queryKey: ['demo', 'report-table-records'],
-    queryFn: ({ signal }) => readDemoReportRows(signal), enabled: activeId === 'reports' || isDomains });
+    queryFn: ({ signal }) => readDemoReportRows(signal), enabled: activeId === 'reports' || isHomeReports });
   const reportRows = tableRecords.data && (expandReportCatalog ? paginationReportRows(tableRecords.data) : tableRecords.data);
   const domainRowsReady = reportRows !== undefined && favoriteRecords.data !== undefined;
   const domains = new Map<string, ReportTableRow[]>();
-  if (isDomains && domainRowsReady) {
+  if (isHomeReports && domainRowsReady) {
     const catalogIds = new Set(reportRows.map(row => row.id));
     const additions = favoriteRecords.data.filter(row => additionalDomainReportIds.has(row.id) && !catalogIds.has(row.id));
     for (const row of [...reportRows, ...additions]) {
@@ -228,7 +249,13 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
       else domains.set(row.domain, [row]);
     }
   }
-  const domainRows = homeDomain ? domains.get(homeDomain) : undefined;
+  const domainRows = isDomains && homeDomain ? domains.get(homeDomain) : undefined;
+  const homeReportSegmentCounts = {
+    favorites: favoriteRows?.length,
+    domains: domainRowsReady ? domains.size : undefined,
+    subscriptions: subscriptions.length,
+    contribution: contributors.length,
+  };
   const domainPage = domainRows && reportTablePage(
     sortReportRows(filterReportRows(domainRows, domainFilters.applied), domainFilters.sort),
     Number(params.get('domainPage') ?? '1') - 1, tablePageSize,
@@ -437,9 +464,9 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
     const next = withoutDetail(step);
     next.set(kind, id);
     if (kind === 'report') next.set('reportTab', detail?.kind === 'source' ? 'sources' : 'overview');
-    if (kind === 'source' && detail?.kind === 'report') {
-      next.set('sourceReport', detail.id);
+    if (kind === 'source') {
       next.set('sourceTab', 'fields');
+      if (detail?.kind === 'report') next.set('sourceReport', detail.id);
     }
     for (const ancestor of [...detailTrail, step]) next.append(detailTrailParam, ancestor.toString());
     const state: NavigationState = {
@@ -484,13 +511,23 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
     }
     const reportId = step.get('sourceReport');
     return (reportId ? reportDetails.read(reportId)?.sources?.find(source => source.id === ancestor.id)?.name : undefined)
-      ?? sourcesGateway.list().find(source => source.id === ancestor.id)?.technicalName ?? 'Карточка источника';
+      ?? sourcesGateway.list().find(source => source.id === ancestor.id)?.technicalName
+      ?? sourcesGateway.read?.(ancestor.id)?.technicalName ?? 'Карточка источника';
   }
   const detailBreadcrumbs: DetailCrumb[] | undefined = detailTrail.length ? [
     { label: activeSection.label, onSelect: () => transitionCatalog(() => setParams(withoutDetail(detailTrail[0]), { replace: true })) },
     ...detailTrail.map((step, index) => ({ label: detailLabel(step), onSelect: () => openDetailAncestor(index) })),
   ] : undefined;
   function changeHomeTab(id: string) { closeOverlays(); updateLocation({ tab: id, news: undefined }, undefined, 'tab'); setEditNotice(undefined); }
+  function openHomeFavorite(kind: 'source' | 'ai', id: string, position: HomeFavoritePosition) {
+    setHomeFavoritePositions(previous => new Map(previous).set(location.key, position));
+    const state: NavigationState = { fromHomeFavorite: kind };
+    const destination = kind === 'source'
+      ? { section: 'sources', source: id, sourceTab: 'fields' }
+      : { section: 'ai', 'ai.solution': id };
+    updateLocation(destination, { state });
+  }
+  function backToHomeFavorite() { transitionCatalog(() => navigate(-1)); }
   function changeHomeSegment(id: string) {
     closeOverlays();
     updateLocation({ segment: id, ...(id !== 'domains' ? { reportDomain: undefined, domainPage: undefined } : {}) }, undefined, 'tab');
@@ -522,6 +559,10 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
     setEditNotice(intent.kind === 'unsubscribe' ? 'Отписка не выполнена: серверные действия в демопрототип не подключены.' : 'Переход к боту не выполнен: внешний адрес в документации не определён.');
   }
   const isFavorites = activeId === 'home' && homeTab === 'reports' && homeSegment === 'favorites' && !selectedReportId;
+  const homeFavoriteKind = activeId === 'home' && !hasDetail
+    ? homeTab === 'sources' ? 'source' : homeTab === 'ai-hub' ? 'ai' : undefined
+    : undefined;
+  const homeFavoritePosition = homeFavoritePositions.get(location.key);
   const isSubscriptions = activeId === 'home' && homeTab === 'reports' && homeSegment === 'subscriptions' && !selectedReportId;
   const isContribution = activeId === 'home' && homeTab === 'reports' && homeSegment === 'contribution' && contributionType === 'contributors' && !selectedReportId;
   const hasFavoriteRows = Boolean(favoriteRows?.length);
@@ -564,11 +605,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
     }, ...previous]);
   }
   function toggleAiBookmark(id:string) {
-    setAiBookmarks(previous => {
-      const next = new Set(previous);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
+    setAiBookmarks(previous => toggleBookmark(previous, id));
   }
   return (
     <div className={styles.preview} inert={panel.isOpen || sourcePanelOpen || aiPanelOpen}>
@@ -591,7 +628,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
         <main ref={main} className={styles.review} data-catalog-screen data-list-scroll={isAiCatalog || isSystemReferences ? '' : undefined} data-ai-catalog={isAiCatalog} data-dictionary={activeId === 'dictionary' && !selectedReportId} data-source-detail={isSourceDetail} data-source-catalog={activeId === 'sources' && !hasDetail} data-report-detail={Boolean(selectedReportId)} data-metric-catalog={activeId === 'metrics' && !hasDetail} data-metric-detail={isMetricDetail} data-table-preview={activeId === 'reports' && !hasDetail} data-home-preview={activeId === 'home' && !selectedReportId} data-news-reading={isReadingNews} data-system-references={isSystemReferences ? params.has('systems.reference') ? 'detail' : 'catalog' : undefined} data-questions={isQuestions} data-tasks={isTasks}>
           <SearchLandingContext.Provider key={sidebarEntry} value={pendingDescription ? undefined : landingHit}>
           {!hasDetail && activeId !== 'metrics' && activeId !== 'sources' && activeId !== 'dictionary' && !isAiCatalog && !isSystemReferences && !isQuestions && !isTasks && <div className={styles.pageHeader}><h1>{activeSection.label}</h1>
-            {activeId === 'reports' && !selectedReportId && tablePage && <span className={styles.reportTotal}>{tablePage.total}</span>}
+            {activeId === 'reports' && !selectedReportId && tablePage && <span className={badges.sectionTotal}>{tablePage.total}</span>}
             {activeId === 'reports' && !selectedReportId && hasReportRows && <div className={styles.catalogActions}>
               {Boolean(tablePage?.rows.length) && <ViewPicker selection={{ value: reportsView, onChange: value => { closeOverlays(); clearSearchSelection(); setCatalogView(value); }, inactiveSurface: reportsView === 'cards' ? 'neutral' : 'track' }} />}
               <FilterButton count={reportFilterCount(filters.applied)} onOpen={event => panel.open(event.currentTarget)} onClear={() => filters.replaceApplied({})} />
@@ -609,9 +646,12 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
             onOpenRelatedMetric={id=>openRelatedDetail('metric',id)} onOpenReport={id=>openRelatedDetail('report',id)} />}
           {activeId === 'home' && !selectedReportId && (
             <HomeControls tabs={{ ariaLabel: 'Тип содержимого', items: homeTabs.map(item => ({
-              ...item, count: item.id === 'news' ? newsRecords.length : item.id === 'reports' ? favoriteRows?.length : undefined,
+              ...item, count: item.id === 'news' ? newsRecords.length : item.id === 'reports' ? favoriteRows?.length
+                : item.id === 'sources' ? favoriteSources.length : item.id === 'ai-hub' ? favoriteSolutions.length : undefined,
             })), selectedId: homeTab, onChange: changeHomeTab }}
-              segments={homeTab === 'reports' ? { ariaLabel: 'Раздел отчётов', items: homeReportSegments.map(item => ({...item,count:item.id === 'favorites' ? favoriteRows?.length : item.id === 'subscriptions' ? subscriptions.length : item.id === 'contribution' ? contributors.length : undefined})), selectedId: homeSegment, onChange: changeHomeSegment }
+              segments={homeTab === 'reports' ? { ariaLabel: 'Раздел отчётов', items: homeReportSegments.map(item => ({
+                ...item, count: homeReportSegmentCounts[item.id],
+              })), selectedId: homeSegment, onChange: changeHomeSegment }
                 : homeTab === 'news' && !isReadingNews && newsRecords.length > 0 ? { ariaLabel: 'Категории новостей', items: homeNewsCategories.map(item => ({...item,count:filterNewsByCategory(newsRecords,item.id as NewsCategoryId).length})), selectedId: newsCategory, onChange: id => updateLocation({ category: id, news: undefined, newsPage: undefined }, undefined, 'tab') } : undefined}
               contribution={homeTab === 'reports' && homeSegment === 'contribution' && contributors.length > 0 ? { ariaLabel: 'Тип вклада', items: homeContributionTypes, selectedId: contributionType, onChange: setContributionType } : undefined}
               view={hasHomeResults ? { value: homeView, onChange: value => { closeOverlays(); clearSearchSelection(); setHomeViews(previous => ({ ...previous, [homeSegment]: value })); } } : undefined}
@@ -634,6 +674,19 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
               onChangeArticle={id => updateLocation({ news: id }, { replace: true, state: location.state }, 'tab')}
               listScrollTop={newsScroll.current[newsCategory] ?? 0} onListScroll={top => { newsScroll.current[newsCategory] = top; }}
               listViewportOffset={newsRecords.length ? 210 : 154} readingViewportOffset={162} />
+          </div>}
+          {homeFavoriteKind && <div className={styles.homeResults} data-detail-tab-content>
+            <HomeFavoriteCards key={homeFavoriteKind} kind={homeFavoriteKind} pageSize={homePageSize}
+              items={homeFavoriteKind === 'source'
+                ? favoriteSources.map(item => ({ id: item.id, title: item.technicalName, description: [item.platform, item.layer].filter(Boolean).join(' · ') }))
+                : favoriteSolutions.map(item => ({ id: item.id, title: item.title, description: item.domain }))}
+              pageIndex={Number(params.get(homeFavoriteKind === 'source' ? 'favoriteSourcePage' : 'favoriteAiPage') ?? 0)}
+              position={homeFavoritePosition}
+              onOpen={(id, position) => openHomeFavorite(homeFavoriteKind, id, position)}
+              onPageChange={index => updateLocation({
+                [homeFavoriteKind === 'source' ? 'favoriteSourcePage' : 'favoriteAiPage']: index ? String(index) : undefined,
+              }, { replace: true }, 'tab')}
+              onOpenCatalog={() => openSectionStart(homeFavoriteKind === 'source' ? 'sources' : 'ai')} />
           </div>}
           {isDomains && <div className={styles.homeResults} data-detail-tab-content>
             {homeDomain && <div className={styles.domainBreadcrumb}>
@@ -694,7 +747,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
             : !hasReportRows ? <EmptyState className={styles.catalogEmpty} title="В каталоге пока нет отчётов" description="Здесь будут отображаться опубликованные отчёты." />
             : !tablePage.rows.length ? <EmptyState className={styles.catalogEmpty} role="status" title="Отчёты не найдены" description="Измените условия или сбросьте фильтры, чтобы вернуться ко всем отчётам."
               action={{ label: 'Сбросить фильтры', variant: 'filter-reset', onClick: () => filters.replaceApplied({}) }} />
-            : reportsView === 'cards' ? <div className={styles.catalogCards} data-list-scroll-boundary>
+            : reportsView === 'cards' ? <div className={`${styles.catalogCards} ${reportCardGroups.catalogSurface}`} data-list-scroll-boundary>
               <ReportCardGroups key={tablePage.pageIndex} reports={tablePage.rows.map(row => row.report).filter((report): report is ReportCardData => report.verification !== undefined)}
                 onOpen={openReport} onEdit={onEdit} layout="catalog" viewportOffset={tablePage.pageCount > 1 ? 136 : 226}
                 bottomReserve={tablePage.pageCount > 1 ? 80 : 16} />
@@ -708,17 +761,22 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
               onHeaderLayoutChange={filters.reposition}
               onColumnIntent={(column, anchor) => { setEditNotice(undefined); filters.open(column, anchor); }} />}
           </div>}
-          {editNotice && <div className={styles.notice}><p role="status">{editNotice}</p><button type="button" onClick={() => setEditNotice(undefined)} aria-label="Закрыть уведомление">×</button></div>}
-          {(isSourceDetail || activeId === 'sources' && !hasDetail) && <SourcesWorkspace gateway={sourcesGateway} detailsGateway={paginationDemo ? paginationSourceDetailsGateway : undefined}
-            breadcrumbs={detailBreadcrumbs} reportDetails={reportDetails} onModalChange={setSourcePanelOpen} searchTarget={searchDestination?.kind === 'source' ? searchDestination.id : undefined}
+          {editNotice && <div className={feedback.notice}><p role="status">{editNotice}</p><button type="button" onClick={() => setEditNotice(undefined)} aria-label="Закрыть уведомление">×</button></div>}
+          {(isSourceDetail || activeId === 'sources' && !hasDetail) && <SourcesWorkspace gateway={sourcesGateway} detailsGateway={paginationDemo ? paginationSourceDetailsGateway : demoSourceDetailsGateway} masterSystemGroups={demoMasterSystemGroups}
+            breadcrumbs={detailBreadcrumbs ?? (navigationState?.fromHomeFavorite === 'source' ? [{ label: 'Избранные источники', onSelect: backToHomeFavorite }] : undefined)}
+            currentBreadcrumb={detailTrail.at(-1)?.get('sourceTab') === 'similar' && detail ? detailLabel(params) : undefined}
+            bookmarks={sourceBookmarks} onBookmark={id => setSourceBookmarks(previous => toggleBookmark(previous, id))}
+            reportDetails={reportDetails} onModalChange={setSourcePanelOpen} searchTarget={searchDestination?.kind === 'source' ? searchDestination.id : undefined}
             relatedNavigation={{
               link: relatedDetailDestination,
               saveScroll: top => { sourceDetailScroll.current.set(location.key, top); },
               scrollTop: sourceDetailScroll.current.get(location.key),
             }} />}
           {activeId === 'dictionary' && !selectedReportId && <DictionaryWorkspace gateway={paginationDemo ? paginationDictionaryGateway : demoDictionaryGateway} />}
-          {isAiCatalog && <AiHubCatalog items={paginationDemo ? paginatedAi : demoAiSolutions} scrollPosition={aiScrollPosition} bookmarks={aiBookmarks} onBookmark={toggleAiBookmark} onModalChange={setAiPanelOpen}/>}
-          {isSystemReferences && <SystemReferencesWorkspace gateway={paginationDemo ? paginationReferencesGateway : demoSystemReferencesGateway} />}
+          {isAiCatalog && <AiHubCatalog items={aiSolutions} scrollPosition={aiScrollPosition} bookmarks={aiBookmarks}
+            onBookmark={toggleAiBookmark} onModalChange={setAiPanelOpen}
+            onBackToHome={navigationState?.fromHomeFavorite === 'ai' ? backToHomeFavorite : undefined} />}
+          {isSystemReferences && <SystemReferencesWorkspace gateway={paginationDemo ? paginationReferencesGateway : demoSystemReferencesGateway} detailIds={referencesWithDetail} />}
           {isQuestions && <QuestionsWorkspace key={sidebarEntry} faq={faq} appeals={appeals} onSubmitQuestion={submitQuestion}
             onClearSearch={clearSearchSelection} />}
           {selectedReportId && !selectedReport && <section aria-label="Содержимое раздела">
@@ -729,13 +787,9 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
                 action={{ label: 'К отчётам', onClick: returnFromReport }} />}
           </section>}
           {isTasks && <TasksWorkspace tasks={demoMailingTasks} onOpenReport={openReport} />}
-          {activeId === 'home' && !selectedReportId && !isFavorites && !isSubscriptions && !isContribution && !isNews &&
+          {activeId === 'home' && !selectedReportId && !homeFavoriteKind && !isDomains && !isFavorites && !isSubscriptions && !isContribution && !isNews &&
             <EmptyState className={styles.catalogEmpty} data-detail-tab-content title="Содержимое недоступно на главной"
-              description={homeTab === 'sources' || homeTab === 'ai-hub' ? 'Откройте полный каталог в соответствующем разделе.' : 'Выберите другой раздел на главной.'}
-              action={homeTab === 'sources' || homeTab === 'ai-hub' ? {
-                label: homeTab === 'sources' ? 'К источникам' : 'В AI Hub',
-                onClick: () => updateLocation({ section: homeTab === 'sources' ? 'sources' : 'ai', source: undefined }),
-              } : undefined} />}
+              description="Выберите другой раздел на главной." />}
           </SearchLandingContext.Provider>
         </main>
       </div>
@@ -753,7 +807,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
           onSortChange={activeFilters.changeSort} />
       </div>, document.body)}
       <ReportFilterOverlay controller={panel} context={homeContext ? 'favorites' : 'catalog'} />
-      <AiAssistant suspended={panel.isOpen || sourcePanelOpen || aiPanelOpen} />
+      <AiAssistant suspended={panel.isOpen || sourcePanelOpen || aiPanelOpen} requestReply={replyFromCatalogDemo} />
     </div>
   );
 }

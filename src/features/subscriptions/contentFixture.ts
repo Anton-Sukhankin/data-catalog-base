@@ -1,4 +1,4 @@
-import type { SubscriptionListItem } from './SubscriptionsContent';
+import type { SubscriptionListItem } from '@data-catalog/ui/source/features/subscriptions/SubscriptionsContent';
 
 // Exact ten objects shared by cards471:1644 and table814:16158.
 // Local IDs only. External report routing and action results belong to the caller.

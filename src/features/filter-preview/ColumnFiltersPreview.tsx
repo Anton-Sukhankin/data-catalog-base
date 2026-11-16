@@ -1,12 +1,12 @@
 import { StrictMode, useState } from 'react';
-import { SingleSelect } from '../../components/SingleSelect/SingleSelect';
+import { SingleSelect } from '@data-catalog/ui/source/components/SingleSelect/SingleSelect';
 import { createRoot } from 'react-dom/client';
-import { ListScrollIndicator } from '../../components/ListScrollIndicator/ListScrollIndicator';
-import { ColumnFilterMenu } from '../../components/ColumnFilterMenu/ColumnFilterMenu';
+import { ListScrollIndicator } from '@data-catalog/ui/source/components/ListScrollIndicator/ListScrollIndicator';
+import { ColumnFilterMenu } from '@data-catalog/ui/source/components/ColumnFilterMenu/ColumnFilterMenu';
 import '../../styles/base.css';
 import { filterExamples, type FilterPreviewExample } from './fixtures';
 import styles from './ColumnFiltersPreview.module.css';
-import { isReportRangeValid, reportRangeScale, type ReportNumberRange } from '../../data/reportFilters';
+import { isReportRangeValid, reportRangeScale, type ReportNumberRange } from '@data-catalog/ui/source/data/reportFilters';
 
 const params = new URLSearchParams(window.location.search);
 const initialExample = filterExamples.find(example => example.key === params.get('case')) ?? filterExamples[0];

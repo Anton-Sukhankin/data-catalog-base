@@ -162,11 +162,11 @@ test('similar sources show the observed rows, label business metric counts and d
   ]);
   await expect(rows.getByText('Бизнес-метрики', { exact: true })).toHaveCount(8);
   await expect(rows.getByText(/^\d$/)).toHaveText(['5', '4', '2', '2', '2', '1', '1', '1']);
-  await expect(list.getByRole('link')).toHaveCount(0);
+  await expect(list.getByRole('link')).toHaveCount(8);
   await expect(page.getByRole('heading', { name: 'Сведения', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Похожие источники', exact: true })).toHaveCount(0);
 
-  const first = rows.first();
+  const first = rows.first().getByRole('link');
   const icon = first.locator('[data-catalog-entity-icon=source]');
   const name = first.locator('strong');
   const metricLabel = first.getByText('Бизнес-метрики', { exact: true });
@@ -202,6 +202,59 @@ test('similar sources show the observed rows, label business metric counts and d
   await page.goto(entry + '&source=source-dwh-date&sourceTab=similar');
   await expect(page.getByRole('tab', { name: 'Похожие источники', exact: true })).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByRole('heading', { name: 'Список похожих источников недоступен', exact: true })).toBeVisible();
+});
+
+test('similar sources open their own cards and preserve the source trail', async ({ page, context }) => {
+  await page.setViewportSize({ width: 1440, height: 650 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const origin = entry + '&sourceView=cards&source.platform=SQL+Server&source=source-reportcrm-date&sourceTab=similar';
+  await page.goto(origin);
+  const list = page.getByRole('list', { name: 'Похожие источники', exact: true });
+  const links = list.getByRole('link');
+  const crumbs = page.getByRole('navigation', { name: 'Хлебные крошки' });
+  const scroll = page.locator('[data-source-detail-id] [data-detail-scroll]');
+  const names = await list.locator('strong').allTextContents();
+  expect(names).toHaveLength(8);
+  const destinationIds = new Set<string>();
+  for (const [index, name] of names.entries()) {
+    const link = links.nth(index);
+    if (index === 0) await link.press('Enter');
+    else await link.click();
+    await expect(page.getByRole('heading', { level: 1, name, exact: true })).toBeVisible();
+    await expect(page.getByRole('tab', { name: /^Описание полей/ })).toHaveAttribute('aria-selected', 'true');
+    await expect(crumbs.getByRole('button', { name: 'Источники', exact: true })).toBeVisible();
+    await expect(crumbs.locator('[aria-current=page]')).toHaveText(name);
+    destinationIds.add(new URL(page.url()).searchParams.get('source')!);
+
+    if (index === 0) {
+      const direct = await context.newPage();
+      await direct.goto(page.url());
+      await expect(direct.getByRole('heading', { level: 1, name, exact: true })).toBeVisible();
+      await direct.getByRole('navigation', { name: 'Хлебные крошки' })
+        .getByRole('button', { name: 'reportcrm20.dbo.dimdate', exact: true }).click();
+      await expect(direct).toHaveURL(url => url.searchParams.get('sourceTab') === 'similar');
+      await direct.close();
+
+      await page.goBack();
+      await expect(list).toBeVisible();
+      await page.goForward();
+      await expect(crumbs.locator('[aria-current=page]')).toHaveText(name);
+    }
+    await crumbs.getByRole('button', { name: 'reportcrm20.dbo.dimdate', exact: true }).click();
+    await expect(list).toBeVisible();
+    await expect(page).toHaveURL(url => url.searchParams.get('sourceTab') === 'similar');
+  }
+  expect(destinationIds.size).toBe(8);
+  expect(destinationIds.has('source-reportcrm-date')).toBe(false);
+  await expect.poll(() => scroll.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
+
+  await links.last().click();
+  await crumbs.getByRole('button', { name: 'Источники', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Карточный вид', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  const catalog = new URL(page.url()).searchParams;
+  expect(catalog.get('source.platform')).toBe('SQL Server');
+  expect(catalog.has('source')).toBe(false);
+  expect(catalog.has('detailVia')).toBe(false);
 });
 
 test('source title keeps its own view count and a local follow toggle beside the existing actions', async ({ page }) => {
@@ -274,13 +327,13 @@ test('known synchronization appears once under Сведения and follows the 
   await expect(passportDescription).toHaveText('Домен, мастер-система и ответственные за источник');
 });
 
-test('source actions have honest boundaries and the unselected bookmark is an enabled local toggle',async({page})=>{
+test('source actions have honest boundaries and the bookmark is an enabled session toggle',async({page})=>{
   await page.goto(detail);
   const bookmark=page.getByRole('button',{name:'Закладка источника',exact:true});
-  await expect(bookmark).toHaveAttribute('aria-pressed','false');
+  await expect(bookmark).toHaveAttribute('aria-pressed','true');
   await expect(bookmark).toBeEnabled();
+  await bookmark.click();await expect(bookmark).toHaveAttribute('aria-pressed','false');
   await expect(bookmark).toHaveCSS('background-color','rgb(255, 255, 255)');
-  await bookmark.click();await expect(bookmark).toHaveAttribute('aria-pressed','true');
   await page.getByRole('button',{name:'Скачать метаданные',exact:true}).click();
   await expect(page.getByRole('status')).toContainText('Файл не создан');
   await page.getByRole('button',{name:'Получить доступ',exact:true}).click();
@@ -288,7 +341,7 @@ test('source actions have honest boundaries and the unselected bookmark is an en
   await page.getByRole('tab',{name:'MCP-инструменты 0',exact:true}).click();
   await expect(page.getByRole('status')).toContainText('Содержимое этой вкладки не предоставлено');
   await expect(page.getByRole('tab',{name:'Описание полей 8',exact:true})).toHaveAttribute('aria-selected','true');
-  await page.reload();await expect(bookmark).toHaveAttribute('aria-pressed','false');
+  await page.reload();await expect(bookmark).toHaveAttribute('aria-pressed','true');
 });
 
 test('source Lineage opens a framed canvas with grid, complete legend and fullscreen controls', async ({page}) => {
@@ -488,7 +541,7 @@ test('dimdate shows the observed report cards in order without changing the tab 
   expect(await icon.evaluate(element => {
     const glyph = getComputedStyle(element,'::before');
     return {width:glyph.width,height:glyph.height,mask:glyph.maskImage};
-  })).toEqual({width:'16px',height:'16px',mask:expect.stringContaining('/icons/reports/report-document.svg')});
+  })).toEqual({width:'16px',height:'16px',mask:expect.stringMatching(/report-document(?:-[\w-]+)?\.svg|data:image\/svg\+xml/)});
   for (const width of [1440,900]) {
     await page.setViewportSize({ width, height: 900 });
     await expect.poll(async () => {

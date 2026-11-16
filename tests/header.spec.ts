@@ -1,5 +1,48 @@
 import { expect, test } from '@playwright/test';
 
+test('profile menu toggles on click and stays open when choosing a demo item', async ({ page }, info) => {
+  await page.goto('/preview/navigation?section=reports');
+  const avatar = page.getByRole('button', { name: 'Профиль пользователя' });
+  const menu = page.getByRole('menu', { name: 'Профиль пользователя' });
+  const search = page.getByRole('combobox', { name: 'Поиск по каталогу' });
+  const initialUrl = page.url();
+
+  await avatar.hover();
+  await expect(menu).toHaveCount(0);
+  await avatar.click();
+  await expect(avatar).toHaveAttribute('aria-expanded', 'true');
+  const items = menu.getByRole('menuitem');
+  await expect(items).toHaveText(['Профиль', 'Админка', 'Выйти']);
+  await expect(items.locator('svg')).toHaveCount(3);
+  await items.first().hover();
+  await expect(items.first()).toHaveCSS('background-color', 'rgb(243, 244, 249)');
+  await expect(items.first()).toHaveCSS('outline-style', 'none');
+  await page.screenshot({ path: info.outputPath('profile-menu.png'), animations: 'disabled' });
+  for (const item of await items.all()) {
+    await item.click();
+    await expect(menu).toBeVisible();
+    await expect(page).toHaveURL(initialUrl);
+  }
+
+  await search.hover();
+  await expect(menu).toBeVisible();
+  await avatar.click();
+  await expect(menu).toHaveCount(0);
+  await avatar.click();
+  await search.click();
+  await expect(menu).toHaveCount(0);
+  await expect(search).toBeFocused();
+
+  await avatar.press('Enter');
+  await expect(menu).toBeVisible();
+  await page.keyboard.press('ArrowDown');
+  await expect(menu.locator('[data-highlighted]')).toHaveCSS('outline-color', 'rgb(0, 123, 252)');
+  await expect(menu.locator('[data-highlighted]')).toHaveCSS('outline-style', 'solid');
+  await page.keyboard.press('Escape');
+  await expect(menu).toHaveCount(0);
+  await expect(avatar).toBeFocused();
+});
+
 test('header preserves the documented layout and uses real local assets at both baseline widths', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));

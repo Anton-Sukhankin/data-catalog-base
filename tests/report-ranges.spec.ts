@@ -1,12 +1,89 @@
 import { expect, test } from '@playwright/test';
 
+test('column range validates incomplete input and synchronizes the slider endpoints', async ({ page }) => {
+  await page.goto('/preview/navigation?section=reports&tableCase=single-page');
+  const heading = page.getByRole('button', { name: 'Фильтр «MAU»', exact: true });
+  const menu = page.getByRole('dialog', { name: 'Фильтр: MAU', exact: true });
+  const from = menu.getByRole('spinbutton', { name: 'MAU: от', exact: true });
+  const to = menu.getByRole('spinbutton', { name: 'MAU: до', exact: true });
+  const lower = menu.getByRole('slider', { name: 'MAU: нижняя граница', exact: true });
+  const upper = menu.getByRole('slider', { name: 'MAU: верхняя граница', exact: true });
+  const apply = menu.getByRole('button', { name: 'Применить', exact: true });
+
+  await heading.click();
+  await to.press('-');
+  await expect(menu.getByRole('alert')).toBeVisible();
+  await expect(apply).toBeDisabled();
+  await menu.getByRole('button', { name: 'От 50', exact: true }).click();
+  await expect(from).toHaveValue('50');
+  expect(await to.evaluate(field => (field as HTMLInputElement).validity.badInput)).toBe(false);
+  await expect(lower).toHaveValue('50');
+  await lower.press('Home');
+  await expect(from).toHaveValue('0');
+  await to.fill('200');
+  await expect(upper).toHaveValue('200');
+  await upper.press('End');
+  await expect(to).toHaveValue('500');
+  await from.fill('201');
+  await to.fill('200');
+  await expect(apply).toBeDisabled();
+  await page.keyboard.press('Escape');
+  await expect(heading).toBeFocused();
+  await heading.click();
+  await expect(from).toHaveValue('');
+  await expect(to).toHaveValue('');
+});
+
+test('report resets preserve sorting and return to the first page', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/preview/navigation?section=reports');
+  const button = (name: string) => page.getByRole('button', { name, exact: true });
+  const domain = page.getByRole('dialog', { name: 'Фильтр: Домен', exact: true });
+  const mau = page.getByRole('dialog', { name: 'Фильтр: MAU', exact: true });
+  const mauHeading = button('Фильтр «MAU»');
+  const mauColumn = page.getByRole('columnheader').filter({ has: mauHeading });
+  const openPanel = button('Открыть фильтры отчётов');
+  const pagination = page.getByRole('navigation', { name: 'Страницы отчётов', exact: true });
+
+  await button('Фильтр «Домен»').click();
+  for (const name of ['Гостеприимство', 'Клиентский сервис', 'Продажи и маркетинг', 'Финансы'])
+    await domain.getByRole('checkbox', { name, exact: true }).check();
+  await domain.getByRole('button', { name: 'Применить', exact: true }).click();
+  await mauHeading.click();
+  await mau.getByRole('spinbutton', { name: 'MAU: от', exact: true }).fill('50');
+  await mau.getByRole('spinbutton', { name: 'MAU: до', exact: true }).fill('200');
+  await mau.getByRole('button', { name: 'По возрастанию', exact: true }).click();
+  await mau.getByRole('button', { name: 'Применить', exact: true }).click();
+  await expect(button('Сбросить все фильтры: 2 атрибута')).toHaveText('2');
+  await mauHeading.click();
+  await button('Сбросить фильтр «MAU»').click();
+  await expect(mau).toHaveCount(0);
+  await expect(mauColumn).toHaveAttribute('aria-sort', 'ascending');
+  const reset = button('Сбросить все фильтры: 1 атрибут');
+  await expect(reset).toHaveText('1');
+  await button('Следующая страница').click();
+  await expect(pagination).toContainText('16–30');
+  await openPanel.press('Tab');
+  await expect(reset).toBeFocused();
+  await expect(reset.locator('svg')).toBeVisible();
+  await reset.press('Enter');
+  await expect(reset).toHaveCount(0);
+  await expect(pagination).toContainText('1–15');
+  await expect(mauColumn).toHaveAttribute('aria-sort', 'ascending');
+  await expect(openPanel).toBeFocused();
+
+  await mauHeading.click();
+  await mau.getByRole('button', { name: 'Сбросить', exact: true }).click();
+  await expect(mauColumn).toHaveAttribute('aria-sort', 'none');
+});
+
 for(const context of ['catalog','favorites'] as const) {
   test(`${context}: numerical ranges and exclusive thresholds stay synchronized across panel and columns`, async ({page})=>{
     await page.setViewportSize({width:1440,height:900});
     const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
-    await page.goto(`/preview/navigation?section=${context==='catalog'?'reports':'home'}&segment=favorites`);
+    await page.goto(`/preview/navigation?section=${context==='catalog'?'reports':'home'}&segment=favorites&paginationDemo=0`);
     const rows=page.locator('[data-table-report-id]');
-    const initialCount=context==='catalog'?8:10;
+    const initialCount=context==='catalog'?9:10;
     await expect(rows).toHaveCount(initialCount);
     const open=page.getByRole('button',{name:'Открыть фильтры отчётов',exact:true});
     const panel=page.locator('[data-report-filter-panel]');
