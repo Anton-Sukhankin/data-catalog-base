@@ -54,17 +54,21 @@ test('Navigator appends results in batches of fifteen and starts over when searc
   await expect(more).toHaveText(`Показать ещё ${remaining}`);
 });
 
-test('Navigator aligns result highlights with the text of their group heading', async ({ page }) => {
+test('Navigator uses the same result inset in groups with and without a heading icon', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/preview/navigation');
   const { field, dropdown, rows } = searchControls(page);
-  await field.fill('ОТЧЁТ');
-
-  for (const label of ['Отчёты', 'Источники']) {
-    const heading = dropdown.getByRole('rowgroup', { name: label, exact: true })
-      .getByRole('columnheader').getByText(label, { exact: true });
-    const row = rows(label).first();
+  await field.fill('ва');
+  const report = rows('Отчёты').first();
+  const metric = rows('Метрики и показатели').first();
+  await expect(report).toBeVisible();
+  await expect(metric).toBeVisible();
+  const grid = dropdown.getByRole('grid', { name: 'Результаты поиска' });
+  const left = (await grid.boundingBox())!.x;
+  for (const row of [report, metric]) {
     await row.hover();
-    expect((await row.boundingBox())!.x).toBe((await heading.boundingBox())!.x);
+    expect((await row.boundingBox())!.x - left).toBe(16);
+    expect((await row.getByRole('gridcell').first().getByRole('button').locator('span').first().boundingBox())!.x - left).toBe(32);
   }
 
   await field.hover();

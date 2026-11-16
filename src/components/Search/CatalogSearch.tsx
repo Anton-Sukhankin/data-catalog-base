@@ -230,7 +230,7 @@ export function CatalogSearch({ entries, sections, loading, error, routeKey, res
               <>
                 <div ref={results} id={gridId} className={styles.results} role="grid" aria-label="Результаты поиска">
                   {visibleGroups.map(group => (
-                    <section key={group.id} className={group.id === 'reports' ? styles.reportGroup : undefined} role="rowgroup" aria-label={group.title}>
+                    <section key={group.id} role="rowgroup" aria-label={group.title}>
                       <div role="row">
                         <div className={styles.groupHeading} role="columnheader" aria-colspan={group.visibleMatches.some(hit => hasSearchDetail(hit.entry.destination)) ? 2 : undefined}>
                           {group.id === 'reports' && <img src="/icons/search/group-report.svg" width="16" height="16" alt="" aria-hidden="true" />}
