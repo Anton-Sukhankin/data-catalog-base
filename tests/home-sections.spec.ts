@@ -100,6 +100,199 @@ test('Home saved solutions preserve the page on return and clamp it when the las
   await expect(page.getByRole('tooltip')).toHaveText('rewedo_crm_production.public.versions');
 });
 
+test('Home Reports summary stays between the tabs and toolbar and opens details only on the domain strip', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/preview/navigation?section=home&paginationDemo=0');
+  const tabs = page.getByRole('tablist', { name: 'Тип содержимого' });
+  const summary = page.getByRole('region', { name: 'Сводка каталога отчётов' });
+  const toolbar = page.locator('[data-home-controls] [data-control-toolbar]');
+  const strip = summary.getByRole('img', { name: 'Распределение отчётов по доменам' });
+  const details = page.locator('[data-report-domain-breakdown]');
+  await expect(summary).toContainText('Всего отчётов11');
+  await expect(summary).toContainText('Домены6');
+  await expect(summary).toContainText('Проверенные5 из 11');
+  await expect(summary).toContainText('45%');
+  await expect(page.getByRole('heading', { name: 'Список отчётов' })).toHaveCount(0);
+  const [tabsBox, summaryBox, toolbarBox] = await Promise.all([tabs, summary, toolbar].map(node => node.boundingBox()));
+  expect(summaryBox!.y - tabsBox!.y - tabsBox!.height).toBeCloseTo(16);
+  expect(toolbarBox!.y - summaryBox!.y - summaryBox!.height).toBeCloseTo(16);
+  await page.screenshot({ path: info.outputPath('summary-1440.png'), animations: 'disabled' });
+  await page.setViewportSize({ width: 1920, height: 900 });
+  await expect.poll(async () => (await summary.boundingBox())!.width).toBeGreaterThan(summaryBox!.width);
+  await page.screenshot({ path: info.outputPath('summary-1920.png'), animations: 'disabled' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+
+  const stripBox = (await strip.boundingBox())!;
+  await page.mouse.move(stripBox.x + 1, stripBox.y + 4);
+  await expect(details).toBeVisible();
+  await expect(details.locator('li')).toHaveCount(6);
+  await expect(details).toContainText('Управление персоналом');
+  await expect(details).toContainText('Строительство');
+  expect(Number(await details.locator('strong').evaluateAll(items => items.reduce((sum, item) => sum + Number(item.textContent), 0)))).toBe(11);
+  await page.screenshot({ path: info.outputPath('summary-domain-tooltip.png'), animations: 'disabled' });
+  await page.mouse.move(stripBox.x + stripBox.width - 1, stripBox.y + 4);
+  await expect(details).toBeVisible();
+  await summary.getByText('Домены', { exact: true }).hover();
+  await expect(details).toBeHidden();
+  await summary.getByText('Проверенные', { exact: true }).hover();
+  await expect(details).toBeHidden();
+  await strip.focus();
+  await expect(details).toBeVisible();
+  await strip.press('Escape');
+  await expect(details).toBeHidden();
+
+  await tabs.getByRole('tab', { name: /^Источники/ }).click();
+  await expect(summary).toHaveCount(0);
+  await tabs.getByRole('tab', { name: /^Отчёты/ }).click();
+  await expect(summary).toBeVisible();
+  await page.getByRole('tab', { name: 'Домены 6', exact: true }).click();
+  await expect(toolbar.getByRole('button', { name: 'Открыть фильтры отчётов' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Гостеприимство 5 отчётов' }).click();
+  await toolbar.getByRole('button', { name: 'Открыть фильтры отчётов' }).click();
+  await expect(page.locator('[data-report-filter-panel]')).toBeVisible();
+  await expect(summary).toContainText('Всего отчётов11');
+  await page.keyboard.press('Escape');
+});
+
+test('Home Reports scrolls its summary out before the list and brings it back on reversal', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 680 });
+  const summary = page.getByRole('region', { name: 'Сводка каталога отчётов' });
+  const tabs = page.getByRole('tablist', { name: 'Тип содержимого' });
+  const toolbar = page.locator('[data-home-controls] [data-control-toolbar]');
+  const clip = page.locator('[data-report-summary-clip]');
+
+  for (const view of ['Табличный вид', 'Карточный вид']) {
+    await page.goto('/preview/navigation?section=home');
+    const viewButton = page.getByRole('button', { name: view });
+    await viewButton.click();
+    await expect(viewButton).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('html')).not.toHaveAttribute('data-catalog-transition');
+    await expect(summary).toBeVisible();
+    const viewport = page.locator('[data-detail-tab-content] [data-list-scroll]');
+    const readTop = () => viewport.evaluate(element => element.scrollTop);
+    const readToolbar = async () => (await toolbar.boundingBox())!.y;
+    const initialTabs = (await tabs.boundingBox())!.y;
+    const initialToolbar = await readToolbar();
+    const tabEdge = (await tabs.boundingBox())!;
+    expect((await clip.boundingBox())!.y).toBeCloseTo(tabEdge.y + tabEdge.height);
+    const viewportBox = (await viewport.boundingBox())!;
+    await page.mouse.move(viewportBox.x + 48, viewportBox.y + 20);
+
+    await page.mouse.wheel(0, 30);
+    await expect.poll(readToolbar).toBeCloseTo(initialToolbar - 30);
+    expect(await readTop()).toBe(0);
+    await expect(summary).toBeVisible();
+
+    const visibleSummary = (await clip.boundingBox())!.height;
+    await page.mouse.wheel(0, 260);
+    await expect(summary).toBeHidden();
+    await expect.poll(readTop).toBeCloseTo(260 - visibleSummary);
+    const scrolledTop = await readTop();
+    const collapsedToolbar = await readToolbar();
+    expect((await tabs.boundingBox())!.y).toBe(initialTabs);
+
+    await page.mouse.wheel(0, -28);
+    await expect.poll(readToolbar).toBeCloseTo(collapsedToolbar + 28);
+    expect(await readTop()).toBe(scrolledTop);
+
+    await page.mouse.wheel(0, -300);
+    await expect.poll(readToolbar).toBeCloseTo(initialToolbar);
+    await expect(summary).toBeVisible();
+    await expect.poll(readTop).toBe(0);
+    await expect(page.getByRole('navigation', { name: 'Страницы избранных отчётов' })).toBeInViewport();
+
+    if (view === 'Табличный вид') {
+      await viewport.press('ArrowDown');
+      await expect.poll(readToolbar).toBeCloseTo(initialToolbar - 40);
+      expect(await readTop()).toBe(0);
+      await viewport.press('ArrowUp');
+      await expect.poll(readToolbar).toBeCloseTo(initialToolbar);
+
+      const card = clip.locator('dl > div').first();
+      await expect(card).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+      const shadowOpacity = () => card.evaluate(element => Number(getComputedStyle(element, '::before').opacity));
+      const sampleMotion = (deltaY: number) => viewport.evaluate(async (element, delta) => {
+        const mask = document.querySelector('[data-report-summary-clip]')!;
+        const card = mask.querySelector('dl > div')!;
+        const readFrame = () => ({
+          height: mask.getBoundingClientRect().height,
+          scroll: element.scrollTop,
+          shadow: Number(getComputedStyle(card, '::before').opacity),
+        });
+        const initial = readFrame();
+        element.dispatchEvent(new WheelEvent('wheel', { deltaY: delta, bubbles: true, cancelable: true }));
+        const frames = [initial, readFrame()];
+        const end = performance.now() + 350;
+        while (performance.now() < end) {
+          await new Promise<number>(resolve => requestAnimationFrame(resolve));
+          frames.push(readFrame());
+        }
+        return frames;
+      }, deltaY);
+      const closing = await sampleMotion(180);
+      expect(closing[1]).toEqual(closing[0]);
+      expect(closing[0].shadow).toBe(1);
+      expect(closing.some(frame => frame.height > 0 && frame.height < closing[0].height && frame.scroll === 0 && frame.shadow > 0 && frame.shadow < 1)).toBe(true);
+      expect(closing.findIndex(frame => frame.scroll > 0)).toBe(closing.findIndex(frame => frame.height === 0));
+      await expect(summary).toBeHidden();
+      expect(await shadowOpacity()).toBe(0);
+      await expect.poll(readTop).toBeCloseTo(180 - closing[0].height);
+      const opening = await sampleMotion(-180);
+      expect(opening[1]).toEqual(opening[0]);
+      expect(opening[0].shadow).toBe(0);
+      expect(opening.some(frame => frame.height > 0 && frame.height < closing[0].height && frame.scroll === opening[0].scroll && frame.shadow > 0 && frame.shadow < 1)).toBe(true);
+      expect(opening.findIndex(frame => frame.scroll < opening[0].scroll)).toBe(opening.findIndex(frame => frame.height === closing[0].height));
+      await expect.poll(readToolbar).toBeCloseTo(initialToolbar);
+      await expect.poll(readTop).toBe(0);
+      expect(await shadowOpacity()).toBe(1);
+
+      const readLeft = () => viewport.evaluate(element => element.scrollLeft);
+      const readHeight = async () => (await clip.boundingBox())!.height;
+      const fullHeight = await readHeight();
+      await page.mouse.wheel(110, 0);
+      await expect.poll(readLeft).toBe(110);
+      expect(await readHeight()).toBe(fullHeight);
+      await page.mouse.wheel(-35, 60);
+      await expect.poll(readLeft).toBe(75);
+      await expect.poll(readHeight).toBeCloseTo(fullHeight - 60);
+      expect(await readTop()).toBe(0);
+      await page.mouse.wheel(0, 40);
+      await expect(summary).toBeHidden();
+      await expect.poll(readTop).toBeCloseTo(100 - fullHeight);
+    }
+
+    if (view === 'Карточный вид') {
+      const samples = await viewport.evaluate(async element => {
+        const mask = document.querySelector('[data-report-summary-clip]')!;
+        const readFrame = () => ({ height: mask.getBoundingClientRect().height, scroll: element.scrollTop });
+        const wheel = (deltaY: number) => element.dispatchEvent(new WheelEvent('wheel', { deltaY, bubbles: true, cancelable: true }));
+        wheel(280);
+        const frames = [readFrame()];
+        let continued = false;
+        const end = performance.now() + 700;
+        while (performance.now() < end) {
+          await new Promise<number>(resolve => requestAnimationFrame(resolve));
+          const current = readFrame();
+          frames.push(current);
+          if (!continued && current.scroll > 0) {
+            continued = true;
+            wheel(64);
+          }
+        }
+        return frames;
+      });
+      const firstMove = samples.find(frame => frame.scroll > 0);
+      const final = samples.at(-1)!;
+      expect(firstMove).toBeDefined();
+      expect(firstMove!.height).toBe(0);
+      expect(samples.indexOf(firstMove!)).toBe(samples.findIndex(frame => frame.height === 0));
+      expect(final.scroll).toBeCloseTo(280 + 64 - samples[0].height);
+      expect(firstMove!.scroll).toBeLessThan(final.scroll / 3);
+      expect(new Set(samples.map(frame => frame.scroll)).size).toBeGreaterThan(4);
+    }
+  }
+});
+
 test('Home Domains lists catalog domains and opens the same reports in both views', async ({ page }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/preview/navigation?section=home&paginationDemo=0');
@@ -408,7 +601,11 @@ test('Home empty states and pagination remain accessible in both views',async({p
     const text=name==='subscriptions'?'Вы пока ни на что не подписаны':name==='contribution'?'Вклад в каталог пока не отображается':'В избранном пока нет отчётов';
     await expect(page.getByRole('heading',{name:text,exact:true})).toBeVisible();
     const surface=name==='favorites'?page.getByRole('region',{name:'Пустое избранное'}):page.locator(name==='subscriptions'?'[data-subscriptions-content]':'[data-contribution-content]');
-    expect(await surface.boundingBox()).toEqual({x:296,y:210,width:1128,height:name==='subscriptions'?690:674});
+    const summary = page.getByRole('region', { name: 'Сводка каталога отчётов' });
+    await expect(summary).toBeVisible();
+    const { height: summaryHeight } = (await summary.boundingBox())!;
+    const summarySpace = summaryHeight + 16;
+    expect(await surface.boundingBox()).toEqual({x:296,y:210+summarySpace,width:1128,height:(name==='subscriptions'?690:674)-summarySpace});
     await expect(surface).toHaveCSS('border-bottom-right-radius','16px');
     await page.screenshot({path:`verification/current/home/empty-${name}.png`});
     await expect(page.getByRole('navigation',{name:/^Страницы/})).toHaveCount(0);

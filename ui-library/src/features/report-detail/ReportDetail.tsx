@@ -1,4 +1,5 @@
 import { RoundIconButton } from '../../components/RoundIconButton/RoundIconButton';
+import { ReportEditDialog } from '../../components/ReportEditDialog/ReportEditDialog';
 import { useLayoutEffect, useRef, useState } from 'react';
 import type { ReportSummary } from '../../data/reports';
 import { Accordion } from '../../components/Accordion/Accordion';
@@ -25,6 +26,7 @@ export function ReportDetail({report,tab,onTabChange,onBack,breadcrumbs,currentB
   const current=tabs.some(t=>t[0]===tab)?tab:'overview';
   const { compact, scroll, onScroll } = useDetailScroll(current);
   const [notice,setNotice]=useState<string>();
+  const [editOpen, setEditOpen] = useState(false);
   const [bookmark,setBookmark]=useState(false);
   const buttons=useRef<Array<HTMLButtonElement|null>>([]);
   const tabStrip=useRef<HTMLDivElement>(null);
@@ -61,7 +63,8 @@ export function ReportDetail({report,tab,onTabChange,onBack,breadcrumbs,currentB
     </DetailSecondary>
     <div className={s.headingBlock}>
     <div className={s.titleRow}><h1 className={s.title}>{report.title}</h1><div className={s.headerActions}>
-      <RoundIconButton icon="edit" className={s.iconAction} aria-label="Редактировать отчёт" onClick={()=>setNotice('Редактор отчёта не описан в выбранных экранах.')} />
+      <RoundIconButton icon="edit" className={s.iconAction} aria-label="Редактировать отчёт"
+        tooltip="Редактировать отчёт" aria-haspopup="dialog" onClick={() => setEditOpen(true)} />
       <RoundIconButton icon="bookmark" className={s.iconAction} aria-label="Закладка отчёта" aria-pressed={bookmark} onClick={()=>setBookmark(v=>!v)} />
       <button type="button" className={s.openAction} onClick={()=>setNotice('Внешний адрес отчёта не предоставлен. Переход в BI не выполнен.')}><img src={chromeAsset('open-report')} width="16" height="16" alt="" /><span>Открыть отчёт</span></button>
     </div></div>
@@ -106,5 +109,6 @@ export function ReportDetail({report,tab,onTabChange,onBack,breadcrumbs,currentB
       </div>
     </div>
     {notice&&<div role="status" className={s.notice}><button type="button" aria-label="Закрыть уведомление" onClick={()=>setNotice(undefined)}>×</button>{notice}</div>}
+    {editOpen && <ReportEditDialog reportTitle={report.title} onClose={() => setEditOpen(false)} />}
   </article>;
 }

@@ -97,7 +97,7 @@ test('returning to Reports via the sidebar resets its local filters, sort and vi
 test('every main section uses the same spacing above and below its heading block', async ({ page }) => {
   const sections = [
     ['home', 'h1', '[data-home-controls]'],
-    ['reports', 'h1', '[data-catalog-view-results]'],
+    ['reports', 'h1', '[aria-label="Сводка каталога отчётов"]'],
     ['tasks', 'header p', '[aria-label="Прокрутка задач"]'],
     ['metrics', 'h1', '[data-metrics-toolbar]'],
     ['sources', 'h1', '[data-source-toolbar]'],
@@ -124,6 +124,47 @@ test('every main section uses the same spacing above and below its heading block
       expect(topInset).toBe(16);
       expect(top - bottom).toBe(topInset);
     });
+  }
+});
+
+test('Reports shares the catalog summary and scroll handoff in both views', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 680 });
+  await page.goto('/preview/navigation?section=reports');
+  const summary = page.getByRole('region', { name: 'Сводка каталога отчётов' });
+  const heading = page.getByRole('heading', { name: 'Отчёты', exact: true });
+  const clip = page.locator('[data-report-summary-clip]');
+  const results = page.locator('[data-report-summary-results]');
+  const scroll = results.locator('[data-list-scroll]');
+  const pagination = page.getByRole('navigation', { name: 'Страницы отчётов' });
+  const readHeaderBottom = () => heading.evaluate(node => node.parentElement!.getBoundingClientRect().bottom);
+  const readTop = () => scroll.evaluate(node => node.scrollTop);
+
+  await expect(summary).toContainText('Всего отчётов35');
+  await expect(summary).toContainText('Домены4');
+  await expect(summary).toContainText('Проверенные20 из 35');
+  for (const view of ['Табличный вид', 'Карточный вид']) {
+    const viewButton = page.getByRole('button', { name: view });
+    await viewButton.click();
+    await expect(viewButton).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('html')).not.toHaveAttribute('data-catalog-transition');
+    const headerBottom = await readHeaderBottom();
+    const summaryBox = (await summary.boundingBox())!;
+    const clipBox = (await clip.boundingBox())!;
+    expect(clipBox.y).toBeCloseTo(headerBottom);
+    expect(summaryBox.y - headerBottom).toBeCloseTo(16);
+    expect((await results.boundingBox())!.y - (summaryBox.y + summaryBox.height)).toBeCloseTo(16);
+    await expect(pagination).toBeInViewport();
+    const scrollBox = (await scroll.boundingBox())!;
+    await page.mouse.move(scrollBox.x + 60, scrollBox.y + 40);
+    await page.mouse.wheel(0, 180);
+    await expect(summary).toBeHidden();
+    await expect.poll(readTop).toBeCloseTo(180 - clipBox.height);
+    expect(await readHeaderBottom()).toBe(headerBottom);
+    await expect(pagination).toBeInViewport();
+    await page.mouse.wheel(0, -180);
+    await expect(summary).toBeVisible();
+    await expect.poll(async () => (await clip.boundingBox())!.height).toBeCloseTo(clipBox.height);
+    await expect.poll(readTop).toBe(0);
   }
 });
 

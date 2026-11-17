@@ -1,4 +1,6 @@
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ComponentPropsWithRef } from 'react';
+import { Tooltip } from 'radix-ui';
+import { TextTooltipSurface } from '../OverflowText/OverflowText';
 import s from './RoundIconButton.module.css';
 
 const icons = {
@@ -10,11 +12,17 @@ const icons = {
   close: new URL('../../assets/images/filter-panel/close-catalog.svg', import.meta.url).href,
 } as const;
 
-type Props = Omit<ComponentPropsWithoutRef<'button'>, 'children'> & { icon: keyof typeof icons };
+type Props = Omit<ComponentPropsWithRef<'button'>, 'children'> & { icon: keyof typeof icons; tooltip?: string };
 
 /** Shared outlined action, with a compact size for back; the caller owns behavior and accessible name. */
-export function RoundIconButton({ icon, className = '', type = 'button', ...props }: Props) {
-  return <button {...props} type={type} className={`${s.button} ${className}`} data-round-action={icon}>
+export function RoundIconButton({ icon, className = '', type = 'button', tooltip, ...props }: Props) {
+  const button = <button {...props} type={type} className={`${s.button} ${className}`} data-round-action={icon}>
     <span className={s.glyph} aria-hidden="true" style={{ maskImage: `url("${icons[icon]}")` }} />
   </button>;
+  return tooltip ? <Tooltip.Provider delayDuration={350}>
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>{button}</Tooltip.Trigger>
+      <TextTooltipSurface text={tooltip} />
+    </Tooltip.Root>
+  </Tooltip.Provider> : button;
 }

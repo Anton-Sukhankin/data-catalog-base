@@ -72,7 +72,10 @@ test('cards match the reference within domain groups and preserve their chosen i
   await expect(reviewer).toHaveText('Губина Екатерина Игоревна');
   await verified.screenshot({ path: 'verification/current/cards/hover.png' });
   await verified.getByRole('button', { name: 'Редактировать отчёт «Сводный отчёт Гостеприимства»' }).click();
-  await expect(page.getByRole('status')).toHaveText('Редактирование отчёта «Сводный отчёт Гостеприимства» пока не реализовано.');
+  const editDialog = page.getByRole('dialog', { name: 'Раздел в разработке' });
+  await expect(editDialog).toHaveAccessibleDescription(/Редактирование отчёта «Сводный отчёт Гостеприимства»/);
+  await page.keyboard.press('Escape');
+  await expect(editDialog).toHaveCount(0);
   await expect(page.locator('[data-report-id]')).toHaveCount(0);
   await verified.getByRole('button', { name: 'Открыть отчёт «Сводный отчёт Гостеприимства»' }).click();
   await expect(page.locator('[data-report-id]')).toHaveAttribute('data-report-id', 'demo-report-summary');

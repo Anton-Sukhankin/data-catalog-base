@@ -49,11 +49,13 @@ import styles from './NavigationPreview.module.css';
 import badges from '@data-catalog/ui/source/components/CountBadge/CountBadge.module.css';
 import reportCardGroups from '@data-catalog/ui/source/components/ReportCard/ReportCardGroups.module.css';
 import feedback from '@data-catalog/ui/source/styles/notice.module.css';
+import { ReportEditDialog } from '@data-catalog/ui/source/components/ReportEditDialog/ReportEditDialog';
 import { sortReportRows } from '@data-catalog/ui/source/data/reportSort';
 import { NewsContent, demoNewsArticles, filterNewsByCategory, type NewsCategoryId } from '../features/news';
 import { SubscriptionsContent, subscriptionContentFixture, type SubscriptionsIntent } from '../features/subscriptions';
 import { ContributionContent, contributionContentFixture } from '../features/contributors';
 import { EmptyFavorites } from './EmptyFavorites';
+import { ReportCatalogSummary } from './ReportCatalogSummary';
 import { demoReportDetailSources } from '../features/report-detail/demoSource';
 import { ReportDetail } from '@data-catalog/ui/source/features/report-detail/ReportDetail';
 import { MetricWorkspace } from '@data-catalog/ui/source/features/metrics/MetricWorkspace';
@@ -204,6 +206,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
   const isSourceDetail = detail?.kind === 'source' && (activeId === 'sources' || detailTrail.length > 0);
   const hasDetail = Boolean(selectedReportId || isMetricDetail || isSourceDetail);
   const [editNotice, setEditNotice] = useState<string>();
+  const [reportToEdit, setReportToEdit] = useState<ReportSummary>();
   const [tablePageIndex, setTablePageIndex] = useState(0);
   const [catalogView, setCatalogView] = useState<HomeViewMode>(DEFAULT_VIEW_MODE);
   const filters = useReportFilters(() => { setTablePageIndex(0); clearSearchSelection(); });
@@ -238,12 +241,17 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
   const tableRecords = useQuery({ queryKey: ['demo', 'report-table-records'],
     queryFn: ({ signal }) => readDemoReportRows(signal), enabled: activeId === 'reports' || isHomeReports });
   const reportRows = tableRecords.data && (expandReportCatalog ? paginationReportRows(tableRecords.data) : tableRecords.data);
+  const isReportCatalog = activeId === 'reports' && !hasDetail;
   const domainRowsReady = reportRows !== undefined && favoriteRecords.data !== undefined;
   const domains = new Map<string, ReportTableRow[]>();
-  if (isHomeReports && domainRowsReady) {
-    const catalogIds = new Set(reportRows.map(row => row.id));
-    const additions = favoriteRecords.data.filter(row => additionalDomainReportIds.has(row.id) && !catalogIds.has(row.id));
-    for (const row of [...reportRows, ...additions]) {
+  const showReportSummary = (isReportCatalog && reportRows !== undefined) || (isHomeReports && domainRowsReady);
+  if (showReportSummary && reportRows) {
+    const rows = [...reportRows];
+    if (isHomeReports && favoriteRecords.data) {
+      const catalogIds = new Set(reportRows.map(row => row.id));
+      rows.push(...favoriteRecords.data.filter(row => additionalDomainReportIds.has(row.id) && !catalogIds.has(row.id)));
+    }
+    for (const row of rows) {
       const group = domains.get(row.domain);
       if (group) group.push(row);
       else domains.set(row.domain, [row]);
@@ -298,11 +306,12 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
   const activeFilters = isDomains ? domainFilters : homeContext ? favoriteFilters : filters;
   const reportColumnMenu = activeFilters.visibleMenu;
   const activeRows = isDomains ? domainRows : homeContext ? favoriteRows : reportRows;
-  const panel = useReportFilterPanel({ context: homeContext ? 'favorites' : 'catalog', rows: activeRows ?? [],
+  const panelContext = homeContext && !isDomains ? 'favorites' : 'catalog';
+  const panel = useReportFilterPanel({ context: panelContext, rows: activeRows ?? [],
     applied: activeFilters.applied, onApply: activeFilters.replaceApplied, onOpen: activeFilters.close });
   // Browser history is also a navigation boundary: drafts must not follow it
   // into another list. Applied conditions, views and page state survive.
-  useLayoutEffect(() => { filters.close(); favoriteFilters.close(); domainFilters.close(); panel.close(); setEditNotice(undefined); }, [location.key]);
+  useLayoutEffect(() => { filters.close(); favoriteFilters.close(); domainFilters.close(); panel.close(); setEditNotice(undefined); setReportToEdit(undefined); }, [location.key]);
   useLayoutEffect(() => { domainFilters.resetForNavigation(); }, [homeDomain]);
   useLayoutEffect(() => { main.current?.scrollTo(0, 0); }, [sidebarEntry]);
   useLayoutEffect(() => {
@@ -566,6 +575,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
   const isSubscriptions = activeId === 'home' && homeTab === 'reports' && homeSegment === 'subscriptions' && !selectedReportId;
   const isContribution = activeId === 'home' && homeTab === 'reports' && homeSegment === 'contribution' && contributionType === 'contributors' && !selectedReportId;
   const hasFavoriteRows = Boolean(favoriteRows?.length);
+  const hasHomeReportFilters = isFavorites && hasFavoriteRows || isDomains && Boolean(domainRows?.length);
   const hasHomeResults = isFavorites && Boolean(favoritePage?.rows.length)
     || isDomains && Boolean(domainRows)
     || isSubscriptions && subscriptions.length > 0
@@ -593,7 +603,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
       systems: params.get('systems.view') === 'list' ? 'list' : 'cards',
     } as Record<string, string | null>)[activeId] ?? null;
   useCatalogTransition(main, JSON.stringify(screen), view, contentTab);
-  const onEdit = (report: ReportSummary) => setEditNotice(`Редактирование отчёта «${report.title}» пока не реализовано.`);
+  const onEdit = setReportToEdit;
   const isAiCatalog = activeId === 'ai' && !selectedReportId;
   const isSystemReferences = activeId === 'systems' && !selectedReportId;
   const isQuestions = activeId === 'questions' && !selectedReportId;
@@ -634,6 +644,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
               <FilterButton count={reportFilterCount(filters.applied)} onOpen={event => panel.open(event.currentTarget)} onClear={() => filters.replaceApplied({})} />
             </div>}
           </div>}
+          {isReportCatalog && showReportSummary && <ReportCatalogSummary domains={domains} workspace={main} />}
           {outsideReportFilters && <p className={styles.searchContextNote} role="status">Найденный отчёт показан вне текущих фильтров списка.</p>}
           {selectedReport && <ReportDetail source={reportDetails} key={selectedReport.id} report={selectedReport} tab={params.get('reportTab') ?? 'overview'} empty={params.get('detailEmpty')==='true'}
             onTabChange={id=>updateLocation({reportTab:id},{replace:detailTrail.length > 0,state:location.state},'tab')}
@@ -649,19 +660,20 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
               ...item, count: item.id === 'news' ? newsRecords.length : item.id === 'reports' ? favoriteRows?.length
                 : item.id === 'sources' ? favoriteSources.length : item.id === 'ai-hub' ? favoriteSolutions.length : undefined,
             })), selectedId: homeTab, onChange: changeHomeTab }}
+              summary={isHomeReports && showReportSummary ? <ReportCatalogSummary domains={domains} workspace={main} /> : undefined}
               segments={homeTab === 'reports' ? { ariaLabel: 'Раздел отчётов', items: homeReportSegments.map(item => ({
                 ...item, count: homeReportSegmentCounts[item.id],
               })), selectedId: homeSegment, onChange: changeHomeSegment }
                 : homeTab === 'news' && !isReadingNews && newsRecords.length > 0 ? { ariaLabel: 'Категории новостей', items: homeNewsCategories.map(item => ({...item,count:filterNewsByCategory(newsRecords,item.id as NewsCategoryId).length})), selectedId: newsCategory, onChange: id => updateLocation({ category: id, news: undefined, newsPage: undefined }, undefined, 'tab') } : undefined}
               contribution={homeTab === 'reports' && homeSegment === 'contribution' && contributors.length > 0 ? { ariaLabel: 'Тип вклада', items: homeContributionTypes, selectedId: contributionType, onChange: setContributionType } : undefined}
               view={hasHomeResults ? { value: homeView, onChange: value => { closeOverlays(); clearSearchSelection(); setHomeViews(previous => ({ ...previous, [homeSegment]: value })); } } : undefined}
-              onFilter={isFavorites && hasFavoriteRows ? anchor => panel.open(anchor!) : undefined}
-              filterCount={reportFilterCount(favoriteFilters.applied)} onClearFilters={() => favoriteFilters.replaceApplied({})} />
+              onFilter={hasHomeReportFilters ? anchor => panel.open(anchor!) : undefined}
+              filterCount={reportFilterCount(activeFilters.applied)} onClearFilters={() => activeFilters.replaceApplied({})} />
           )}
-          {isSubscriptions && <div className={styles.homeResults} data-catalog-view-results data-detail-tab-content>
-            <SubscriptionsContent view={homeView} items={subscriptionPage.rows} page={{index:subscriptionPage.pageIndex,size:subscriptionPage.pageSize,total:subscriptionPage.total}} onIntent={subscriptionIntent} viewportOffset={210} />
+          {isSubscriptions && <div className={styles.homeResults} data-report-summary-results data-catalog-view-results data-detail-tab-content>
+            <SubscriptionsContent view={homeView} items={subscriptionPage.rows} page={{index:subscriptionPage.pageIndex,size:subscriptionPage.pageSize,total:subscriptionPage.total}} onIntent={subscriptionIntent} />
           </div>}
-          {isContribution && <div className={styles.homeResults} data-catalog-view-results data-detail-tab-content>
+          {isContribution && <div className={styles.homeResults} data-report-summary-results data-catalog-view-results data-detail-tab-content>
             <ContributionContent view={homeView} items={contributionPage.rows} page={{index:contributionPage.pageIndex,size:contributionPage.pageSize,total:contributionPage.total}} onIntent={intent => setContributionPageIndex(intent.pageIndex)} viewportOffset={contributors.length ? 210 : 226} />
           </div>}
           {isNews && <div className={styles.newsResults}>
@@ -688,7 +700,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
               }, { replace: true }, 'tab')}
               onOpenCatalog={() => openSectionStart(homeFavoriteKind === 'source' ? 'sources' : 'ai')} />
           </div>}
-          {isDomains && <div className={styles.homeResults} data-detail-tab-content>
+          {isDomains && <div className={styles.homeResults} data-report-summary-results data-detail-tab-content>
             {homeDomain && <div className={styles.domainBreadcrumb}>
               <DetailBreadcrumbs ancestors={[{ label: 'Домены', onSelect: () => openHomeDomain() }]} current={homeDomain} />
             </div>}
@@ -720,7 +732,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
                 onColumnIntent={(column, anchor) => { setEditNotice(undefined); domainFilters.open(column, anchor); }} />}
             </div>
           </div>}
-          {isFavorites && <div className={styles.favoriteResults} data-catalog-view-results data-detail-tab-content>
+          {isFavorites && <div className={styles.favoriteResults} data-report-summary-results data-catalog-view-results data-detail-tab-content>
             {!favoritePage ? favoriteRecords.isError
               ? <EmptyState className={styles.catalogEmpty} role="alert" title="Не удалось загрузить избранное" description="Попробуйте загрузить список ещё раз."
                 action={{ label: 'Повторить', onClick: () => { void favoriteRecords.refetch(); } }} />
@@ -739,7 +751,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
               onClearColumn={favoriteFilters.clearColumn} onClearSort={favoriteFilters.clearSort} onHeaderLayoutChange={favoriteFilters.reposition}
               onColumnIntent={(column, anchor) => { setEditNotice(undefined); favoriteFilters.open(column, anchor); }} />}
           </div>}
-          {activeId === 'reports' && !hasDetail && <div className={styles.reportTable} data-catalog-view-results>
+          {isReportCatalog && <div className={styles.reportTable} data-report-summary-results data-catalog-view-results>
             {!tablePage ? tableRecords.isError
               ? <EmptyState className={styles.catalogEmpty} role="alert" title="Не удалось загрузить отчёты" description="Попробуйте загрузить каталог ещё раз."
                 action={{ label: 'Повторить', onClick: () => { void tableRecords.refetch(); } }} />
@@ -762,6 +774,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
               onColumnIntent={(column, anchor) => { setEditNotice(undefined); filters.open(column, anchor); }} />}
           </div>}
           {editNotice && <div className={feedback.notice}><p role="status">{editNotice}</p><button type="button" onClick={() => setEditNotice(undefined)} aria-label="Закрыть уведомление">×</button></div>}
+          {reportToEdit && <ReportEditDialog reportTitle={reportToEdit.title} onClose={() => setReportToEdit(undefined)} />}
           {(isSourceDetail || activeId === 'sources' && !hasDetail) && <SourcesWorkspace gateway={sourcesGateway} detailsGateway={paginationDemo ? paginationSourceDetailsGateway : demoSourceDetailsGateway} masterSystemGroups={demoMasterSystemGroups}
             breadcrumbs={detailBreadcrumbs ?? (navigationState?.fromHomeFavorite === 'source' ? [{ label: 'Избранные источники', onSelect: backToHomeFavorite }] : undefined)}
             currentBreadcrumb={detailTrail.at(-1)?.get('sourceTab') === 'similar' && detail ? detailLabel(params) : undefined}
@@ -806,7 +819,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
           sortDirection={reportColumnMenu.sort?.column === reportColumnMenu.column ? reportColumnMenu.sort.direction : undefined}
           onSortChange={activeFilters.changeSort} />
       </div>, document.body)}
-      <ReportFilterOverlay controller={panel} context={homeContext ? 'favorites' : 'catalog'} />
+      <ReportFilterOverlay controller={panel} context={panelContext} />
       <AiAssistant suspended={panel.isOpen || sourcePanelOpen || aiPanelOpen} requestReply={replyFromCatalogDemo} />
     </div>
   );

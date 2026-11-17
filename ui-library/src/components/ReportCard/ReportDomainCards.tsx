@@ -6,11 +6,12 @@ import groups from './ReportCardGroups.module.css';
 const plural = new Intl.PluralRules('ru');
 const reportNouns: Partial<Record<Intl.LDMLPluralRule, string>> = { one: 'отчёт', few: 'отчёта', many: 'отчётов' };
 
-export function ReportDomainCards({ domains, onOpen }: {
+export function ReportDomainCards({ domains, onOpen, viewportOffset = 210 }: {
   domains: readonly { name: string; count: number }[];
   onOpen: (name: string) => void;
+  viewportOffset?: number;
 }) {
-  return <section className={groups.surface} style={{ height: 'calc(100vh - 210px)' }} aria-label="Домены отчётов" data-list-scroll-boundary>
+  return <section className={groups.surface} style={{ height: `calc(var(--list-viewport-height, 100vh) - ${viewportOffset}px)` }} aria-label="Домены отчётов" data-list-scroll-boundary>
     <div className={groups.scroll} data-list-scroll>
       <div className={groups.grid} data-flat>
         {domains.map(({ name, count }) => (

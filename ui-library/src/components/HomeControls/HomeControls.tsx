@@ -1,6 +1,6 @@
 const viewIcons = { list: [new URL('../../assets/images/home-controls/list-inactive.svg', import.meta.url).href, new URL('../../assets/images/home-controls/list-active.svg', import.meta.url).href], cards: [new URL('../../assets/images/home-controls/cards-inactive.svg', import.meta.url).href, new URL('../../assets/images/home-controls/cards-active.svg', import.meta.url).href] };
 import { useRef } from 'react';
-import type { KeyboardEvent } from 'react';
+import type { KeyboardEvent, ReactNode } from 'react';
 import { Workflow } from 'lucide-react';
 import styles from './HomeControls.module.css';
 import { FilterButton } from '../FilterButton/FilterButton';
@@ -35,6 +35,7 @@ export interface HomeViewSelection {
 
 export interface HomeControlsProps {
   tabs: HomeSelection;
+  summary?: ReactNode;
   segments?: HomeSelection;
   contribution?: HomeSelection;
   view?: HomeViewSelection;
@@ -128,11 +129,12 @@ export function ViewPicker({ selection, appearance = 'icons', includeTree }: Vie
 }
 
 /** Presentation only. The caller owns selected IDs, counts, visible groups and action results. */
-export function HomeControls({ tabs, segments, contribution, view, onFilter, filterLabel = 'Открыть фильтры отчётов', filterCount = 0, onClearFilters }: HomeControlsProps) {
+export function HomeControls({ tabs, summary, segments, contribution, view, onFilter, filterLabel = 'Открыть фильтры отчётов', filterCount = 0, onClearFilters }: HomeControlsProps) {
   const hasToolbar = Boolean(segments || contribution || view || onFilter);
   return (
     <div className={styles.controls} data-home-controls>
       <Choices selection={tabs} kind="tabs" />
+      {summary}
       {hasToolbar && (
         <div className={styles.toolbar} data-control-toolbar>
           <div className={styles.left}>{segments && <Choices selection={segments} kind="segments" />}</div>

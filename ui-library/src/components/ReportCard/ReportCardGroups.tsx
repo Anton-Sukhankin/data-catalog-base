@@ -34,7 +34,7 @@ export function ReportCardGroups({ reports, onOpen, onEdit, viewportOffset = 108
 
   return (
     <section className={styles.surface} data-layout={layout} data-list-scroll-boundary={layout === 'home' ? '' : undefined}
-      style={{ height: `calc(100vh - ${viewportOffset}px)` }} aria-label="Примеры карточек отчётов">
+      style={{ height: `calc(var(--list-viewport-height, 100vh) - ${viewportOffset}px)` }} aria-label="Примеры карточек отчётов">
       <div className={styles.scroll} data-report-card-scroll data-list-scroll style={{ paddingBottom: bottomReserve }}>
         {reports.length === 0 && <p role="status">По выбранным условиям отчёты не найдены.</p>}
         {!groupByDomain && <div className={styles.grid} data-layout={layout} data-flat>

@@ -168,6 +168,14 @@ test('overview accordions, question form and responsive content work without ser
   await accordion.press('Space'); await expect(accordion).toHaveAttribute('aria-expanded','true');
   await page.setViewportSize({width:1920,height:1080});
   expect((await accordion.boundingBox())!.width-initial!.width).toBe(480);
+  const edit = page.getByRole('button', { name: 'Редактировать отчёт', exact: true });
+  await edit.hover();
+  await expect(page.getByRole('tooltip', { name: 'Редактировать отчёт', exact: true })).toBeVisible();
+  await edit.click();
+  const editDialog = page.getByRole('dialog', { name: 'Раздел в разработке' });
+  await editDialog.getByRole('button', { name: 'Закрыть окно' }).click();
+  await expect(editDialog).toHaveCount(0);
+  await expect(edit).toBeFocused();
   const ask = page.getByRole('button',{name:'Задать вопрос',exact:true});
   await expect(ask.locator('img')).toHaveAttribute('src', /questions(?:-[\w-]+)?\.svg(?:\?.*)?$|^data:image\/svg\+xml/);
   await ask.click();

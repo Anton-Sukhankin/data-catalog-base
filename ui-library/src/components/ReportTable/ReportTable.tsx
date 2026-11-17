@@ -134,7 +134,7 @@ export function ReportTable({ rows, total, pageIndex, pageSize, onPageChange, on
     </div>;
   }
   return (
-    <section className={styles.surface} data-list-scroll-boundary style={{ height: `calc(100vh - ${viewportOffset}px)` }} aria-label="Таблица отчётов" data-table-scrolled={offset > 0} data-pagination-visible={showPagination}>
+    <section className={styles.surface} data-list-scroll-boundary style={{ height: `calc(var(--list-viewport-height, 100vh) - ${viewportOffset}px)` }} aria-label="Таблица отчётов" data-table-scrolled={offset > 0} data-pagination-visible={showPagination}>
       <div role="table" aria-label="Список отчётов" aria-colcount={8} aria-rowcount={visibleRowCount + (groupByDomain ? groups.size : 0) + 1} className={styles.table} style={tableStyle}>
         <div role="rowgroup" className={styles.header}>
           <div role="row" className={styles.headerRow}>
@@ -197,7 +197,8 @@ export function ReportTable({ rows, total, pageIndex, pageSize, onPageChange, on
                               </div>
                             </div>
                             <div role="cell" className={styles.fixedEdit}>
-                              <RoundIconButton icon="edit" className={styles.edit} aria-label={`Редактировать отчёт «${row.report.title}»`} onClick={() => onEdit(row.report)} />
+                              <RoundIconButton icon="edit" className={styles.edit} tooltip="Редактировать отчёт" aria-haspopup="dialog"
+                                aria-label={`Редактировать отчёт «${row.report.title}»`} onClick={() => onEdit(row.report)} />
                             </div>
                           </div>;
                         })}

@@ -50,7 +50,7 @@ export function SubscriptionsContent({ view, items, page, onIntent, viewportOffs
       if (report) onIntent({ kind: 'open-report', report });
     },
   };
-  return <section className={styles.surface} style={{ height: `calc(100vh - ${viewportOffset}px)` }}
+  return <section className={styles.surface} style={{ height: `calc(var(--list-viewport-height, 100vh) - ${viewportOffset}px)` }}
     data-subscriptions-content data-view={view} data-empty={items.length === 0} role={view === 'list' && items.length ? 'table' : undefined} aria-label="Мои подписки">
     {items.length === 0 ? <div className={styles.empty}>
       <img src={new URL('../../assets/images/subscriptions/empty.webp', import.meta.url).href} width="190" height="142" alt="" />

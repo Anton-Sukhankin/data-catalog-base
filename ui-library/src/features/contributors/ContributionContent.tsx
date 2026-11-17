@@ -23,7 +23,7 @@ export function ContributionContent({ view, items, page, onIntent, viewportOffse
   const scroll = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => { if (scroll.current) scroll.current.scrollTop = 0; }, [page.index, view]);
   const hasPages = page.total > page.size;
-  return <section className={styles.surface} style={{ height: `calc(100vh - ${viewportOffset}px)` }}
+  return <section className={styles.surface} style={{ height: `calc(var(--list-viewport-height, 100vh) - ${viewportOffset}px)` }}
     data-contribution-content data-view={view} data-empty={items.length === 0} role={view === 'list' && items.length ? 'table' : undefined} aria-label="Вклад в каталог">
     {items.length === 0 ? <div className={styles.empty}>
       <img src={new URL('../../assets/images/contributors/empty.webp', import.meta.url).href} width="190" height="142" alt="" />

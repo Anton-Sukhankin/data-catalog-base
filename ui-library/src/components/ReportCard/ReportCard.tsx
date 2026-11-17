@@ -32,7 +32,8 @@ export function ReportCard({ report, onOpen, onEdit, showDomain = true }: {
           </span>
         </span>
       </button>
-      <RoundIconButton icon="edit" className={styles.edit} aria-label={`Редактировать отчёт «${report.title}»`} onClick={() => onEdit(report)} />
+      <RoundIconButton icon="edit" className={styles.edit} tooltip="Редактировать отчёт" aria-haspopup="dialog"
+        aria-label={`Редактировать отчёт «${report.title}»`} onClick={() => onEdit(report)} />
     </article>
   );
 }
