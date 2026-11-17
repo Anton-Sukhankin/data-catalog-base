@@ -9,6 +9,58 @@ function searchControls(page: Page) {
   return { field, dropdown, rows, match };
 }
 
+test('Navigator stays closed throughout breadcrumb returns from passports', async ({ page }) => {
+  const cases = [
+    { route: 'section=reports&tab=reports&segment=favorites', group: 'Отчёты', query: 'Сводный отчёт Гостеприимства', detail: '[data-report-id="demo-report-summary"]' },
+    { route: 'section=sources&sourceView=cards', group: 'Источники', query: 'reportcrm20.dbo.dimdate', detail: '[data-source-detail-id="source-reportcrm-date"]' },
+    { route: 'section=metrics&metricView=cards', group: 'Метрики и показатели', query: 'Выручка', detail: '[data-metric-detail-id="indicator-revenue-2"]', context: 'по фактически полученным оплатам' },
+  ];
+
+  for (const item of cases) {
+    await test.step(item.group, async () => {
+      await page.goto('/preview/navigation?' + item.route);
+      const origin = page.url();
+      const { field, rows, dropdown } = searchControls(page);
+      const detail = page.locator(item.detail);
+      const crumb = page.getByRole('navigation', { name: 'Хлебные крошки' }).getByRole('button', { name: item.group, exact: true });
+      const matches = item.context ? rows(item.group).filter({ hasText: item.context }) : rows(item.group);
+      const openPassport = () => matches.getByRole('button', { name: `Открыть паспорт «${item.query}»`, exact: true }).click();
+      await field.fill(item.query);
+      await openPassport();
+      await expect(detail).toBeVisible();
+      await expect(dropdown).toHaveCount(0);
+      await expect(page.locator('html')).not.toHaveAttribute('data-catalog-transition');
+
+      await field.evaluate(node => {
+        node.setAttribute('data-navigator-flashed', 'false');
+        const observer = new MutationObserver(records => {
+          if (records.some(record => record.oldValue === 'true') || node.getAttribute('aria-expanded') === 'true') {
+            node.setAttribute('data-navigator-flashed', 'true');
+            observer.disconnect();
+          }
+        });
+        observer.observe(node, { attributeFilter: ['aria-expanded'], attributeOldValue: true });
+      });
+      await crumb.click();
+      await expect(page).toHaveURL(origin);
+      await expect(detail).toHaveCount(0);
+      await expect(page.locator('html')).not.toHaveAttribute('data-catalog-transition');
+      await expect(field).toHaveAttribute('aria-expanded', 'false');
+      await expect(field).toHaveAttribute('data-navigator-flashed', 'false');
+      await expect(dropdown).toHaveCount(0);
+      await expect(field).toHaveValue(item.query);
+
+      await field.click();
+      await openPassport();
+      await expect(detail).toBeVisible();
+      await page.goBack();
+      await expect(page).toHaveURL(origin);
+      await expect(dropdown).toBeVisible();
+      await expect(field).toBeFocused();
+    });
+  }
+});
+
 test('Navigator appends results in batches of fifteen and starts over when search conditions change', async ({ page }) => {
   await page.goto('/preview/navigation');
   const { field, dropdown, rows } = searchControls(page);

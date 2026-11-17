@@ -1,0 +1,10 @@
+@media (prefers-reduced-motion: no-preference) {
+  .reveal:not([inert] *) {
+    animation: chart-reveal var(--chart-reveal-duration, 546ms) cubic-bezier(.22, .61, .36, 1);
+  }
+}
+
+@keyframes chart-reveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0); }
+}

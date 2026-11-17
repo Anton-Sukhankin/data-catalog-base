@@ -36,13 +36,13 @@ interface Props {
   loading: boolean;
   error: boolean;
   routeKey: string;
-  restoreOnReturn: boolean;
+  restoreFromHistory: boolean;
   stepper?: { query: string; index: number; total: number; onStep: (index: number) => void };
   onChoose: (hit: SearchHit, action: 'location' | 'detail') => boolean;
   onClearQuery: () => void;
 }
 
-export function CatalogSearch({ entries, sections, loading, error, routeKey, restoreOnReturn, stepper, onChoose, onClearQuery }: Props) {
+export function CatalogSearch({ entries, sections, loading, error, routeKey, restoreFromHistory, stepper, onChoose, onClearQuery }: Props) {
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [kinds, setKinds] = useState<SearchGroup[]>([]);
@@ -95,12 +95,12 @@ export function CatalogSearch({ entries, sections, loading, error, routeKey, res
   useLayoutEffect(() => {
     if (previousKey.current === routeKey) return;
     previousKey.current = routeKey;
-    if (returnTo.current?.key === routeKey || (restoreOnReturn && returnTo.current)) {
+    if (restoreFromHistory && returnTo.current?.key === routeKey) {
       input.current?.focus({ preventScroll: true });
       openResults();
     }
     else { setOpen(false); setActive(-1); }
-  }, [routeKey, restoreOnReturn]);
+  }, [routeKey, restoreFromHistory]);
 
   useLayoutEffect(() => {
     if (open && results.current && restoreScroll.current !== undefined) {

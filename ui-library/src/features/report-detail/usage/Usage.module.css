@@ -9,7 +9,7 @@
 .statistics > div { border:solid var(--accordion-border); border-width:1px 0 0 1px; }
 .statistics > div:nth-child(-n+4) { border-top:0; }
 .statistics > div:nth-child(4n+1) { border-left:0; }
-.chart { display:grid; grid-template-columns:28px minmax(0,1fr); column-gap:12px; padding-top:8px; }
+.chart { --chart-reveal-duration:780ms; display:grid; grid-template-columns:28px minmax(0,1fr); column-gap:12px; padding-top:8px; }
 .axis { height:328px; display:flex; flex-direction:column; justify-content:space-between; padding:7px 0 3px; color:#6d84a6; text-align:right; font-size:12px; line-height:18px; }
 .plot { position:relative; min-width:0; }
 .plot svg { display:block; width:100%; height:328px; overflow:visible; }

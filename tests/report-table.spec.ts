@@ -1,4 +1,63 @@
 import { expect, test } from '@playwright/test';
+import type { Locator } from '@playwright/test';
+
+test('report charts draw from left to right when their surface opens', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.addInitScript(() => {
+    document.addEventListener('animationstart', event => {
+      if (!(event.target instanceof Element) || !event.target.matches('[data-report-chart]')) return;
+      const animation = event.target.getAnimations().find(item => item instanceof CSSAnimation && item.animationName === event.animationName);
+      if (animation) {
+        animation.pause();
+        animation.currentTime = 0;
+      }
+    });
+  });
+
+  async function verifyReveal(chart: Locator) {
+    await expect.poll(() => chart.evaluate(node => node.getAnimations()[0]?.playState)).toBe('paused');
+    const clip = await chart.evaluate(node => {
+      const animation = node.getAnimations()[0];
+      const rightInset = () => Number(getComputedStyle(node).clipPath.match(/^inset\(0px ([\d.]+)%/)?.[1]);
+      const start = rightInset();
+      animation.currentTime = Number(animation.effect!.getComputedTiming().duration) / 2;
+      return { start, halfway: rightInset() };
+    });
+    expect(clip.start).toBe(100);
+    expect(clip.halfway).toBeGreaterThan(0);
+    expect(clip.halfway).toBeLessThan(100);
+  }
+
+  const preview = '/preview/navigation?paginationDemo=0';
+  const trend = page.locator('[data-report-chart="mau"]').first();
+  await page.goto(`${preview}&section=home`);
+  await verifyReveal(trend);
+  await page.getByRole('navigation', { name: 'Разделы каталога' }).getByRole('button', { name: 'Отчёты' }).click();
+  await verifyReveal(trend);
+  await page.getByRole('button', { name: 'Карточный вид' }).click();
+  await expect(trend).toHaveCount(0);
+  await page.getByRole('button', { name: 'Табличный вид' }).click();
+  await verifyReveal(trend);
+
+  await page.goto(`${preview}&section=home&segment=domains&reportDomain=${encodeURIComponent('Гостеприимство')}`);
+  await verifyReveal(trend);
+
+  await page.goto(`${preview}&section=reports&report=demo-report-summary&reportTab=usage`);
+  const series = page.locator('[data-report-chart="usage"]');
+  await verifyReveal(series);
+  const dynamics = page.getByRole('button', { name: /^Динамика по месяцам/ });
+  await dynamics.click();
+  await expect(dynamics).toHaveAttribute('aria-expanded', 'false');
+  expect(await series.evaluate(node => node.getAnimations().length)).toBe(0);
+  await dynamics.click();
+  await verifyReveal(series);
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(series).toHaveCSS('clip-path', 'none');
+  expect(await series.evaluate(node => node.getAnimations().length)).toBe(0);
+  await page.goto(`${preview}&section=reports`);
+  await expect(trend).toHaveCSS('clip-path', 'none');
+});
 
 for (const width of [1024, 1440, 1760]) {
   test(`sidebar resizing keeps report actions aligned and MAU charts beside their values at ${width}px`, async ({ page }) => {

@@ -159,7 +159,7 @@ export function SourcesWorkspace({gateway,detailsGateway,masterSystemGroups,repo
     }
     const returnTo=(location.state as {sourceReturnTo?:string}|null)?.sourceReturnTo;
     transitionCatalog(() => {
-      if(returnTo)navigate(returnTo,{replace:true,state:(location.state as {searchSelection?:unknown}|null)?.searchSelection ? {restoreCatalogSearch:true} : undefined});
+      if(returnTo)navigate(returnTo,{replace:true});
       else setParams(previous=>{const next=new URLSearchParams(previous);next.delete('source');next.delete('sourceTab');return next;},{replace:true});
     });
   }

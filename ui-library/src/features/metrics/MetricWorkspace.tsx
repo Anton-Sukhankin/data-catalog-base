@@ -54,9 +54,18 @@ export function MetricWorkspace({ gateway, breadcrumbs, onOpenRelatedMetric, onO
     transitionCatalog(() => setParams(next, { state: { metricReturnTo: location.pathname + location.search } }));
   }
   function back() {
-    if (breadcrumbs?.length) breadcrumbs[breadcrumbs.length - 1].onSelect();
-    else if ((location.state as { metricReturnTo?: string } | null)?.metricReturnTo) navigate(-1);
-    else setParams(previous => { const next = new URLSearchParams(previous); next.delete('metric'); return next; }, { replace: true });
+    if (breadcrumbs?.length) {
+      breadcrumbs[breadcrumbs.length - 1].onSelect();
+      return;
+    }
+    const origin = location.state as { metricReturnTo?: string; searchSelection?: unknown } | null;
+    if (origin?.metricReturnTo) {
+      const returnTo = origin.metricReturnTo;
+      if (origin.searchSelection) transitionCatalog(() => navigate(returnTo, { replace: true }));
+      else navigate(-1);
+      return;
+    }
+    setParams(previous => { const next = new URLSearchParams(previous); next.delete('metric'); return next; }, { replace: true });
   }
   if (selectedId) return metric && profile?.metricId === metric.id
     ? <MetricDetail key={metric.id} metric={metric} profile={profile} breadcrumbs={breadcrumbs} onOpenMetric={id => {

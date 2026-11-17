@@ -85,7 +85,9 @@ export function Sidebar({ items, activeId, collapsed, onSelect, onCollapsedChang
                 aria-current={item.id === activeId ? 'page' : undefined}
                 onClick={() => onSelect(item.id)}
               >
-                <img className={styles.icon} src={item.icon} alt="" aria-hidden="true" />
+                <span className={styles.icon} style={{ '--sidebar-icon': `url(${JSON.stringify(item.icon)})` } as CSSProperties}>
+                  <img src={item.icon} alt="" aria-hidden="true" />
+                </span>
                 <span className={styles.text} aria-hidden={collapsed}>
                   <span className={styles.label}>{item.label}</span>
                   {item.count !== undefined && <span className={styles.count}>{item.count}</span>}

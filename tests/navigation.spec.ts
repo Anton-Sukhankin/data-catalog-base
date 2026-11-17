@@ -345,12 +345,16 @@ test('sidebar hover matches the selected background and keeps the collapsed high
   const neutralEdge = 'rgb(220, 226, 234)';
   const activeEdge = 'rgb(0, 122, 255)';
   const edgeColor = () => sidebar.evaluate(element => getComputedStyle(element, '::after').backgroundColor);
+  const icon = (button: typeof current) => button.locator('img').locator('..');
   await expect(current).toHaveAttribute('aria-current', 'page');
   await expect(current).toHaveCSS('background-color', highlight);
+  await expect(icon(current)).toHaveCSS('background-color', activeEdge);
+  await expect(icon(current)).toHaveCSS('mask-image', /ai-hub\.svg/);
   await expect(reports).toHaveCSS('background-color', transparent);
 
   await reports.hover();
   await expect(reports).toHaveCSS('background-color', highlight);
+  await expect(icon(reports)).toHaveCSS('background-color', transparent);
   await expect(reports).not.toHaveAttribute('aria-current');
   await expect.poll(edgeColor).toBe(neutralEdge);
   await expect(toggle).toHaveCSS('color', 'rgb(104, 115, 132)');
@@ -375,7 +379,8 @@ test('sidebar hover matches the selected background and keeps the collapsed high
   await expect(sidebar).toHaveCSS('width', '64px');
   const iconHighlight = (button: typeof reports) =>
     button.evaluate(element => getComputedStyle(element, '::before').backgroundColor);
-  await expect.poll(() => iconHighlight(current)).toBe(transparent);
+  await expect.poll(() => iconHighlight(current)).toBe(highlight);
+  await expect(icon(current)).toHaveCSS('background-color', activeEdge);
   await reports.hover();
   await expect.poll(() => iconHighlight(reports)).toBe(highlight);
   await expect(reports).toHaveCSS('background-color', transparent);
@@ -386,6 +391,16 @@ test('sidebar hover matches the selected background and keeps the collapsed high
   await toggle.hover();
   await expect.poll(edgeColor).toBe(activeEdge);
   await expect(toggle).toHaveCSS('background-color', 'rgb(229, 241, 255)');
+  await reports.click();
+  await page.mouse.move(700, 500);
+  await expect(reports).toHaveAttribute('aria-current', 'page');
+  await expect.poll(() => iconHighlight(reports)).toBe(highlight);
+  await expect(icon(reports)).toHaveCSS('background-color', activeEdge);
+  await expect.poll(() => iconHighlight(current)).toBe(transparent);
+  await expect(icon(current)).toHaveCSS('background-color', transparent);
+  await toggle.click();
+  await expect(sidebar).toHaveCSS('width', '280px');
+  await expect(icon(reports)).toHaveCSS('background-color', activeEdge);
 });
 
 test('navigation matches documented geometry and keeps selected identity across collapse/expand', async ({ page }) => {

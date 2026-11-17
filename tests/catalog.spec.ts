@@ -15,7 +15,8 @@ test('catalog switches the same real page between views, preserves conditions an
   expect(await cards.locator('[data-card-report-id]').evaluateAll(nodes => nodes.map(node => node.getAttribute('data-card-report-id')))).toEqual(initialIds);
   const picker = page.getByRole('group', { name: 'Вид представления', exact: true });
   expect(await picker.boundingBox()).toEqual({x:1266,y:64,width:102,height:40});
-  expect(await cards.boundingBox()).toEqual({x:312,y:136,width:1088,height:764});
+  const summarySpace = (await page.locator('[data-report-summary-clip]').boundingBox())!.height;
+  expect(await cards.boundingBox()).toEqual({x:312,y:136+summarySpace,width:1088,height:764-summarySpace});
   await page.screenshot({path:'verification/current/catalog/cards.png'});
   const sourceOnly = cards.locator('[data-card-report-id="demo-report-sales-plan"]');
   await sourceOnly.getByRole('button', { name: 'Открыть отчёт «План-Факт продажи»', exact: true }).click();
@@ -82,7 +83,8 @@ test('sort directions are drafts until Apply, work on displayed values and resto
   await menu.getByRole('button',{name:'Применить',exact:true}).click();
   expect((await ids()).slice(0,5)).toEqual(['demo-report-occupancy','demo-report-motivation','demo-report-debt','demo-report-summary','demo-report-management']);
   const arrow=table.locator('[data-sort-indicator="asc"]');
-  expect(await arrow.boundingBox()).toEqual({x:398,y:136,width:16,height:16});
+  const tableTop = (await table.boundingBox())!.y;
+  expect(await arrow.boundingBox()).toEqual({x:398,y:tableTop+16,width:16,height:16});
   await expect.poll(()=>arrow.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBe(16);
   await page.screenshot({path:'verification/current/catalog/sorted-title.png'});
   await open('Отчёт');

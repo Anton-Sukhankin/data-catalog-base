@@ -11,6 +11,7 @@ import { ListPagination } from '../ListPagination/ListPagination';
 import { SearchLandingContext, SearchTargetText } from '../Search/SearchMatch';
 import { searchId } from '../../data/catalogSearch';
 import motion from '../Accordion/Accordion.module.css';
+import chartMotion from '../../styles/chart-reveal.module.css';
 
 const features = tableFeatures({});
 const helper = createColumnHelper<typeof features, ReportTableRow>();
@@ -37,6 +38,14 @@ function revealInTable(target: Element, mask: Element, viewport: HTMLDivElement)
   const visible = mask.getBoundingClientRect();
   if (bounds.right > visible.right - 8) viewport.scrollLeft += bounds.right - visible.right + 8;
   else if (bounds.left < visible.left + 8) viewport.scrollLeft -= visible.left - bounds.left + 8;
+}
+
+function ReportTrendChart({ src }: { src: string }) {
+  const [loaded, setLoaded] = useState(false);
+  return <span className={styles.chartSlot}>
+    <img src={src} height="32" alt="" aria-hidden="true" onLoad={() => setLoaded(true)}
+      className={loaded ? chartMotion.reveal : styles.chartPending} data-report-chart={loaded ? 'mau' : undefined} />
+  </span>;
 }
 
 export function ReportTable({ rows, total, pageIndex, pageSize, onPageChange, onOpen, onEdit, onColumnIntent, activeColumn, appliedColumns = [], onClearColumn, onClearSort, onHeaderLayoutChange, viewportOffset = 120, paginationLabel, sort, searchLandingKey, groupByDomain = true }: {
@@ -187,7 +196,7 @@ export function ReportTable({ rows, total, pageIndex, pageSize, onPageChange, on
                               <div className={styles.middleGrid}>
                                 <div role="cell" className={`${styles.cell} ${styles.mauCell}`}><div className={styles.metric} data-mau-trend={row.delta.startsWith('−') || row.delta.startsWith('-') ? 'down' : row.delta.startsWith('+') ? 'up' : 'unknown'}>
                                   <span className={styles.metricValues}><strong><AttributeValue value={row.mau} /></strong><span><AttributeValue value={row.delta} /></span></span>
-                                  {row.mau !== '—' && <span className={styles.chartSlot}><img src={row.chartSrc} height="32" alt="" aria-hidden="true" /></span>}
+                                  {row.mau !== '—' && <ReportTrendChart key={row.chartSrc} src={row.chartSrc} />}
                                 </div></div>
                                 <div role="cell" className={styles.cell}><span className={styles.singleLine}><AttributeValue value={row.platform}><SearchTargetText id={target} field="platform" text={row.platform} useMatchedValue /></AttributeValue></span></div>
                                 <div role="cell" className={styles.cell}><span className={styles.twoLines}><AttributeValue value={row.domain}><SearchTargetText id={target} field="domain" text={row.domain} useMatchedValue /></AttributeValue></span></div>

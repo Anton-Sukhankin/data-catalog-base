@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { createPortal } from 'react-dom';
-import { useLocation, useNavigate, useSearchParams } from 'react-router';
+import { useLocation, useNavigate, useNavigationType, useSearchParams } from 'react-router';
 import { useCatalogTransition } from './useCatalogTransition';
 import { detailTrailParam, readDetail, readDetailTrail, withoutDetail, type DetailKind } from './detailTrail';
 import { transitionCatalog, type CatalogTransition } from '@data-catalog/ui/source/components/catalogTransition';
@@ -84,7 +84,7 @@ type SearchSelection = {
   descriptionOrigin?: string;
   highlightDescription?: true;
 };
-type DetailOriginState = { searchSelection?: SearchSelection; restoreCatalogSearch?: boolean; report?: ReportSummary; returnTo?: string; reportOrigin?: 'tasks' | 'domains' };
+type DetailOriginState = { searchSelection?: SearchSelection; report?: ReportSummary; returnTo?: string; reportOrigin?: 'tasks' | 'domains' };
 type NavigationState = DetailOriginState & { detailHistoryDepth?: number; detailOrigin?: DetailOriginState | null; fromHomeFavorite?: 'source' | 'ai' };
 
 const defaultHomeViews = { favorites: DEFAULT_VIEW_MODE, domains: DEFAULT_VIEW_MODE, subscriptions: DEFAULT_VIEW_MODE, contribution: DEFAULT_VIEW_MODE };
@@ -173,6 +173,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
   const metricsGateway = paginationDemo ? paginationMetricsGateway : demoMetricsGateway;
   const sourcesGateway = paginationDemo ? paginationSourcesGateway : demoSourcesGateway;
   const location = useLocation();
+  const navigationType = useNavigationType();
   const navigate = useNavigate();
   const navigationState = location.state as NavigationState | null;
   const searchSelection = navigationState?.searchSelection;
@@ -463,7 +464,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
   }
   function returnFromReport() {
     const returnTo = navigationState?.returnTo;
-    if (returnTo) transitionCatalog(() => navigate(returnTo, { replace: true, state: searchSelection ? { restoreCatalogSearch: true } : undefined }));
+    if (returnTo) transitionCatalog(() => navigate(returnTo, { replace: true }));
     else updateLocation({ report: undefined, section: 'reports' }, { replace: true });
   }
   function relatedDetailDestination(kind: DetailKind, id: string) {
@@ -622,7 +623,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
       <Header productName="AI&Data Hub" brandMarkSrc="/images/header/brand-mark.svg"
         avatarSrc="/images/header/profile-avatar.png"
         search={<CatalogSearch entries={searchEntries} sections={searchSections} loading={summaries.isPending} error={summaries.isError}
-          routeKey={location.key} restoreOnReturn={Boolean(navigationState?.restoreCatalogSearch)} onChoose={chooseSearch}
+          routeKey={location.key} restoreFromHistory={navigationType === 'POP'} onChoose={chooseSearch}
           onClearQuery={() => setHighlightToken(createHighlightToken())}
           stepper={searchSelection && !highlightDismissed && !pendingDescription && initialSearchHit && matchIndex >= 0 && pageMatches.length > 1 ? {
             query: initialSearchHit.query,

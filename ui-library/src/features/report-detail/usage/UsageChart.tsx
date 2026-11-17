@@ -3,6 +3,7 @@ import { EmptyDetail } from '../EmptyDetail';
 import { formatUsageNumber, usageChartDomain, usageMetrics } from './model';
 import type { UsageMetric, UsageMonth } from './model';
 import s from './Usage.module.css';
+import chartMotion from '../../../styles/chart-reveal.module.css';
 
 const chartNumber = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 });
 const chartWidth = 1038;
@@ -54,8 +55,10 @@ export function UsageChart({ months, metric }: { months: readonly UsageMonth[]; 
         {points.map((point, index) => <line key={index} x1={point.x} x2={point.x} y1="16" y2="316" className={s.gridLine} strokeDasharray="3 4" />)}
         {activePoint && <line x1="0" x2="0" y1="16" y2="316" className={s.guide}
           vectorEffect="non-scaling-stroke" style={{ transform: `translateX(${activePoint.x}px)` }} data-usage-guide />}
-        <path d={path} className={s.chartLine} vectorEffect="non-scaling-stroke" />
-        {points.map((point, index) => <circle key={months[index].id} cx={point.x} cy={point.y} r="4" className={s.marker} vectorEffect="non-scaling-stroke" />)}
+        <g className={chartMotion.reveal} data-report-chart="usage">
+          <path d={path} className={s.chartLine} vectorEffect="non-scaling-stroke" />
+          {points.map((point, index) => <circle key={months[index].id} cx={point.x} cy={point.y} r="4" className={s.marker} vectorEffect="non-scaling-stroke" />)}
+        </g>
         {points.map((point, index) => {
           const left = index === 0 ? 0 : (points[index - 1].x + point.x) / 2;
           const right = index === points.length - 1 ? chartWidth : (point.x + points[index + 1].x) / 2;
