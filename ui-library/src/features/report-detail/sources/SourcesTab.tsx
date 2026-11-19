@@ -5,6 +5,7 @@ import type { ReportDetailContent } from '../source';
 import { LineageGraph } from './LineageGraph';
 import type { ReportDataSource } from './model';
 import s from './Sources.module.css';
+import attributes from '../ReportAttributes.module.css';
 
 function SourceAttributes({ source }: { source: ReportDataSource }) {
   const fields = [
@@ -13,7 +14,7 @@ function SourceAttributes({ source }: { source: ReportDataSource }) {
   ] as const;
   return <div className={s.attributesGroup}>
     <h3>Состав источника</h3>
-    <dl className={s.attributes} aria-label={`Сведения об источнике ${source.name}`}>
+    <dl className={`${attributes.grid} ${attributes.sources}`} aria-label={`Сведения об источнике ${source.name}`}>
       {fields.map(([label,value])=><div key={label} data-wide={label==='URN'||undefined}>
         <dt>{label}</dt><dd data-technical={label==='URN'||undefined}><AttributeValue value={value} /></dd>
       </div>)}

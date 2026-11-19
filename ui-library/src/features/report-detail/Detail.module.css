@@ -46,7 +46,6 @@
 .info { --information-divider:1px solid #d6e6fb; min-width:0; border:1px solid #d6e6fb; border-radius:12px; background:#fff; }
 .information { composes:pinnedInformation from "../../components/DetailHeader/DetailHeader.module.css"; scrollbar-width:none; }
 .count { background:#007bfc; border-radius:12px; color:#fff; padding:1px 4px; font-size:10px; }
-.muted { color:#6d84a6; font-size:12px; }
 .tabMain [data-accordion-body]:has(> .rows) { padding-inline:var(--accordion-header-inline-padding); }
 .rows { margin:0; padding:0; list-style:none; }
 .rows li { display:grid; grid-template-columns:var(--accordion-chevron-size) minmax(0,1fr); gap:var(--accordion-header-gap); padding:16px 0; border-bottom:1px solid #e2e4ea; }
@@ -60,10 +59,6 @@
 .detail[data-report-tab='technical'] .information dl { padding-block:16px; }
 .detail[data-report-tab='technical'] .information dt { line-height:16px; }
 .detail[data-report-tab='technical'] .information dd { font-size:16px; line-height:20px; overflow-wrap:anywhere; }
-.slideExample { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%, 200px),1fr)); gap:8px; margin:0; }
-.slideExample > div { padding:12px 16px; border:1px solid #d6e6fb; border-radius:8px; }
-.slideExample dt { font-size:12px; color:#6d84a6; }
-.slideExample dd { margin:4px 0 0; font-weight:500; overflow-wrap:anywhere; }
 .notice { composes:notice from '../questions/QuestionSentNotice.module.css'; }
 .questionTabs { display:flex; gap:var(--horizontal-tab-gap); margin-bottom:16px; }
 .questionTabs button { display:flex; align-items:center; gap:4px; border:0; border-radius:20px; padding:8px 12px; font-weight:var(--tab-label-weight); cursor:pointer; }

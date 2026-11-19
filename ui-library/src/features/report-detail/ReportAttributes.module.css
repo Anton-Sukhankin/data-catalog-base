@@ -1,0 +1,21 @@
+.grid { display:grid; margin:0; min-width:0; }
+.grid > div { display:flex; flex-direction:column; gap:4px; min-width:0; padding:12px 20px; border:solid #d6e6fb; border-width:1px 0 0 1px; }
+.grid dt { color:#52627c; font-size:13px; line-height:18px; }
+.grid dd { margin:0; min-width:0; overflow-wrap:anywhere; color:#34445d; font-size:18px; line-height:24px; font-weight:500; }
+
+.sources { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.sources > div:nth-child(-n+4) { border-top:0; }
+.sources > div:nth-child(4n+1) { border-left:0; }
+.sources > div[data-wide] { grid-column:span 2; }
+.sources dd[data-technical] { font-size:14px; line-height:20px; }
+
+.slide { grid-template-columns:repeat(2,minmax(0,1fr)); margin-inline:16px; }
+.slide > div:nth-child(-n+2) { border-top:0; }
+.slide > div:nth-child(2n+1) { border-left:0; }
+
+@container (max-width:640px) {
+  .sources { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .sources > div:nth-child(n) { border-width:1px 0 0 1px; }
+  .sources > div:nth-child(-n+2) { border-top:0; }
+  .sources > div:nth-child(2n+1), .sources > div[data-wide] { border-left:0; }
+}

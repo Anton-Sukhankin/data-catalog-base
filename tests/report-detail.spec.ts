@@ -153,8 +153,7 @@ test('overview accordions, question form and responsive content work without ser
   await page.setViewportSize({ width:1440,height:900 }); await page.goto(entry);
   const accordion=page.getByRole('button',{name:/Об отчёте Назначение/});
   const surface = accordion.locator('xpath=../..');
-  await expect(surface).toHaveCSS('border-bottom-left-radius', '0px');
-  await expect(surface).toHaveCSS('border-bottom-right-radius', '0px');
+  await expect(surface).toHaveCSS('border-radius', '12px');
   await expect(surface).toHaveCSS('border-bottom-style', 'solid');
   await expect(surface.locator('[data-accordion-body]')).toHaveCSS('border-top-left-radius', '0px');
   const businessQuestions = page.getByRole('button', { name: /^На какие вопросы отвечает отчёт/ });
@@ -165,6 +164,7 @@ test('overview accordions, question form and responsive content work without ser
   await page.screenshot({ path: testInfo.outputPath('overview-accordion-1440.png'), animations: 'disabled' });
   const initial=await accordion.boundingBox();
   await accordion.click(); await expect(accordion).toHaveAttribute('aria-expanded','false');
+  await expect(surface).toHaveCSS('border-radius', '12px');
   await accordion.press('Space'); await expect(accordion).toHaveAttribute('aria-expanded','true');
   await page.setViewportSize({width:1920,height:1080});
   expect((await accordion.boundingBox())!.width-initial!.width).toBe(480);
@@ -332,7 +332,12 @@ test('every demo report has content in all seven passport tabs', async ({ page }
 
       await tabs.getByRole('tab', { name: /^Слайды \d+$/ }).click();
       if (report.id === 'demo-report-summary') await panel.getByRole('button').first().click();
-      await expect(panel.getByLabel('Демонстрационные значения слайда').filter({ visible: true }).locator('dd')).toHaveCount(2);
+      const parameters = panel.getByLabel('Параметры слайда').filter({ visible: true });
+      await expect(parameters.locator('dd')).toHaveCount(2);
+      await expect(parameters.locator('..').locator(':scope > *')).toHaveCount(1);
+      await expect(panel.getByText('Демонстрационные значения', { exact: true })).toHaveCount(0);
+      await expect(parameters.locator('dd').first()).toHaveCSS('font-size', '18px');
+      await expect(parameters.locator(':scope > div').nth(1)).toHaveCSS('border-left-width', '1px');
       if (report.id === 'demo-report-debt') {
         const secondSlide = panel.getByRole('button', { name: /^Сроки погашения/ });
         await expect(secondSlide).toHaveAttribute('aria-expanded', 'false');

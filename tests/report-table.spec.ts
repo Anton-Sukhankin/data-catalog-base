@@ -15,6 +15,7 @@ test('report charts draw from left to right when their surface opens', async ({ 
   });
 
   async function verifyReveal(chart: Locator) {
+    await expect(page.locator('html')).not.toHaveAttribute('data-catalog-transition');
     await expect.poll(() => chart.evaluate(node => node.getAnimations()[0]?.playState)).toBe('paused');
     const clip = await chart.evaluate(node => {
       const animation = node.getAnimations()[0];
@@ -57,6 +58,46 @@ test('report charts draw from left to right when their surface opens', async ({ 
   expect(await series.evaluate(node => node.getAnimations().length)).toBe(0);
   await page.goto(`${preview}&section=reports`);
   await expect(trend).toHaveCSS('clip-path', 'none');
+});
+
+test('the table transition leaves the mini-chart at its left edge until the table is visible', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/preview/navigation?section=home&paginationDemo=0');
+  // Load the shared SVGs before measuring the transition into the standalone catalog.
+  await expect(page.locator('[data-report-chart="mau"]').first()).toBeVisible();
+  const reports = page.getByRole('navigation', { name: 'Разделы каталога' }).getByRole('button', { name: 'Отчёты', exact: true });
+
+  async function sampleTransition(trigger: Locator, phase: 'screen' | 'view') {
+    const frames = await trigger.evaluate(async (button, expectedPhase) => {
+      const root = document.documentElement;
+      const samples: { transition: boolean; remaining: number }[] = [];
+      (button as HTMLButtonElement).click();
+      const deadline = performance.now() + 1800;
+      while (performance.now() < deadline) {
+        await new Promise<number>(resolve => requestAnimationFrame(resolve));
+        const transition = root.getAttribute('data-catalog-transition') === expectedPhase;
+        const chart = document.querySelector('[data-report-chart="mau"]');
+        if (!chart || document.querySelector('main h1')?.textContent !== 'Отчёты') continue;
+        const clip = getComputedStyle(chart).clipPath;
+        const remaining = clip === 'none' ? 0 : Number(clip.match(/^inset\(0px ([\d.]+)%/)?.[1] ?? 0);
+        samples.push({ transition, remaining });
+        if (!transition && remaining > 0 && remaining < 90) break;
+      }
+      return samples;
+    }, phase);
+    const during = frames.filter(frame => frame.transition);
+    expect(during.length).toBeGreaterThan(0);
+    expect(during.every(frame => frame.remaining === 100)).toBe(true);
+    const firstAfter = frames.find(frame => !frame.transition);
+    expect(firstAfter?.remaining).toBeGreaterThanOrEqual(90);
+    expect(frames.some(frame => !frame.transition && frame.remaining > 0 && frame.remaining < 90)).toBe(true);
+  }
+
+  await sampleTransition(reports, 'screen');
+  await page.getByRole('button', { name: 'Карточный вид' }).click();
+  await expect(page.locator('html')).not.toHaveAttribute('data-catalog-transition');
+  await expect(page.getByRole('button', { name: 'Карточный вид' })).toHaveAttribute('aria-pressed', 'true');
+  await sampleTransition(page.getByRole('button', { name: 'Табличный вид' }), 'view');
 });
 
 for (const width of [1024, 1440, 1760]) {

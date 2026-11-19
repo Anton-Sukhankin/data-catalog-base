@@ -3,6 +3,7 @@ import { ReportEditDialog } from '../../components/ReportEditDialog/ReportEditDi
 import { useLayoutEffect, useRef, useState } from 'react';
 import type { ReportSummary } from '../../data/reports';
 import { Accordion } from '../../components/Accordion/Accordion';
+import { AttributeValue } from '../../components/AttributeValue/AttributeValue';
 import { EmptyDetail } from './EmptyDetail';
 import { OverviewTab } from './overview/OverviewTab';
 import { ReportInformation } from './ReportInformation';
@@ -16,6 +17,7 @@ import { DetailBreadcrumbs, type DetailCrumb } from '../../components/DetailHead
 import chrome from '../../components/DetailHeader/DetailHeader.module.css';
 import { useDetailScroll } from '../../components/DetailHeader/useDetailScroll';
 import s from './Detail.module.css';
+import attributes from './ReportAttributes.module.css';
 import type { ReportDetailSources } from './source';
 
 const tabs = [ ['overview','Обзор'], ['slides','Слайды'], ['metrics','Метрики и показатели'], ['sources','Источники данных'], ['usage','Использование'], ['mailings','Рассылки'], ['technical','Техническая информация'] ] as const;
@@ -93,11 +95,9 @@ export function ReportDetail({report,tab,onTabChange,onBack,breadcrumbs,currentB
       {current==='mailings'&&<MailingsTab reportId={report.id} source={source.mailings} />}
       {current==='slides'&&(slides.length > 0
         ? <div className={s.column}>{slides.map((slide, index) => <Accordion key={slide.title} title={slide.title}
-          description="Сценарии использования данных" defaultOpen={detail?.demonstration === true && index === 0}>
-          <p>{slide.description}</p>
-          {!detail?.demonstration && <p className={s.muted}>Демонстрационные значения</p>}
-          <dl className={s.slideExample} aria-label="Демонстрационные значения слайда">
-            {slide.example.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
+          description="Сценарии использования данных" defaultOpen={detail?.demonstration === true && index === 0} bodyInset="flush">
+          <dl className={`${attributes.grid} ${attributes.slide}`} aria-label="Параметры слайда">
+            {slide.example.map(([label, value]) => <div key={label}><dt>{label}</dt><dd><AttributeValue value={value} /></dd></div>)}
           </dl>
         </Accordion>)}</div>
         : <EmptyDetail viewport title={detail?.slides ? 'У отчёта пока нет слайдов' : 'Слайды отчёта недоступны'} description="В этой вкладке отображаются слайды, связанные с отчётом." />)}
