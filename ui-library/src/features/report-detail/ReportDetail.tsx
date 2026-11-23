@@ -1,3 +1,4 @@
+import { VerificationMark } from '../../components/CatalogEntityIcon/VerificationMark';
 import { RoundIconButton } from '../../components/RoundIconButton/RoundIconButton';
 import { ReportEditDialog } from '../../components/ReportEditDialog/ReportEditDialog';
 import { useLayoutEffect, useRef, useState } from 'react';
@@ -22,7 +23,7 @@ import type { ReportDetailSources } from './source';
 
 const tabs = [ ['overview','Обзор'], ['slides','Слайды'], ['metrics','Метрики и показатели'], ['sources','Источники данных'], ['usage','Использование'], ['mailings','Рассылки'], ['technical','Техническая информация'] ] as const;
 const chromeAsset = (name: keyof typeof assets) => assets[name];
-const assets = { 'open-report': new URL('../../assets/images/report-detail/chrome/open-report.svg', import.meta.url).href, 'verified': new URL('../../assets/images/report-detail/chrome/verified.svg', import.meta.url).href, 'dot': new URL('../../assets/images/report-detail/chrome/dot.svg', import.meta.url).href };
+const assets = { 'open-report': new URL('../../assets/images/report-detail/chrome/open-report.svg', import.meta.url).href, 'dot': new URL('../../assets/images/report-detail/chrome/dot.svg', import.meta.url).href };
 
 export function ReportDetail({report,tab,onTabChange,onBack,breadcrumbs,currentBreadcrumb='Паспорт отчёта',source,onOpenMetric,onOpenSource,empty=false}:{report:ReportSummary;tab:string;onTabChange:(tab:string)=>void;onBack:()=>void;breadcrumbs?:readonly DetailCrumb[];currentBreadcrumb?:string;source:ReportDetailSources;onOpenMetric?:(id:string)=>void;onOpenSource:(id:string)=>void;empty?:boolean}) {
   const current=tabs.some(t=>t[0]===tab)?tab:'overview';
@@ -72,7 +73,7 @@ export function ReportDetail({report,tab,onTabChange,onBack,breadcrumbs,currentB
     </div></div>
     <DetailSecondary compact={compact}>
     <div className={s.meta}>
-      <span>{report.verification?.status==='verified'&&<img src={chromeAsset('verified')} width="16" height="16" alt="" />}{report.verification?.status==='verified'?'Карточка проверена':'Не проверено'}</span>
+      <span>{report.verification?.status==='verified'&&<VerificationMark />}{report.verification?.status==='verified'?'Карточка проверена':'Не проверено'}</span>
       {headingContext && <><img src={chromeAsset('dot')} width="3" height="3" alt="" /><span>{headingContext}</span></>}
       {detail?.catalogId && <><img src={chromeAsset('dot')} width="3" height="3" alt="" /><span>ID {detail.catalogId}</span></>}
       {detail?.headingNote && <><img src={chromeAsset('dot')} width="3" height="3" alt="" /><span>{detail.headingNote}</span></>}

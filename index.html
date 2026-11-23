@@ -4,6 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Каталог данных — подготовка прототипа</title>
+    <script>
+      // Paint the saved preference before the app (including its optional demo worker) loads.
+      (() => {
+        const root = document.documentElement;
+        const pilotKey = 'data-catalog.theme-pilot';
+        const choice = new URLSearchParams(location.search).get('themePilot');
+        let pilot = choice === '1';
+        try {
+          if (choice === '1') sessionStorage.setItem(pilotKey, '1');
+          else if (choice === '0') sessionStorage.removeItem(pilotKey);
+          else pilot = sessionStorage.getItem(pilotKey) === '1';
+        } catch { /* An explicit pilot link remains usable without storage. */ }
+        let theme = 'light';
+        if (pilot) {
+          root.dataset.catalogThemePilot = 'true';
+          try {
+            if (localStorage.getItem('data-catalog.theme') === 'dark') theme = 'dark';
+          } catch { /* Start in light when the preference is unavailable. */ }
+        }
+        root.dataset.catalogTheme = theme;
+        root.style.colorScheme = theme;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

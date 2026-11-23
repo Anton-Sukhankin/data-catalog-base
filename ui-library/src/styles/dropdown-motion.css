@@ -43,9 +43,9 @@
     padding:6px;
     border:0;
     border-radius:12px;
-    background:#fff;
-    color:#202028;
-    box-shadow:0 8px 24px rgb(0 0 0 / 12%);
+    background:var(--catalog-theme-surface, #fff);
+    color:var(--catalog-theme-text, #202028);
+    box-shadow:0 8px 24px var(--catalog-theme-thin-shadow, rgb(0 0 0 / 12%));
     font:400 14px/20px 'CoFo Sans',sans-serif;
     opacity:0;
   }
@@ -56,7 +56,7 @@
   @starting-style { select:open::picker(select) { opacity:0; } }
   select option { min-height:36px; padding:8px; border-radius:8px; }
   select option:hover, select option:focus { background:var(--table-heading-hover); }
-  select option:checked { color:#0067dc; }
+  select option:checked { color:var(--catalog-theme-accent, #0067dc); }
 }
 
 @media (prefers-reduced-motion:reduce) {

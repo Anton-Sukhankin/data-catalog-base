@@ -1,4 +1,4 @@
-.preview { min-width: 600px; padding: 24px; background: #f4f6f9; color: #101d3b; }
+.preview { min-width: 600px; padding: 24px; background: var(--catalog-theme-workspace, #f4f6f9); color: var(--catalog-theme-text, #101d3b); }
 .preview h1 { margin: 0 0 16px; font-size: 20px; line-height: 28px; }
 .examplePicker { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
 .controller { max-width: 1050px; font-size: 14px; line-height: 20px; }

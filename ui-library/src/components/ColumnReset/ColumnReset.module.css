@@ -1,5 +1,5 @@
 .button { position:relative; z-index:1; display:grid; place-items:center; flex:0 0 16px; width:16px; height:16px; padding:0; border:0; border-radius:50%; background:transparent; cursor:pointer; }
-.button:focus-visible { outline:2px solid #007bfc; outline-offset:2px; }
+.button:focus-visible { outline:2px solid var(--catalog-theme-accent, #007bfc); outline-offset:2px; }
 .indicator,.cross {
   grid-area:1 / 1;
   transition:opacity var(--navigation-hover-duration, 160ms) ease,

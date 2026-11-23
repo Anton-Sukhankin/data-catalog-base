@@ -116,7 +116,7 @@ export function ReportFilterPanel<Id extends string = ReportFilterFieldId>({ con
         {showReset && <button type="button" className={styles.reset} onClick={onReset}>Сбросить</button>}
         <span className={styles.spacer} />
         <button type="button" className={styles.close} onClick={onClose}>Закрыть</button>
-        <button type="button" className={styles.apply} disabled={!canApply} onClick={onApply}>Применить</button>
+        <button type="button" data-catalog-action="apply" className={styles.apply} disabled={!canApply} onClick={onApply}>Применить</button>
       </footer>
     </section>
     </div>

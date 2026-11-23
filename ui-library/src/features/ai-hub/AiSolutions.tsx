@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState, type RefObject } from 'react';
 import { Ellipsis, ExternalLink, Heart } from 'lucide-react';
 import { DropdownMenu } from 'radix-ui';
+import { CatalogEntityIcon } from '../../components/CatalogEntityIcon/CatalogEntityIcon';
 import { DescriptionText } from '../../components/DescriptionText/DescriptionText';
 import { OverflowText } from '../../components/OverflowText/OverflowText';
 import { RoundIconButton } from '../../components/RoundIconButton/RoundIconButton';
@@ -165,7 +166,7 @@ export function AiSolutionsTable({ rows, bookmarks, onBookmark, onUnavailable, o
           if (isSurfaceClick(event.currentTarget, event.target)) onOpen(item);
         }}>
           <td><button type="button" className={s.tableTitle} data-ai-open onClick={() => onOpen(item)}>
-            <span className={s.solutionIcon} aria-hidden="true" />
+            <CatalogEntityIcon kind="ai" />
             <OverflowText className={s.singleLine} fullText={item.title}>{item.title}</OverflowText>
           </button></td>
           <td><OverflowText className={s.tableDescription} fullText={item.description}>{item.description}</OverflowText></td>

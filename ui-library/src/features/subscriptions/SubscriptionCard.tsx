@@ -1,3 +1,4 @@
+import { CatalogEntityIcon } from '../../components/CatalogEntityIcon/CatalogEntityIcon';
 import styles from './SubscriptionCard.module.css';
 
 export interface SubscriptionCardData {
@@ -33,9 +34,7 @@ export function SubscriptionCard({
     <article className={`${styles.card} ${variant === 'joined' ? styles.joined : styles.standalone}`}
       data-subscription-id={subscription.id} aria-label={subscription.title}>
       <header className={styles.header}>
-        <span className={styles.document}>
-          <img src={new URL('../../assets/icons/reports/report-document.svg', import.meta.url).href} width="16" height="16" alt="" aria-hidden="true" />
-        </span>
+        <CatalogEntityIcon kind="report" />
         <div className={styles.information}>
           <div className={styles.typeAndStatus}>
             <span className={styles.label}>{subscription.typeLabel}</span>

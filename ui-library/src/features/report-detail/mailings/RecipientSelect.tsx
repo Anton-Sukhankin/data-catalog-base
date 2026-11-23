@@ -83,7 +83,7 @@ export function RecipientSelect({ field, options, selected, onChange }: Props) {
         </div>
         <div className={`${filter.actions} ${s.recipientActions}`} data-filter-actions>
           <button type="button" className={filter.reset} onClick={() => { setDraft([]); setQuery(''); }}>Сбросить</button>
-          <button type="button" className={filter.apply} onClick={apply}>Применить</button>
+          <button type="button" data-catalog-action="apply" className={filter.apply} onClick={apply}>Применить</button>
         </div>
       </Popover.Content>
     </Popover.Portal>

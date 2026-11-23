@@ -1,0 +1,7 @@
+.mark { display:block; flex:none; }
+.inline { fill:var(--catalog-theme-success-soft, #f1faf6); stroke:var(--catalog-theme-success, #6aac8e); }
+.inlineCheck, .overlayCheck { fill:none; stroke-linecap:round; stroke-linejoin:round; }
+.inlineCheck { stroke:var(--catalog-theme-success, #6aac8e); }
+.overlay { fill:var(--catalog-theme-success-soft, #5b947e); stroke:var(--catalog-theme-surface, #f9fbfe); }
+.ring { fill:none; stroke:var(--catalog-theme-success, none); }
+.overlayCheck { stroke:var(--catalog-theme-success, white); }

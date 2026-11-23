@@ -1,3 +1,5 @@
+import { CatalogEntityIcon } from '../CatalogEntityIcon/CatalogEntityIcon';
+import { VerificationMark } from '../CatalogEntityIcon/VerificationMark';
 import { AttributeValue } from '../AttributeValue/AttributeValue';
 import { RoundIconButton } from '../RoundIconButton/RoundIconButton';
 import { OverflowText } from '../OverflowText/OverflowText';
@@ -17,11 +19,9 @@ export function ReportCard({ report, onOpen, onEdit, showDomain = true }: {
   return (
     <article className={styles.card} data-card-report-id={report.id}>
       <button type="button" className={styles.open} aria-label={`Открыть отчёт «${report.title}»`} onClick={() => onOpen(report)}>
-        <span className={styles.document}>
-            <img className={styles.defaultGlyph} data-report-document="default" src={new URL('../../assets/icons/reports/report-document.svg', import.meta.url).href} width="16" height="16" alt="" aria-hidden="true" />
-            <img className={styles.hoverGlyph} data-report-document="hover" src={new URL('../../assets/icons/reports/report-document-hover.svg', import.meta.url).href} width="16" height="16" alt="" aria-hidden="true" />
-            {verified && <img className={styles.verifiedBadge} src={new URL('../../assets/icons/reports/verified-badge.svg', import.meta.url).href} width="18" height="18" alt="Проверенный отчёт" />}
-        </span>
+        <CatalogEntityIcon kind="report">
+          {verified && <VerificationMark overlay label="Проверенный отчёт" className={styles.verifiedBadge} />}
+        </CatalogEntityIcon>
         <span className={styles.information}>
           <OverflowText className={styles.title} data-card-title fullText={report.title}>{report.cardTitle ?? report.title}</OverflowText>
           <span className={styles.description} data-card-description>

@@ -15,7 +15,7 @@
   text-align: start;
   cursor: pointer;
 }
-.card:focus-visible { outline: 2px solid #007aff; outline-offset: -2px; }
+.card:focus-visible { outline: 2px solid var(--catalog-theme-accent, #007aff); outline-offset: -2px; }
 .content { display: grid; gap: 4px; min-width: 0; }
 .title { composes: subject from '../questions/QuestionsWorkspace.module.css'; }
 .card:hover .title { color: var(--item-hover-ink); }
@@ -23,7 +23,7 @@
   --description-separator-gap: 4px;
   display: flex;
   flex-wrap: wrap;
-  color: #52698c;
+  color: var(--catalog-theme-secondary, #52698c);
   font-size: 13px;
   line-height: 18px;
   overflow-wrap: anywhere;

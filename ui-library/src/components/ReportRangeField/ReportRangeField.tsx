@@ -1,5 +1,5 @@
 import { useId, useLayoutEffect, useRef, type ChangeEvent, type FormEvent } from 'react';
-import { isReportRangeValid, mauThresholds, type ReportNumberRange, type ReportNumericAttribute } from '../../data/reportFilters';
+import { hasReportRange, isReportRangeValid, mauThresholds, type ReportNumberRange, type ReportNumericAttribute } from '../../data/reportFilters';
 import s from './ReportRangeField.module.css';
 
 export interface ReportRangeFieldProps {
@@ -47,7 +47,7 @@ export function ReportRangeField({ attribute, value = {}, scaleMax, onChange }: 
       },
     };
   }
-  return <div className={s.field} data-report-range={attribute} data-invalid={!valid}>
+  return <div className={s.field} data-report-range={attribute} data-invalid={!valid} data-bounded={valid && hasReportRange(value)}>
     <div className={s.label} id={`${id}-label`}>
       <span>{label}</span>
       {attribute === 'mau' && <span className={s.description} id={`${id}-description`}>Количество активных пользователей за месяц</span>}
@@ -58,7 +58,7 @@ export function ReportRangeField({ attribute, value = {}, scaleMax, onChange }: 
       <label className={`${s.value} ${s.upper}`}><span>До</span><input ref={maxField} type="number" inputMode="numeric" min="0" step="1" aria-label={`${label}: до`} aria-invalid={!valid} aria-describedby={descriptionId}
         value={maxInput ?? ''} placeholder="Любое" {...numberInputEvents('max')} /></label>
       <div className={s.slider}>
-        <div className={s.track} /><div className={s.progress} style={{ left:`calc(${left}% + ${10 - left / 5}px)`, right:`calc(${100 - right}% + ${10 - (100 - right) / 5}px)` }} />
+        <div className={s.track} data-range-track /><div className={s.progress} data-range-band style={{ left:`calc(${left}% + ${10 - left / 5}px)`, right:`calc(${100 - right}% + ${10 - (100 - right) / 5}px)` }} />
         {[left, right].map((position, index) => <span key={index} className={s.knob} style={{ left:`calc(${position}% - ${position / 5}px)` }} aria-hidden="true"><img src={new URL('../../assets/images/report-range/thumb.svg', import.meta.url).href} width="68" height="68" alt="" /></span>)}
         <input className={s.range} type="range" min="0" max={maximum} step="1" value={lower} aria-label={`${label}: нижняя граница`} style={{ zIndex:lower === maximum ? 4 : 2 }}
           onChange={event => onChange({ ...value, min:Math.min(event.currentTarget.valueAsNumber, upper) })} />

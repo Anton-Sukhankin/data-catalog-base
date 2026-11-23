@@ -331,7 +331,7 @@ test('sidebar resizes from its edge and restores the default width', async ({ pa
   await expect(page).toHaveURL(initialUrl);
 });
 
-test('sidebar hover matches the selected background and keeps the collapsed highlight under the icon', async ({ page }, testInfo) => {
+test('every collapsed icon keeps the background of its corresponding expanded state', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/preview/navigation?section=ai');
   const sidebar = page.locator('aside[data-collapsed]');
@@ -379,7 +379,9 @@ test('sidebar hover matches the selected background and keeps the collapsed high
   await expect(sidebar).toHaveCSS('width', '64px');
   const iconHighlight = (button: typeof reports) =>
     button.evaluate(element => getComputedStyle(element, '::before').backgroundColor);
+  await page.mouse.move(700, 500);
   await expect.poll(() => iconHighlight(current)).toBe(highlight);
+  await expect.poll(() => iconHighlight(reports)).toBe(highlight);
   await expect(icon(current)).toHaveCSS('background-color', activeEdge);
   await reports.hover();
   await expect.poll(() => iconHighlight(reports)).toBe(highlight);
@@ -396,7 +398,7 @@ test('sidebar hover matches the selected background and keeps the collapsed high
   await expect(reports).toHaveAttribute('aria-current', 'page');
   await expect.poll(() => iconHighlight(reports)).toBe(highlight);
   await expect(icon(reports)).toHaveCSS('background-color', activeEdge);
-  await expect.poll(() => iconHighlight(current)).toBe(transparent);
+  await expect.poll(() => iconHighlight(current)).toBe(highlight);
   await expect(icon(current)).toHaveCSS('background-color', transparent);
   await toggle.click();
   await expect(sidebar).toHaveCSS('width', '280px');

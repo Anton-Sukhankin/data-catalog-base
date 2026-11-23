@@ -2,7 +2,7 @@
   padding:12px;
   border-radius:8px;
   background:#141f33;
-  color:#fff;
+  color:var(--catalog-theme-inverse, #fff);
   font:400 14px/20px 'CoFo Sans',sans-serif;
   overflow-wrap:anywhere;
 }

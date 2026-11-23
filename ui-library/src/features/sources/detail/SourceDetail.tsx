@@ -237,7 +237,7 @@ export function SourceDetail({source,detail,tab,onTabChange,onBack,breadcrumbs,c
             const description = item.description ?? ('descriptionUnavailable' in item ? item.descriptionUnavailable : undefined);
             const descriptionId = !showMetrics && description ? `${id}-report-description-${item.id}` : undefined;
             const content = <>
-              {showMetrics ? <CatalogEntityIcon kind="metric" /> : <span className={s.relatedReportBadge} aria-hidden="true" />}
+              {showMetrics ? <CatalogEntityIcon kind="metric" /> : <CatalogEntityIcon kind="report" />}
               <div className={s.relatedReportText}>
                 <h2>{item.title}</h2>
                 {description && (showMetrics ? <p>{description}</p> : (

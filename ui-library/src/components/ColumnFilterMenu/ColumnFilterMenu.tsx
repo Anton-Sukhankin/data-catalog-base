@@ -58,7 +58,7 @@ export function ColumnFilterMenu({
         onSearchChange={onSearchChange} onToggleValue={onToggleValue} embedded />}
       <div className={styles.actions} data-filter-actions>
         <button type="button" className={styles.reset} onClick={onReset}>Сбросить</button>
-        <button type="button" className={styles.apply} disabled={range && !isReportRangeValid(range.value)} onClick={onApply}>Применить</button>
+        <button type="button" data-catalog-action="apply" className={styles.apply} disabled={range && !isReportRangeValid(range.value)} onClick={onApply}>Применить</button>
       </div>
     </div>
   );

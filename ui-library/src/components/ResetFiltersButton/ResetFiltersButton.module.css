@@ -1,4 +1,4 @@
 .typography { font:500 14px/14px 'CoFo Sans',sans-serif; letter-spacing:normal; }
-.button { composes:typography; flex:none; height:40px; padding:0 16px; border:0; border-radius:20px; background:#f0f1f4; color:#202028; cursor:pointer; }
-.button:hover { background:#e2e4ea; }
-.button:focus-visible { outline:2px solid #007bfc; outline-offset:2px; }
+.button { composes:typography; flex:none; height:40px; padding:0 16px; border:0; border-radius:20px; background:var(--catalog-theme-section, #f0f1f4); color:var(--catalog-theme-text, #202028); cursor:pointer; }
+.button:hover { background:var(--catalog-theme-hover, #e2e4ea); }
+.button:focus-visible { outline:2px solid var(--catalog-theme-accent, #007bfc); outline-offset:2px; }

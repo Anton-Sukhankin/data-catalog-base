@@ -1,4 +1,4 @@
-import icon from '../CatalogEntityIcon/CatalogEntityIcon.module.css';
+import { CatalogEntityIcon } from '../CatalogEntityIcon/CatalogEntityIcon';
 import { OverflowText } from '../OverflowText/OverflowText';
 import card from './ReportCard.module.css';
 import groups from './ReportCardGroups.module.css';
@@ -17,7 +17,7 @@ export function ReportDomainCards({ domains, onOpen, viewportOffset = 210 }: {
         {domains.map(({ name, count }) => (
           <article key={name} className={card.card}>
             <button type="button" className={`${card.open} ${card.openWithoutActions}`} onClick={() => onOpen(name)}>
-              <span className={`${card.document} ${icon.glyph} ${card.domainIcon}`} aria-hidden="true" />
+              <CatalogEntityIcon kind="domain" />
               <span className={card.information}>
                 <OverflowText className={card.title} fullText={name}>{name}</OverflowText>
                 <span className={card.description}>{count} {reportNouns[plural.select(count)] ?? 'отчётов'}</span>

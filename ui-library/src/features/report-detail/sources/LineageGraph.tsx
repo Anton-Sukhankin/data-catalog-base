@@ -15,15 +15,16 @@ const toolbarReserve=48;
 const fullscreenDuration=260;
 type Mode='pan'|'nodes';
 type Gesture={pointerId:number;client:Point;start:Point;scale:number}&({kind:'pan'}|{kind:'node';id:string|null});
+const rootLegendColors = ['var(--lineage-root-fill)', 'var(--lineage-root-stroke, var(--lineage-root-fill))'] as const;
 const categories=[
-  ['report','Отчёт','#007bfc','#007bfc'], ['datahub','Источник DataHub','#edf8f3','#5c9a83'],
-  ['catalog','Источник (каталог)','#fff0ee','#de9e95'], ['reports','Reports','#e8f8f2','#60b5a1'],
-  ['cdm','CDM','#f3edfa','#a999c4'], ['clean','Clean','#eaf3fc','#82add2'], ['bclean','BClean','#fff3db','#cfab67'],
+  ['report','Отчёт',...rootLegendColors], ['datahub','Источник DataHub','var(--catalog-theme-success-soft, #edf8f3)','var(--catalog-theme-success, #5c9a83)'],
+  ['catalog','Источник (каталог)','var(--catalog-theme-warning-soft, #fff0ee)','var(--catalog-theme-warning, #de9e95)'], ['reports','Reports','var(--catalog-theme-success-soft, #e8f8f2)','var(--catalog-theme-success, #60b5a1)'],
+  ['cdm','CDM','var(--catalog-theme-category-soft, #f3edfa)','var(--catalog-theme-category, #a999c4)'], ['clean','Clean','var(--catalog-theme-tint, #eaf3fc)','var(--catalog-theme-accent, #82add2)'], ['bclean','BClean','var(--catalog-theme-warning-soft, #fff3db)','var(--catalog-theme-warning, #cfab67)'],
 ] as const;
 
 const sourceLegendColors = {
-  report: ['#5c9a83', '#5c9a83'],
-  catalog: ['#007bfc', '#007bfc'],
+  report: ['var(--catalog-theme-success, #5c9a83)', 'var(--catalog-theme-success, #5c9a83)'],
+  catalog: rootLegendColors,
 } as const;
 type GraphNode = Pick<ReportDataSource,'id'|'name'|'category'|'platform'> |
   {id:string;name:string;category:'report';platform:'REPORT'};
@@ -235,7 +236,7 @@ function LineageCanvas({title,nodes,graph,isSource=false}:{title:string;nodes:re
               const node=positions.get(edge.sourceId);const source=nodeById.get(edge.sourceId);if(!node||!source)return null;
               const childPort={x:node.x+lineageNodeSize.width/2,y:node.y};
               const path=lineagePath(childPort,reportPort);
-              return <path key={edge.sourceId} data-lineage-edge={edge.sourceId} d={path} fill="none" stroke={source.category==='catalog'?'#ca8d83':'#7a9f8e'} strokeWidth="1.4" strokeDasharray="5 4" strokeLinecap="round"/>;
+              return <path key={edge.sourceId} data-lineage-edge={edge.sourceId} d={path} fill="none" stroke={source.category==='catalog'?'var(--catalog-theme-warning, #ca8d83)':'var(--catalog-theme-success, #7a9f8e)'} strokeWidth="1.4" strokeDasharray="5 4" strokeLinecap="round"/>;
             })}
           </svg>
           <div className={s.reportNode} data-lineage-report data-dragging={draggedNode===null} style={{...lineageNodeSize,left:reportPosition.x,top:reportPosition.y}}
@@ -264,8 +265,8 @@ function LineageCanvas({title,nodes,graph,isSource=false}:{title:string;nodes:re
             </div>;
           })}
           <svg width={sceneWidth} height={sceneHeight} className={s.ports} aria-hidden="true">
-            {graph.nodes.map(node=>{const position=positions.get(node.sourceId)!;return <circle key={node.sourceId} data-source-port={node.sourceId} cx={position.x+lineageNodeSize.width/2} cy={position.y} r="4" fill="#fff" stroke={nodeById.get(node.sourceId)?.category==='catalog'?'#ca8d83':'#7a9f8e'} strokeWidth="1.5"/>;})}
-            <circle data-report-port cx={reportPort.x} cy={reportPort.y} r="4" fill="#fff" stroke="#007bfc" strokeWidth="1.5"/>
+            {graph.nodes.map(node=>{const position=positions.get(node.sourceId)!;return <circle key={node.sourceId} data-source-port={node.sourceId} cx={position.x+lineageNodeSize.width/2} cy={position.y} r="4" fill="var(--catalog-theme-surface, #fff)" stroke={nodeById.get(node.sourceId)?.category==='catalog'?'var(--catalog-theme-warning, #ca8d83)':'var(--catalog-theme-success, #7a9f8e)'} strokeWidth="1.5"/>;})}
+            <circle data-report-port cx={reportPort.x} cy={reportPort.y} r="4" fill="var(--catalog-theme-surface, #fff)" stroke="var(--catalog-theme-accent, #007bfc)" strokeWidth="1.5"/>
           </svg>
         </div>
         <ul className={s.legend} data-lineage-legend aria-label="Категории происхождения данных">

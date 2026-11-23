@@ -1,3 +1,5 @@
+import { CatalogEntityIcon } from '../CatalogEntityIcon/CatalogEntityIcon';
+import { VerificationMark } from '../CatalogEntityIcon/VerificationMark';
 import { AttributeValue } from '../AttributeValue/AttributeValue';
 import { RoundIconButton } from '../RoundIconButton/RoundIconButton';
 import { ColumnReset } from '../ColumnReset/ColumnReset';
@@ -23,7 +25,7 @@ const columns = helper.columns([
 ]);
 const middleLabels = ['MAU', 'Платформа', 'Домен', 'Мастер-система', 'Владелец', 'Просмотр'];
 const asset = (name: keyof typeof assets) => assets[name];
-const assets = { 'filter-active.svg': new URL('../../assets/images/report-table/filter-active.svg', import.meta.url).href, 'filter.svg': new URL('../../assets/images/report-table/filter.svg', import.meta.url).href, 'sort-applied.svg': new URL('../../assets/images/report-table/sort-applied.svg', import.meta.url).href, 'document-default.svg': new URL('../../assets/images/report-table/document-default.svg', import.meta.url).href, 'document-hover.svg': new URL('../../assets/images/report-table/document-hover.svg', import.meta.url).href, 'status-verified.svg': new URL('../../assets/images/report-table/status-verified.svg', import.meta.url).href, 'status-warning.svg': new URL('../../assets/images/report-table/status-warning.svg', import.meta.url).href };
+const assets = { 'filter-active.svg': new URL('../../assets/images/report-table/filter-active.svg', import.meta.url).href, 'filter.svg': new URL('../../assets/images/report-table/filter.svg', import.meta.url).href, 'sort-applied.svg': new URL('../../assets/images/report-table/sort-applied.svg', import.meta.url).href, 'status-warning.svg': new URL('../../assets/images/report-table/status-warning.svg', import.meta.url).href };
 const minimumLayout = reportTableLayout(0);
 const tableSizing = {
   '--table-start-column': `${minimumLayout.report}px`,
@@ -177,17 +179,14 @@ export function ReportTable({ rows, total, pageIndex, pageSize, onPageChange, on
                       <div className={`${motion.clip} ${styles.groupRows}`}>
                         {items.map((row) => {
                           const target = searchId('report', row.id);
-                          return <div role="row" key={row.id} className={styles.row} data-table-report-id={row.id}
+                          return <div role="row" key={row.id} className={`${styles.row} ${styles.entitySurface}`} data-table-report-id={row.id}
                             onClick={(event) => { if (!(event.target as Element).closest('button')) onOpen(row.report); }}>
                             <div role="cell" className={styles.fixedReport}>
                               <button type="button" className={styles.reportButton} onClick={() => onOpen(row.report)} aria-label={`Открыть отчёт «${row.report.title}»`}>
-                                <span className={styles.document}>
-                                  <img className={styles.defaultDocument} src={asset('document-default.svg')} width="40" height="40" alt="" aria-hidden="true" />
-                                  <img className={styles.hoverDocument} data-report-document="hover" src={asset('document-hover.svg')} width="40" height="40" alt="" aria-hidden="true" />
-                                </span>
+                                <CatalogEntityIcon kind="report" />
                                 <OverflowText className={styles.reportTitle} fullText={row.report.title}><SearchTargetText id={target} field="title" text={row.title} useMatchedValue /></OverflowText>
                                 <span className={styles.indicators}>
-                                  {row.verifiedIndicator && <img src={asset('status-verified.svg')} width="17" height="17" alt="Проверен" />}
+                                  {row.verifiedIndicator && <VerificationMark size={17} label="Проверен" />}
                                   {row.warningIndicator && <img src={asset('status-warning.svg')} width="16" height="16" alt="Индикатор отчёта" />}
                                 </span>
                               </button>

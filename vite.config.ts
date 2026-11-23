@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config';
+import { normalizePath } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
@@ -6,11 +7,15 @@ import { fileURLToPath } from 'node:url';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
-    alias: { '@':fileURLToPath(new URL('./src',import.meta.url)) },
+    alias: [
+      { find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
+      // The prototype uses live library sources so an installed file: copy cannot lag behind.
+      { find: /^@data-catalog\/ui\/source\//, replacement: normalizePath(fileURLToPath(new URL('./ui-library/src/', import.meta.url))) },
+    ],
     dedupe: ['react', 'react-dom', 'react-router', 'radix-ui'],
   },
   optimizeDeps: { exclude: ['@data-catalog/ui'] },
-  server: { fs: { allow: ['.'] } },
+  server: { fs: { allow: ['.', './ui-library'] } },
   build: {
     rollupOptions: {
       input: {

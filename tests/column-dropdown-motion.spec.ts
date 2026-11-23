@@ -45,7 +45,7 @@ for (const { section, route, trigger, label, option } of cases) {
     await expect(menu).toHaveCount(0);
     await heading.click();
     await expect(checkbox).toBeChecked();
-    await clickIcon();
+    await heading.click();
     await expect(heading).toHaveAttribute('aria-expanded', 'false');
 
     await page.emulateMedia({ reducedMotion: 'reduce' });

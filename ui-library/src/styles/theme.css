@@ -20,5 +20,135 @@
 }
 
 :where(.catalog-ui, .catalog-ui *, .catalog-ui *::before, .catalog-ui *::after) { box-sizing: border-box; }
-.catalog-ui { font-family: var(--catalog-ui-font, 'CoFo Sans', Arial, sans-serif); color: #20242b; line-height: 1.5; }
+.catalog-ui { font-family: var(--catalog-ui-font, 'CoFo Sans', Arial, sans-serif); color: var(--catalog-theme-text, #20242b); line-height: 1.5; }
 :where(.catalog-ui) :is(button, input, select, textarea) { font: inherit; }
+
+/* Semantic roles inherit into portals when the application opts in at the document root. */
+[data-catalog-theme="light"] {
+  color-scheme: light;
+  --sidebar-surface: #f3f4f9;
+  --table-heading-hover: #e2e6ec;
+  --table-header-line: #e2e4ea;
+  --item-hover-border: #408fe7;
+  --item-hover-ink: #0067dc;
+  --item-hover-icon-fill: #e7f2ff;
+  --catalog-theme-chart-domain-1: initial;
+  --catalog-theme-chart-domain-2: initial;
+  --catalog-theme-chart-domain-3: initial;
+  --catalog-theme-chart-domain-4: initial;
+  --catalog-theme-chart-domain-5: initial;
+  --catalog-theme-chart-domain-6: initial;
+  --catalog-theme-workspace: initial;
+  --catalog-theme-surface: initial;
+  --catalog-theme-section: initial;
+  --catalog-theme-raised: initial;
+  --catalog-theme-input: initial;
+  --catalog-theme-hover: initial;
+  --catalog-theme-selected: initial;
+  --catalog-theme-icon: initial;
+  --catalog-theme-icon-ink: initial;
+  --catalog-theme-text: initial;
+  --catalog-theme-secondary: initial;
+  --catalog-theme-disabled-ink: initial;
+  --catalog-theme-inverse: initial;
+  --catalog-theme-line: initial;
+  --catalog-theme-edge: initial;
+  --catalog-theme-control: initial;
+  --catalog-theme-accent: initial;
+  --catalog-theme-focus-action: initial;
+  --catalog-theme-primary: initial;
+  --catalog-theme-primary-hover: initial;
+  --catalog-theme-primary-pressed: initial;
+  --catalog-theme-tint: initial;
+  --catalog-theme-danger: initial;
+  --catalog-theme-danger-soft: initial;
+  --catalog-theme-success: initial;
+  --catalog-theme-success-soft: initial;
+  --catalog-theme-warning: initial;
+  --catalog-theme-warning-soft: initial;
+  --catalog-theme-category: initial;
+  --catalog-theme-category-soft: initial;
+  --catalog-theme-scrim: initial;
+  --catalog-theme-shadow: initial;
+  --catalog-theme-thin-shadow: initial;
+  --catalog-theme-scroll-thumb: initial;
+  --catalog-theme-chart-grid: initial;
+  --catalog-theme-chart-actual: initial;
+  --catalog-theme-chart-rising: initial;
+  --catalog-theme-chart-falling: initial;
+  --catalog-theme-summary-outline: initial;
+  --catalog-theme-paper-image-blend: initial;
+  --catalog-theme-paper-image-filter: initial;
+}
+
+[data-catalog-theme="dark"] {
+  color-scheme: dark;
+  --sidebar-surface: var(--catalog-theme-section);
+  --table-heading-hover: var(--catalog-theme-hover);
+  --table-header-line: var(--catalog-theme-line);
+  --item-hover-border: var(--catalog-theme-accent);
+  --item-hover-ink: var(--catalog-theme-accent);
+  --item-hover-icon-fill: var(--catalog-theme-tint);
+  --catalog-theme-chart-domain-1: #86B8FF;
+  --catalog-theme-chart-domain-2: #83D7AE;
+  --catalog-theme-chart-domain-3: #EAC479;
+  --catalog-theme-chart-domain-4: #C9ACFF;
+  --catalog-theme-chart-domain-5: #FF929B;
+  --catalog-theme-chart-domain-6: #B2B5BD;
+  --catalog-theme-workspace: #17181B;
+  --catalog-theme-surface: #202125;
+  --catalog-theme-section: #26272B;
+  --catalog-theme-raised: #292B30;
+  --catalog-theme-input: #202125;
+  --catalog-theme-hover: #32343A;
+  --catalog-theme-selected: #373A40;
+  --catalog-theme-icon: #3A3A3E;
+  --catalog-theme-icon-ink: #B2B5BD;
+  --catalog-theme-text: #F1F2F4;
+  --catalog-theme-secondary: #B2B5BD;
+  --catalog-theme-disabled-ink: #A2A7B1;
+  --catalog-theme-inverse: #FFFFFF;
+  --catalog-theme-line: #595C65;
+  --catalog-theme-edge: #42454C;
+  --catalog-theme-control: #858A96;
+  --catalog-theme-accent: #86B8FF;
+  --catalog-theme-focus-action: #CFE3FF;
+  --catalog-theme-primary: #245A9A;
+  --catalog-theme-primary-hover: #326CAE;
+  --catalog-theme-primary-pressed: #214F87;
+  --catalog-theme-tint: #25364C;
+  --catalog-theme-danger: #FF929B;
+  --catalog-theme-danger-soft: #452A30;
+  --catalog-theme-success: #83D7AE;
+  --catalog-theme-success-soft: #223A32;
+  --catalog-theme-warning: #EAC479;
+  --catalog-theme-warning-soft: #363043;
+  --catalog-theme-category: #C9ACFF;
+  --catalog-theme-category-soft: #363B50;
+  --catalog-theme-scrim: rgb(0 0 0 / 58%);
+  --catalog-theme-shadow: rgb(0 0 0 / 38%);
+  --catalog-theme-thin-shadow: rgb(0 0 0 / 24%);
+  --catalog-theme-scroll-thumb: #777B86;
+  --catalog-theme-chart-grid: #595C65;
+  --catalog-theme-chart-actual: #86B8FF;
+  --catalog-theme-chart-rising: #83D7AE;
+  --catalog-theme-chart-falling: #FF929B;
+  --catalog-theme-summary-outline: var(--catalog-theme-line);
+  --catalog-theme-paper-image-blend: screen;
+  --catalog-theme-paper-image-filter: invert(1) hue-rotate(180deg) brightness(2);
+}
+
+[data-catalog-theme="dark"] [data-catalog-action="apply"]:enabled {
+  background: #0071EB;
+  color: var(--catalog-theme-inverse);
+}
+[data-catalog-theme="dark"] [data-catalog-action="apply"]:enabled:hover {
+  background: #0064D7;
+}
+[data-catalog-theme="dark"] [data-catalog-action="apply"]:enabled:active {
+  background: #005CC4;
+}
+[data-catalog-theme="dark"] [data-catalog-action="apply"]:enabled:focus-visible {
+  outline: 2px solid var(--catalog-theme-focus-action);
+  outline-offset: 2px;
+}

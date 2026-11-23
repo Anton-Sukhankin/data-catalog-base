@@ -1,4 +1,6 @@
 import { expect, test } from '@playwright/test';
+import { reportCrmDateReports } from '../src/demo/relatedSourceReports';
+import { technicalReportSummary } from '../src/demo/technicalReport';
 
 const entry='/preview/navigation?section=reports&report=demo-report-summary&reportTab=sources';
 
@@ -145,6 +147,7 @@ test('lineage zoom, pointer and keyboard pan, ports and native fullscreen work',
     return Math.abs(box.left)<1&&Math.abs(box.right-innerWidth)<1&&Math.abs(box.bottom-innerHeight)<1&&Math.abs(box.top)<1;
   })).toBe(true);
   await expectLegendPosition();
+  await page.mouse.move(0,0);
   await exit.hover();
   const tooltip=page.locator('[data-lineage-fullscreen]').getByRole('tooltip');
   await expect(tooltip).toHaveText('Выйти из полного экрана');
@@ -339,4 +342,87 @@ test('lineage tools work in fullscreen and default zoom includes displaced nodes
   await exit.click();
   await expect(nodesMode).toHaveAttribute('aria-pressed','true');
   await expectAttachedEdges(page);
+});
+
+test('Lineage root nodes and legend have matching contrast across report routes', async ({ page }, info) => {
+  test.setTimeout(150_000);
+  const reportIds = new Set<string>();
+  const fill = 'rgb(41, 63, 89)';
+  const border = 'rgb(107, 150, 200)';
+  const graph = page.getByRole('group', { name: 'Граф происхождения данных', exact: true });
+  const root = graph.locator('[data-lineage-report]');
+  const swatch = (name: RegExp) => graph.getByRole('listitem').filter({ hasText: name }).locator('span');
+  const toggle = page.getByRole('button', { name: 'Тёмная тема', exact: true });
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto(entry + '&themePilot=1');
+  await expect(root).toHaveCSS('background-color', 'rgb(0, 123, 252)');
+  await expect(root).toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
+  await expect(swatch(/^Отчёт$/)).toHaveCSS('background-color', 'rgb(0, 123, 252)');
+  await toggle.click();
+
+  for (const [query, label] of [
+    ['section=reports', 'Страницы отчётов'],
+    ['segment=favorites', 'Страницы избранных отчётов'],
+  ]) {
+    await page.goto('/preview/navigation?themePilot=1&' + query);
+    const pager = page.getByRole('navigation', { name: label, exact: true });
+    const rows = page.locator('[data-table-report-id]');
+    await expect(pager).toBeVisible();
+    const lastPage = await pager.getByRole('button', { name: /^\d+$/ }).count();
+    for (let number = 1; number <= lastPage; number++) {
+      if (number !== 1) {
+        const firstId = (await rows.first().getAttribute('data-table-report-id'))!;
+        await pager.getByRole('button', { name: String(number), exact: true }).click();
+        await expect(rows.first()).not.toHaveAttribute('data-table-report-id', firstId);
+      }
+      for (const id of await rows.evaluateAll(items => items.map(item => item.getAttribute('data-table-report-id')!))) {
+        reportIds.add(id);
+      }
+    }
+  }
+  expect(reportIds.size).toBeGreaterThanOrEqual(35);
+
+  for (const id of reportIds) {
+    await test.step(id, async () => {
+      await page.goto('/preview/navigation?section=reports&reportTab=sources&themePilot=1&report=' + id);
+      const card = page.locator('article[data-report-id="' + id + '"]');
+      await expect(card.getByRole('tabpanel')).toBeVisible();
+      await expect(root).toBeVisible();
+      await expect(root).toHaveCSS('background-color', fill);
+      await expect(root).toHaveCSS('border-top-color', border);
+      await expect(root).toHaveCSS('color', 'rgb(255, 255, 255)');
+      await expect(swatch(/^Отчёт$/)).toHaveCSS('background-color', fill);
+      await expect(swatch(/^Отчёт$/)).toHaveCSS('border-top-color', border);
+      if (id === 'demo-report-sales-plan') {
+        await graph.getByRole('button', { name: 'Граф на полный экран', exact: true }).click();
+        const exit = graph.getByRole('button', { name: 'Выйти из полного экрана', exact: true });
+        await expect(exit).toBeVisible();
+        await expect(root).toHaveCSS('background-color', fill);
+        await graph.screenshot({ path: info.outputPath('lineage-sales-plan-dark.png') });
+        await root.screenshot({ path: info.outputPath('lineage-sales-plan-dark-node.png') });
+        await exit.click();
+        await expect(exit).toHaveCount(0);
+      }
+    });
+  }
+  for (const [id, message] of [
+    [technicalReportSummary.id, 'Сведения об источниках недоступны'],
+    ...reportCrmDateReports.map(report => [report.id, 'Схема происхождения данных недоступна']),
+  ]) {
+    await page.goto('/preview/navigation?section=reports&reportTab=sources&themePilot=1&report=' + id);
+    await expect(page.getByRole('tabpanel').getByText(message, { exact: true })).toBeVisible();
+    await expect(root).toHaveCount(0);
+  }
+  console.info('Report routes with Lineage checked:', reportIds.size);
+
+  await page.goto('/preview/navigation?section=sources&source=source-reportcrm-date&sourceTab=lineage&themePilot=1');
+  await expect(root).toHaveCSS('background-color', fill);
+  await expect(swatch(/^Источник \(каталог\)$/)).toHaveCSS('background-color', fill);
+  await expect(swatch(/^Источник \(каталог\)$/)).toHaveCSS('border-top-color', border);
+  await expect(graph.locator('[data-lineage-node]').first()).toHaveCSS('border-top-color', 'rgb(131, 215, 174)');
+  await graph.getByRole('button', { name: 'Граф на полный экран', exact: true }).click();
+  await expect(graph.getByRole('button', { name: 'Выйти из полного экрана', exact: true })).toBeVisible();
+  await expect(root).toHaveCSS('background-color', fill);
 });

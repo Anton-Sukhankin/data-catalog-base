@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from 'react';
-import { LogOut, Shield, UserRound } from 'lucide-react';
+import { LogOut, Moon, Shield, Sun, UserRound } from 'lucide-react';
 import { DropdownMenu } from 'radix-ui';
 import { DropdownItem } from '@data-catalog/ui/source/components/DropdownItem/DropdownItem';
+import { useCatalogTheme } from '../../app/catalogTheme';
 import styles from './Header.module.css';
 
 interface HeaderProps {
@@ -19,6 +20,7 @@ const profileItems = [
 
 export function Header({ productName, brandMarkSrc, avatarSrc, search }: HeaderProps) {
   const [keyboard, setKeyboard] = useState(false);
+  const { enabled, theme, toggle } = useCatalogTheme();
 
   return (
     <header className={styles.header}>
@@ -27,6 +29,13 @@ export function Header({ productName, brandMarkSrc, avatarSrc, search }: HeaderP
         <span>{productName}</span>
       </div>
       <div className={styles.searchSlot}>{search}</div>
+      {enabled && (
+        <button className={styles.themeToggle} type="button" aria-label="Тёмная тема"
+          title={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
+          aria-pressed={theme === 'dark'} onClick={toggle}>
+          {theme === 'dark' ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
+        </button>
+      )}
       <DropdownMenu.Root modal={false}>
         <DropdownMenu.Trigger asChild>
           <button className={styles.profile} type="button" aria-label="Профиль пользователя"

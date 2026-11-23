@@ -7,7 +7,7 @@
 .row[data-layout='left-wide'] { grid-template-columns:minmax(0,56fr) minmax(0,44fr); }
 .row + .row { border-top:1px solid var(--accordion-border); }
 .row > div + div { border-inline-start:1px solid var(--accordion-border); }
-.unknown { color:#52627c; font-weight:400; }
+.unknown { color:var(--catalog-theme-secondary, #52627c); font-weight:400; }
 
 .row > .tableField { padding:12px 0 0; }
 .tableField dt { padding-inline:20px; }

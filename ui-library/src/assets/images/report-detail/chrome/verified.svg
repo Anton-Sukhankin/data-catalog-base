@@ -3,4 +3,5 @@
 <path id="Vector" d="M8 13.8675C11.2401 13.8675 13.8667 11.2409 13.8667 8.00086C13.8667 4.76079 11.2401 2.13419 8 2.13419C4.75993 2.13419 2.13333 4.76079 2.13333 8.00086C2.13333 11.2409 4.75993 13.8675 8 13.8675Z" fill="#F1FAF6" stroke-width="1.06667" stroke="#6AAC8E"/>
 <path id="Vector_2" d="M5.42222 8.00086L7.11111 9.68975L10.4889 6.13419" stroke-width="1.11111" stroke-linecap="round" stroke-linejoin="round" stroke="#6AAC8E"/>
 </g>
+<style>@media (prefers-color-scheme: dark) { [fill="#F1FAF6"] { fill: #223a32; } [stroke="#6AAC8E"] { stroke: #83d7ae; } }</style>
 </svg>

@@ -40,7 +40,7 @@ test('source metrics show the observed fragment, shared hover and responsive inf
   await expect(description).toHaveCSS('font-size', '14px');
   await expect(icon).toHaveCSS('width', '32px');
   await expect(icon).toHaveCSS('height', '32px');
-  await expect(icon).toHaveCSS('background-color', 'rgb(240, 241, 244)');
+  await expect(icon).toHaveCSS('background-color', 'rgb(238, 242, 246)');
   await expect(icon).toHaveCSS('color', 'rgb(113, 134, 165)');
   expect(await icon.evaluate(element => getComputedStyle(element, '::before').width)).toBe('16px');
   const [rowBox, iconBox] = await Promise.all([first.boundingBox(), icon.boundingBox()]);

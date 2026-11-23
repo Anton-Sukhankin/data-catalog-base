@@ -1,4 +1,4 @@
-.thumb { position:fixed; z-index:190; pointer-events:none; width:3px; border-radius:999px; background:#a5acb6; opacity:0; transition:opacity 160ms ease; }
+.thumb { position:fixed; z-index:190; pointer-events:none; width:3px; border-radius:999px; background:var(--catalog-theme-scroll-thumb, #a5acb6); opacity:0; transition:opacity 160ms ease; }
 .thumb[data-visible='true'] { opacity:1; }
 @media (prefers-reduced-motion:reduce) { .thumb { transition:none; } }
 

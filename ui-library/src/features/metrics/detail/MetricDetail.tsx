@@ -1,3 +1,4 @@
+import { VerificationMark } from '../../../components/CatalogEntityIcon/VerificationMark';
 import { RoundIconButton } from '../../../components/RoundIconButton/RoundIconButton';
 import { DescriptionText } from '../../../components/DescriptionText/DescriptionText';
 import { useContext, useEffect, useId, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
@@ -27,7 +28,7 @@ export interface MetricDetailProps {
 }
 
 const asset = (name: keyof typeof assets) => assets[name];
-const assets = { 'info.svg': new URL('../../../assets/images/metrics/detail/info.svg', import.meta.url).href, 'unknown-avatar.svg': new URL('../../../assets/images/metrics/detail/unknown-avatar.svg', import.meta.url).href, 'verified.svg': new URL('../../../assets/images/metrics/detail/verified.svg', import.meta.url).href, 'dot.svg': new URL('../../../assets/images/metrics/detail/dot.svg', import.meta.url).href };
+const assets = { 'info.svg': new URL('../../../assets/images/metrics/detail/info.svg', import.meta.url).href, 'unknown-avatar.svg': new URL('../../../assets/images/metrics/detail/unknown-avatar.svg', import.meta.url).href, 'dot.svg': new URL('../../../assets/images/metrics/detail/dot.svg', import.meta.url).href };
 const unavailable = 'Действие недоступно: исходный результат и сохранение не определены.';
 
 function DefinitionTooltip({ text }: { text: string }) {
@@ -143,7 +144,7 @@ export function MetricDetail({ metric, profile, onBack, breadcrumbs, onOpenRepor
       <div className={s.heading}><h1 className={s.title}>{metric.title}</h1><DefinitionTooltip key={metric.id} text={metric.description} />
         <div className={s.actions}><RoundIconButton icon="edit" aria-label="Редактировать показатель" aria-disabled="true" title={unavailable}></RoundIconButton><RoundIconButton icon="bookmark" aria-label="Добавить показатель в избранное" aria-disabled="true" title={unavailable}></RoundIconButton></div>
       </div>
-      {'status' in metric && <div className={s.attributes}><span>{metric.status === 'Проверена' && <img src={asset('verified.svg')} alt="" />}{metric.status === 'Проверена' ? 'Карточка проверена' : metric.status}</span><img className={s.dot} src={asset('dot.svg')} alt="" /><span>{metric.type}</span><img className={s.dot} src={asset('dot.svg')} alt="" /><span>{metric.domain}</span>{profile.displayId && <><img className={s.dot} src={asset('dot.svg')} alt="" /><span>ID {profile.displayId}</span></>}</div>}
+      {'status' in metric && <div className={s.attributes}><span>{metric.status === 'Проверена' && <VerificationMark />}{metric.status === 'Проверена' ? 'Карточка проверена' : metric.status}</span><img className={s.dot} src={asset('dot.svg')} alt="" /><span>{metric.type}</span><img className={s.dot} src={asset('dot.svg')} alt="" /><span>{metric.domain}</span>{profile.displayId && <><img className={s.dot} src={asset('dot.svg')} alt="" /><span>ID {profile.displayId}</span></>}</div>}
     </header>
     <div ref={scroll} className={`${chrome.scroll} ${s.scroll}`} data-detail-scroll data-metric-detail-scroll data-list-scroll
       onScrollCapture={onScroll} tabIndex={0} role="region" aria-label="Содержимое паспорта показателя">

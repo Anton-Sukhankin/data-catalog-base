@@ -1,5 +1,5 @@
-.preview { min-height:100vh; background:#fff; font-family:'CoFo Sans',sans-serif; }
-.controller { position:absolute; top:16px; left:24px; width:248px; font-size:12px; line-height:18px; color:#52698c; }
+.preview { min-height:100vh; background:var(--catalog-theme-surface, #fff); font-family:'CoFo Sans',sans-serif; }
+.controller { position:absolute; top:16px; left:24px; width:248px; font-size:12px; line-height:18px; color:var(--catalog-theme-secondary, #52698c); }
 .controller h1 { margin:0 0 12px; font-size:18px; line-height:22px; }
 .controller p { margin:0 0 12px; }
 .controller button { margin-right:8px; }

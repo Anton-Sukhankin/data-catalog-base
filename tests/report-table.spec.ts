@@ -244,7 +244,9 @@ test('report table preserves the documented fixed edges and scrolls real records
   await first.hover();
   await expect.poll(() => first.evaluate(row => getComputedStyle(row, '::after').borderColor)).toBe('rgb(64, 143, 231)');
   await expect(first.getByText('Сводный отчёт Гостеприимства', { exact: true })).toHaveCSS('color', 'rgb(0, 103, 220)');
-  await expect(first.locator('[data-report-document="hover"]')).toBeVisible();
+  const reportIcon = first.locator('[data-catalog-entity-icon="report"]');
+  await expect(reportIcon).toHaveCSS('background-color', 'rgb(231, 242, 255)');
+  await expect(reportIcon).toHaveCSS('color', 'rgb(0, 103, 220)');
   await first.screenshot({ path: 'verification/current/table/row-hover.png' });
   const edit = first.getByRole('button', { name: 'Редактировать отчёт «Сводный отчёт Гостеприимства»' });
   await edit.hover();

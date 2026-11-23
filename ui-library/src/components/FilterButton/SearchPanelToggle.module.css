@@ -1,9 +1,9 @@
 .control { position:relative; display:flex; flex:none; margin-inline-start:auto; }
 .button {
   display:inline-flex; align-items:center; justify-content:center; gap:8px; height:40px; padding:0 12px;
-  border:1px solid #d7e6f5; border-radius:20px; background:#fff; color:#101d3b;
+  border:1px solid var(--catalog-theme-edge, #d7e6f5); border-radius:20px; background:var(--catalog-theme-surface, #fff); color:var(--catalog-theme-text, #101d3b);
   white-space:nowrap; cursor:pointer;
 }
 .toggle { font:inherit; font-size:13px; line-height:18px; font-weight:500; }
-.button:hover { background:#f3f4f9; }
-.button:focus-visible { outline:2px solid #007bfc; outline-offset:2px; }
+.button:hover { background:var(--catalog-theme-hover, #f3f4f9); }
+.button:focus-visible { outline:2px solid var(--catalog-theme-accent, #007bfc); outline-offset:2px; }

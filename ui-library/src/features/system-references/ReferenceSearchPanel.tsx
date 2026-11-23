@@ -22,7 +22,7 @@ export function ReferenceSearchPanel({ id, visible, expanded, draft, onChange, o
   const canApply = referenceFilterCount(draft) > 0;
   const actions = <div className={s.actions}>
     <button type="button" className={`${s.action} ${s.reset}`} onClick={onReset}>Сбросить</button>
-    <button type="button" className={`${s.action} ${s.apply}`} disabled={!canApply} onClick={onApply}>Применить</button>
+    <button type="button" data-catalog-action="apply" className={`${s.action} ${s.apply}`} disabled={!canApply} onClick={onApply}>Применить</button>
   </div>;
   const switches = <div className={s.switches} role="group" aria-label="Условия поиска">
     <button type="button" className={s.toggleChip} aria-pressed={draft.exactEntity}

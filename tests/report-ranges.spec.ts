@@ -133,3 +133,82 @@ for(const context of ['catalog','favorites'] as const) {
     expect(errors).toEqual([]);
   });
 }
+
+
+test('dark range defaults are visible and neutral in the panel and both column menus', async ({ page }, info) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/preview/navigation?section=reports&themePilot=1');
+  const theme = page.getByRole('button', { name: 'Тёмная тема' });
+  const opener = page.getByRole('button', { name: 'Открыть фильтры отчётов', exact: true });
+  const panel = page.locator('[data-report-filter-panel]');
+  const mau = panel.locator('[data-report-range="mau"]');
+  const lastViewed = panel.locator('[data-report-range="lastViewed"]');
+  const band = (field: typeof mau) => field.locator('[data-range-band]');
+  const chip = mau.getByRole('button', { name: 'От 50', exact: true });
+  const movePointerOutside = () => page.mouse.move(12, 48);
+
+  await opener.click();
+  await expect(band(mau)).toHaveCSS('background-color', 'rgb(0, 123, 252)');
+  await expect(chip).toHaveCSS('background-color', 'rgb(240, 241, 244)');
+  await movePointerOutside();
+  await mau.screenshot({ path: info.outputPath('range-light-panel-mau.png') });
+  await page.keyboard.press('Escape');
+  await theme.click();
+  await opener.click();
+  await movePointerOutside();
+
+  async function expectUnbounded(field: typeof mau) {
+    await expect(field).toHaveAttribute('data-bounded', 'false');
+    await expect(field.locator('[data-range-track]')).toHaveCSS('background-color', 'rgb(133, 138, 150)');
+    await expect(band(field)).toHaveCSS('background-color', 'rgb(133, 138, 150)');
+    await expect(field.locator('input[type="number"]')).toHaveCount(2);
+    for (const input of await field.locator('input[type="number"]').all()) await expect(input).toHaveValue('');
+    await expect(field.locator('img')).toHaveCount(2);
+    for (const knob of await field.locator('img').all()) {
+      await expect.poll(() => knob.evaluate(image => (image as HTMLImageElement).naturalWidth)).toBe(68);
+    }
+  }
+  await expectUnbounded(mau);
+  await expectUnbounded(lastViewed);
+  const presets = mau.getByRole('group', { name: 'Пороги MAU' });
+  await expect(presets.getByRole('button')).toHaveCount(4);
+  for (const preset of await presets.getByRole('button').all()) {
+    await expect(preset).toHaveAttribute('aria-pressed', 'false');
+    await expect(preset).toHaveCSS('background-color', 'rgb(32, 33, 37)');
+    await expect(preset).toHaveCSS('box-shadow', /rgb\(133, 138, 150\).*inset/);
+  }
+  await mau.screenshot({ path: info.outputPath('range-dark-panel-mau.png') });
+  await lastViewed.screenshot({ path: info.outputPath('range-dark-panel-viewed.png') });
+
+  const handle = mau.locator('img').first().locator('..');
+  const bounds = (await handle.boundingBox())!;
+  const x = bounds.x + bounds.width / 2;
+  const y = bounds.y + bounds.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x + 90, y, { steps: 6 });
+  await page.mouse.up();
+  const lower = mau.getByRole('slider', { name: 'MAU: нижняя граница' });
+  await expect.poll(async () => Number(await lower.inputValue())).toBeGreaterThan(0);
+  await expect(mau).toHaveAttribute('data-bounded', 'true');
+  await expect(band(mau)).toHaveCSS('background-color', 'rgb(134, 184, 255)');
+  await chip.click();
+  await expect(chip).toHaveAttribute('aria-pressed', 'true');
+  await expect(mau.getByRole('spinbutton', { name: 'MAU: от' })).toHaveValue('50');
+  await expect(mau.getByRole('spinbutton', { name: 'MAU: до' })).toHaveValue('');
+  await page.keyboard.press('Escape');
+  await page.setViewportSize({ width: 1920, height: 1000 });
+
+  for (const [column, attribute, filename] of [
+    ['MAU', 'mau', 'range-dark-column-mau.png'],
+    ['Просмотр', 'lastViewed', 'range-dark-column-viewed.png'],
+  ]) {
+    await page.getByRole('button', { name: `Фильтр «${column}»`, exact: true }).click();
+    await movePointerOutside();
+    const menuRange = page.getByRole('dialog').locator(`[data-report-range="${attribute}"]`);
+    await expectUnbounded(menuRange);
+    await menuRange.screenshot({ path: info.outputPath(filename) });
+    await page.keyboard.press('Escape');
+  }
+});

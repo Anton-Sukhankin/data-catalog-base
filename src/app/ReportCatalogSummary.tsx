@@ -3,7 +3,8 @@ import { Tooltip } from 'radix-ui';
 import type { ReportTableRow } from '@data-catalog/ui/source/data/reportTable';
 import styles from './ReportCatalogSummary.module.css';
 
-const domainColors = ['#0067d8', '#408fe7', '#649fdf', '#8ebbec', '#a7caed', '#c3dcf6'];
+const domainColors = ['#0067d8', '#408fe7', '#649fdf', '#8ebbec', '#a7caed', '#c3dcf6']
+  .map((light, index) => 'var(--catalog-theme-chart-domain-' + (index + 1) + ', ' + light + ')');
 const countFormat = new Intl.NumberFormat('ru');
 const summaryMotionDuration = 180;
 const scrollAccelerationDuration = 45;

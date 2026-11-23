@@ -156,7 +156,7 @@ export function useSourceFilterOverlay({ records, applied, onApply, onModalChang
         {grouped && <h3>{sourceLabels[id]}</h3>}
         {list(id,column.queries[id] ?? '',undefined,column.draft)}
       </section>)}</div>
-      <div className={s.columnActions}><button type="button" className={s.columnReset} onClick={reset}>Сбросить</button><button type="button" disabled={sourceFiltersEqual(applied,column.draft)} onClick={apply}>Применить</button></div>
+      <div className={s.columnActions}><button type="button" className={s.columnReset} onClick={reset}>Сбросить</button><button type="button" data-catalog-action="apply" disabled={sourceFiltersEqual(applied,column.draft)} onClick={apply}>Применить</button></div>
     </div>,document.body);
   }
   return { overlay,openPanel,openColumn,close,isOpen:Boolean(state),activeColumn:activeColumn?.label };

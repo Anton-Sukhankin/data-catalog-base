@@ -1,3 +1,4 @@
+import { CatalogEntityIcon } from '../../components/CatalogEntityIcon/CatalogEntityIcon';
 import { useId, useLayoutEffect, useRef, useState } from 'react';
 import motion from '../../components/Accordion/Accordion.module.css';
 import { ListPagination } from '../../components/ListPagination/ListPagination';
@@ -88,7 +89,7 @@ export function SubscriptionsContent({ view, items, page, onIntent, viewportOffs
                     {view === 'cards' ? <SubscriptionGroup subscriptions={subscriptions} {...callbacks} ariaLabel={`Подписки: ${domain}`} />
                       : <div className={styles.tableGroup}>
                         {subscriptions.map(item => <div role="row" className={`${styles.grid} ${styles.tableRow}`} key={item.id} data-subscription-row-id={item.id}>
-                          <div role="cell" className={styles.cell}><span className={styles.document}><img src={new URL('../../assets/icons/reports/report-document.svg', import.meta.url).href} width="16" height="16" alt="" /></span><span className={styles.subscriptionTitle}>{item.title}</span></div>
+                          <div role="cell" className={styles.cell}><CatalogEntityIcon kind="report" /><span className={styles.subscriptionTitle}>{item.title}</span></div>
                           <div role="cell" className={styles.cell}><span className={styles.status}>{item.statusLabel}</span></div>
                           <div role="cell" className={styles.cell}><button type="button" className={styles.reportLink} onClick={() => onIntent({ kind: 'open-report', report: item.report })}>{item.report.title}</button></div>
                           <div role="cell" className={styles.cell}>{item.nextDeliveryText}</div>

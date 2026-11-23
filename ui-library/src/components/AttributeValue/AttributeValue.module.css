@@ -4,7 +4,7 @@
   inset-inline:0;
   inset-block-start:calc(50% - 0.5px);
   block-size:1px;
-  background:#9499a3;
+  background:var(--catalog-theme-primary, #9499a3);
   content:'';
 }
 .measure { visibility:hidden; }

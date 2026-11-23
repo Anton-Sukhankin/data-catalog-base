@@ -1,5 +1,5 @@
-.preview { min-height:100vh; background:#f3f4f9; }
-.tools { position:absolute; top:24px; left:24px; width:240px; color:#101d3b; font-family:'CoFo Sans',sans-serif; font-size:14px; line-height:20px; }
+.preview { min-height:100vh; background:var(--catalog-theme-workspace, #f3f4f9); }
+.tools { position:absolute; top:24px; left:24px; width:240px; color:var(--catalog-theme-text, #101d3b); font-family:'CoFo Sans',sans-serif; font-size:14px; line-height:20px; }
 .tools h1 { margin:0 0 16px; font-size:20px; line-height:28px; }
 .tools label, .category { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:12px; }
 .category > div { width:140px; }

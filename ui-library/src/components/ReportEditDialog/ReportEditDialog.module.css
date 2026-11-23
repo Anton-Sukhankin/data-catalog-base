@@ -4,27 +4,27 @@
   padding: 24px;
   border: 0;
   border-radius: 16px;
-  background: #fff;
-  color: #101d3b;
-  box-shadow: 0 12px 40px #101d3b29;
+  background: var(--catalog-theme-raised, #fff);
+  color: var(--catalog-theme-text, #101d3b);
+  box-shadow: 0 12px 40px var(--catalog-theme-thin-shadow, #101d3b29);
   font: 400 14px / 20px var(--catalog-ui-font, 'CoFo Sans', sans-serif);
   box-sizing: border-box;
 }
-.dialog::backdrop { background: #101d3b5c; }
+.dialog::backdrop { background: var(--catalog-theme-scrim, #101d3b5c); }
 .header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .header h2 { margin: 0; font-size: 22px; font-weight: 500; line-height: 28px; }
-.dialog p { margin: 8px 0 0; color: #52698c; overflow-wrap: anywhere; }
+.dialog p { margin: 8px 0 0; color: var(--catalog-theme-secondary, #52698c); overflow-wrap: anywhere; }
 .footer { display: flex; justify-content: flex-end; margin-top: 24px; }
 .footer button {
   min-height: 36px;
   padding: 0 16px;
   border: 0;
   border-radius: 18px;
-  background: #0067dc;
-  color: #fff;
+  background: var(--catalog-theme-primary, #0067dc);
+  color: var(--catalog-theme-inverse, #fff);
   font: inherit;
   font-weight: 500;
   cursor: pointer;
 }
-.footer button:hover { background: #005cbf; }
-.footer button:focus-visible { outline: 2px solid #007bfc; outline-offset: 2px; }
+.footer button:hover { background: var(--catalog-theme-primary-hover, #005cbf); }
+.footer button:focus-visible { outline: 2px solid var(--catalog-theme-accent, #007bfc); outline-offset: 2px; }

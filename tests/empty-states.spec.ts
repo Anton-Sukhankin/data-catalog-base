@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 const preview = '/preview/navigation';
 
 test('report filters still recover a result after the table has no matches', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 900 });
   await page.goto(preview + '?section=reports');
   const dialog = page.getByRole('dialog');
   for (const [field, value] of [['Домен', 'Финансы'], ['Мастер-система', 'Домиленд']]) {
@@ -25,7 +26,7 @@ test('empty favorites and unavailable report metrics hide result controls', asyn
   await expect(page.getByRole('button', { name: 'Табличный вид' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Открыть фильтры отчётов' })).toHaveCount(0);
 
-  await page.goto(preview + '?section=reports&report=demo-report-management&reportTab=metrics');
+  await page.goto(preview + '?section=reports&report=demo-report-summary--pagination-demo-11&reportTab=metrics');
   await expect(page.getByRole('heading', { name: 'Сведения о показателях недоступны' })).toBeVisible();
   await expect(page.getByRole('textbox', { name: /Поиск метрик/ })).toHaveCount(0);
   await expect(page.getByRole('combobox', { name: 'Тип метрики' })).toHaveCount(0);
