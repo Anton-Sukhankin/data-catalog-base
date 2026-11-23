@@ -9,13 +9,11 @@ function applyTheme(theme: CatalogTheme) {
 }
 
 export function useCatalogTheme() {
-  const enabled = document.documentElement.dataset.catalogThemePilot === 'true';
   const [theme, setTheme] = useState<CatalogTheme>(() =>
-    document.documentElement.dataset.catalogTheme === 'dark' ? 'dark' : 'light',
+    document.documentElement.dataset.catalogTheme === 'light' ? 'light' : 'dark',
   );
 
   useEffect(() => {
-    if (!enabled) return;
     function synchronize(event: StorageEvent) {
       try {
         if (event.storageArea !== window.localStorage) return;
@@ -23,13 +21,13 @@ export function useCatalogTheme() {
         return;
       }
       if (event.key !== storageKey && event.key !== null) return;
-      const next = event.newValue === 'dark' ? 'dark' : 'light';
+      const next = event.newValue === 'light' ? 'light' : 'dark';
       applyTheme(next);
       setTheme(next);
     }
     window.addEventListener('storage', synchronize);
     return () => window.removeEventListener('storage', synchronize);
-  }, [enabled]);
+  }, []);
 
   function toggle() {
     const next = document.documentElement.dataset.catalogTheme === 'dark' ? 'light' : 'dark';
@@ -40,5 +38,5 @@ export function useCatalogTheme() {
     } catch { /* The theme remains active on this page without storage. */ }
   }
 
-  return { enabled, theme, toggle };
+  return { theme, toggle };
 }

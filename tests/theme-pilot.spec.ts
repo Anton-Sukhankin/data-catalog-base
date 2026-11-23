@@ -2,40 +2,46 @@ import { expect, test } from '@playwright/test';
 
 const home = '/preview/navigation?section=home';
 const reports = '/preview/navigation?section=reports';
-const pilot = '&themePilot=1';
+test.use({ storageState: { cookies: [], origins: [] } });
 
-test('theme pilot is opt-in, starts light and restores dark on a direct route', async ({ page }) => {
-  await page.emulateMedia({ colorScheme: 'dark' });
-  await page.goto(home);
-  await expect(page.getByRole('button', { name: 'Тёмная тема' })).toHaveCount(0);
-  await expect(page.locator('html')).toHaveAttribute('data-catalog-theme', 'light');
-
-  await page.goto(home + pilot);
-  const toggle = page.getByRole('button', { name: 'Тёмная тема' });
-  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+test('dark is the default and an explicit light choice survives direct links and reload', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'light' });
+  const toggle = page.getByRole('button', { name: 'Тёмная тема', exact: true });
+  const navigation = page.getByRole('navigation', { name: 'Разделы каталога' });
+  for (const [section, label] of [
+    ['home', 'Главная'],
+    ['reports', 'Отчёты'],
+    ['tasks', 'Задачи'],
+    ['metrics', 'Метрики и показатели'],
+    ['sources', 'Источники'],
+    ['dictionary', 'Бизнес-словарь'],
+    ['ai', 'AI Hub'],
+    ['systems', 'Справочники ИС'],
+    ['questions', 'Вопросы и ответы'],
+  ]) {
+    await page.goto(section === 'home' ? '/preview/navigation' : '/preview/navigation?section=' + section);
+    await expect(navigation.getByRole('button', { name: label, exact: true })).toHaveAttribute('aria-current', 'page');
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(23, 24, 27)');
+  }
   await toggle.press('Space');
   await expect(toggle).toBeFocused();
-  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('html')).toHaveCSS('color-scheme', 'dark');
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
 
   await page.goto(reports);
-  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(23, 24, 27)');
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('html')).toHaveCSS('color-scheme', 'light');
+  await page.reload();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+
+  await page.evaluate(() => localStorage.setItem('data-catalog.theme', 'invalid'));
   await page.reload();
   await expect(toggle).toHaveAttribute('aria-pressed', 'true');
-
-  await page.goto(home + '&themePilot=0');
-  await expect(toggle).toHaveCount(0);
-  await expect(page.locator('html')).toHaveCSS('color-scheme', 'light');
-
-  await page.goto(home + pilot);
-  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
-  await toggle.press('Enter');
-  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('html')).toHaveCSS('color-scheme', 'dark');
 });
 
 test('switching the theme preserves catalog filters, location and assistant draft', async ({ page }) => {
-  await page.goto(reports + pilot);
+  await page.goto(reports);
   await page.getByRole('button', { name: 'Фильтр «Домен»', exact: true }).click();
   const filter = page.getByRole('dialog', { name: 'Фильтр: Домен' });
   await filter.getByRole('checkbox', { name: 'Гостеприимство', exact: true }).check();
@@ -50,7 +56,7 @@ test('switching the theme preserves catalog filters, location and assistant draf
   const before = page.url();
   const toggle = page.getByRole('button', { name: 'Тёмная тема' });
   await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
   await expect(page).toHaveURL(before);
   await expect(draft).toHaveValue('Черновик проверки темы');
   await page.getByRole('button', { name: 'Закрыть AI-ассистента' }).click();
@@ -59,8 +65,7 @@ test('switching the theme preserves catalog filters, location and assistant draf
 });
 
 test('menu portal and native question dialog share the dark palette', async ({ page }) => {
-  await page.goto('/preview/navigation?section=questions' + pilot);
-  await page.getByRole('button', { name: 'Тёмная тема' }).press('Enter');
+  await page.goto('/preview/navigation?section=questions');
   const profile = page.getByRole('button', { name: 'Профиль пользователя' });
   await profile.press('Enter');
   await expect(page.getByRole('menu', { name: 'Профиль пользователя' })).toHaveCSS('background-color', 'rgb(41, 43, 48)');
@@ -82,51 +87,61 @@ test('theme can change when local preferences cannot be read or written', async 
   await page.addInitScript(() => {
     Object.defineProperty(window, 'localStorage', { get() { throw new DOMException('Unavailable', 'SecurityError'); } });
   });
-  await page.goto(home + pilot);
+  await page.goto(home);
   const toggle = page.getByRole('button', { name: 'Тёмная тема' });
-  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
-  await toggle.click();
   await expect(toggle).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('html')).toHaveCSS('color-scheme', 'dark');
+  await toggle.press('Enter');
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('html')).toHaveCSS('color-scheme', 'light');
+  await page.reload();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
 });
 
 
-test('saved dark theme is ready before the React entry and follows changes from another pilot tab', async ({ page, context }) => {
-  await page.goto(home + pilot);
-  await page.getByRole('button', { name: 'Тёмная тема' }).click();
-  const other = await context.newPage();
-  let allowEntry!: () => void;
-  const heldEntry = new Promise<void>((resolve) => { allowEntry = resolve; });
+test('first paint uses the default or saved theme and open tabs stay synchronized', async ({ page, context }) => {
   const entryRequest = /\/(?:assets\/main-[^/]+\.js|src\/main\.tsx)(?:\?.*)?$/;
-  await other.route(entryRequest, async (route) => {
-    await heldEntry;
-    await route.continue();
-  });
-  try {
-    const entry = other.waitForRequest(entryRequest);
-    await other.goto('/preview/navigation?section=questions' + pilot, { waitUntil: 'commit' });
-    await entry;
-    await expect(other.locator('html')).toHaveAttribute('data-catalog-theme', 'dark');
-    await expect(other.locator('html')).toHaveCSS('color-scheme', 'dark');
-    await expect(other.getByRole('button', { name: 'Задать вопрос' })).toHaveCount(0);
-  } finally {
-    allowEntry();
-  }
+  const checkBeforeReact = async (tab: typeof page, url: string, theme: 'dark' | 'light') => {
+    let resume!: () => void;
+    const heldEntry = new Promise<void>(resolve => { resume = resolve; });
+    await tab.route(entryRequest, async route => {
+      await heldEntry;
+      await route.continue();
+    }, { times: 1 });
+    try {
+      const entry = tab.waitForRequest(entryRequest);
+      await tab.goto(url, { waitUntil: 'commit' });
+      await entry;
+      await expect(tab.locator('html')).toHaveAttribute('data-catalog-theme', theme);
+      await expect(tab.locator('html')).toHaveCSS('color-scheme', theme);
+      await expect(tab.getByRole('button', { name: 'Тёмная тема' })).toHaveCount(0);
+    } finally {
+      resume();
+    }
+  };
+
+  await checkBeforeReact(page, home, 'dark');
+  const toggle = page.getByRole('button', { name: 'Тёмная тема' });
+  await toggle.click();
+  const other = await context.newPage();
+  await checkBeforeReact(other, '/preview/navigation?section=questions', 'light');
 
   await other.getByRole('button', { name: 'Задать вопрос' }).click();
   const subject = other.getByRole('textbox', { name: 'Тема' });
   await subject.fill('Черновик вопроса');
-  await page.getByRole('button', { name: 'Тёмная тема' }).click();
-  await expect(other.locator('[data-question-surface]')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await toggle.click();
+  await expect(other.locator('[data-question-surface]')).toHaveCSS('background-color', 'rgb(41, 43, 48)');
+  await toggle.click();
+  await expect(other.locator('html')).toHaveCSS('color-scheme', 'light');
+  await page.evaluate(() => localStorage.clear());
+  await expect(other.locator('html')).toHaveCSS('color-scheme', 'dark');
   await expect(subject).toHaveValue('Черновик вопроса');
   await expect(subject).toBeFocused();
 });
 
 test('dark theme works with the Navigator and sidebar at desktop and narrow widths', async ({ page }, info) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto(home + pilot);
+  await page.goto(home);
   const toggle = page.getByRole('button', { name: 'Тёмная тема' });
-  await toggle.click();
   for (const width of [1440, 1024, 720]) {
     await page.setViewportSize({ width, height: 900 });
     const activeSection = page.locator('[aria-current="page"]').getByText('Главная', { exact: true });
@@ -154,8 +169,9 @@ test('dark theme works with the Navigator and sidebar at desktop and narrow widt
 test('dark charts retain monthly values, focus and the fullscreen source graph', async ({ page }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  const entry = reports + '&report=demo-report-summary&reportTab=usage' + pilot;
+  const entry = reports + '&report=demo-report-summary&reportTab=usage';
   await page.goto(entry);
+  await page.getByRole('button', { name: 'Тёмная тема' }).click();
   const chart = page.locator('[data-usage-chart="mau"]');
   await chart.locator('[data-usage-month="2026-01"]').hover();
   const tooltip = chart.getByRole('tooltip');
@@ -190,7 +206,7 @@ test('dark charts retain monthly values, focus and the fullscreen source graph',
 test('report workspaces keep summary, rows and pinned actions distinct in both themes', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto(reports + pilot);
+  await page.goto(reports);
   const summary = page.getByRole('region', { name: 'Сводка каталога отчётов' });
   const cards = summary.locator('dl > div');
   const table = page.getByRole('region', { name: 'Таблица отчётов', exact: true });
@@ -199,6 +215,7 @@ test('report workspaces keep summary, rows and pinned actions distinct in both t
   const actions = row.locator(':scope > :last-child');
   const toggle = page.getByRole('button', { name: 'Тёмная тема' });
 
+  await toggle.click();
   await expect(cards).toHaveCount(3);
   await expect(cards.first()).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   await expect(table).toHaveCSS('background-color', 'rgb(243, 244, 249)');
@@ -232,12 +249,12 @@ test('report workspaces keep summary, rows and pinned actions distinct in both t
 });
 
 test('the common empty illustration blends into the selected theme', async ({ page }) => {
-  await page.goto('/preview/navigation?section=questions&questions.tab=mine&questionsCase=empty' + pilot);
+  await page.goto('/preview/navigation?section=questions&questions.tab=mine&questionsCase=empty');
   const artwork = page.getByRole('heading', { name: 'У вас пока нет обращений' }).locator('..').locator('img');
   await expect(artwork).toBeVisible();
-  await expect(artwork).toHaveCSS('mix-blend-mode', 'multiply');
-  await page.getByRole('button', { name: 'Тёмная тема' }).click();
   await expect(artwork).toHaveCSS('mix-blend-mode', 'screen');
+  await page.getByRole('button', { name: 'Тёмная тема' }).click();
+  await expect(artwork).toHaveCSS('mix-blend-mode', 'multiply');
 });
 
 
@@ -253,7 +270,8 @@ test('entity icons share the report palette in both themes and verification foll
   const check = overlay.locator('path');
   const selectView = (name: string) => page.getByRole('button', { name, exact: true }).click();
 
-  await page.goto(reports + pilot);
+  await page.goto(reports);
+  await toggle.click();
   await expect(row.locator(icon)).toHaveCSS('background-color', 'rgb(238, 242, 246)');
   await selectView('Карточный вид');
   await expect(card.locator(icon)).toHaveCSS('background-color', 'rgb(238, 242, 246)');
@@ -310,8 +328,7 @@ test('entity icons share the report palette in both themes and verification foll
 test('collapsed navigation uses expanded hover and selected colors in the dark theme', async ({ page }, info) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto(home + pilot);
-  await page.getByRole('button', { name: 'Тёмная тема' }).click();
+  await page.goto(home);
   const sidebar = page.locator('aside[data-collapsed]');
   const nav = sidebar.getByRole('navigation', { name: 'Разделы каталога' });
   const active = nav.getByRole('button', { name: 'Главная', exact: true });

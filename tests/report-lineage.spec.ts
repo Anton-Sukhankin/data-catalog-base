@@ -356,7 +356,7 @@ test('Lineage root nodes and legend have matching contrast across report routes'
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto(entry + '&themePilot=1');
+  await page.goto(entry);
   await expect(root).toHaveCSS('background-color', 'rgb(0, 123, 252)');
   await expect(root).toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
   await expect(swatch(/^Отчёт$/)).toHaveCSS('background-color', 'rgb(0, 123, 252)');
@@ -366,7 +366,7 @@ test('Lineage root nodes and legend have matching contrast across report routes'
     ['section=reports', 'Страницы отчётов'],
     ['segment=favorites', 'Страницы избранных отчётов'],
   ]) {
-    await page.goto('/preview/navigation?themePilot=1&' + query);
+    await page.goto('/preview/navigation?' + query);
     const pager = page.getByRole('navigation', { name: label, exact: true });
     const rows = page.locator('[data-table-report-id]');
     await expect(pager).toBeVisible();
@@ -386,7 +386,7 @@ test('Lineage root nodes and legend have matching contrast across report routes'
 
   for (const id of reportIds) {
     await test.step(id, async () => {
-      await page.goto('/preview/navigation?section=reports&reportTab=sources&themePilot=1&report=' + id);
+      await page.goto('/preview/navigation?section=reports&reportTab=sources&report=' + id);
       const card = page.locator('article[data-report-id="' + id + '"]');
       await expect(card.getByRole('tabpanel')).toBeVisible();
       await expect(root).toBeVisible();
@@ -411,13 +411,13 @@ test('Lineage root nodes and legend have matching contrast across report routes'
     [technicalReportSummary.id, 'Сведения об источниках недоступны'],
     ...reportCrmDateReports.map(report => [report.id, 'Схема происхождения данных недоступна']),
   ]) {
-    await page.goto('/preview/navigation?section=reports&reportTab=sources&themePilot=1&report=' + id);
+    await page.goto('/preview/navigation?section=reports&reportTab=sources&report=' + id);
     await expect(page.getByRole('tabpanel').getByText(message, { exact: true })).toBeVisible();
     await expect(root).toHaveCount(0);
   }
   console.info('Report routes with Lineage checked:', reportIds.size);
 
-  await page.goto('/preview/navigation?section=sources&source=source-reportcrm-date&sourceTab=lineage&themePilot=1');
+  await page.goto('/preview/navigation?section=sources&source=source-reportcrm-date&sourceTab=lineage');
   await expect(root).toHaveCSS('background-color', fill);
   await expect(swatch(/^Источник \(каталог\)$/)).toHaveCSS('background-color', fill);
   await expect(swatch(/^Источник \(каталог\)$/)).toHaveCSS('border-top-color', border);

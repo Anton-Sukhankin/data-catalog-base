@@ -138,7 +138,7 @@ for(const context of ['catalog','favorites'] as const) {
 test('dark range defaults are visible and neutral in the panel and both column menus', async ({ page }, info) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/preview/navigation?section=reports&themePilot=1');
+  await page.goto('/preview/navigation?section=reports');
   const theme = page.getByRole('button', { name: 'Тёмная тема' });
   const opener = page.getByRole('button', { name: 'Открыть фильтры отчётов', exact: true });
   const panel = page.locator('[data-report-filter-panel]');

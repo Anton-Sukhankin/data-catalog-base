@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
-const base = '/preview/navigation?themePilot=1&';
+const base = '/preview/navigation?';
+test.use({ storageState: { cookies: [], origins: [] } });
 const primary = 'rgb(0, 113, 235)';
 const control = 'rgb(133, 138, 150)';
 const selected = 'rgb(134, 184, 255)';
@@ -11,7 +12,6 @@ test.beforeEach(async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'reduce', colorScheme: 'light' });
   await page.goto(base + 'section=reports');
-  await page.getByRole('button', { name: 'Тёмная тема', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-catalog-theme', 'dark');
 });
 
