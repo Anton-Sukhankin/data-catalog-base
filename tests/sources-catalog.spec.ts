@@ -18,8 +18,15 @@ test('source table headings match the report table insets', async ({ page }) => 
   expect(await measure(page.getByRole('button', { name:'Фильтр: Описание', exact:true }))).toEqual(other);
   await expect(page.getByRole('columnheader', { name:'Тип объекта', exact:true }).locator('span')).toHaveCSS('height', '32px');
   const head = (await page.getByRole('columnheader', { name:'Тип объекта', exact:true }).boundingBox())!;
-  const row = (await page.locator('tbody tr').first().boundingBox())!;
-  expect(row.y - (head.y + 48)).toBe(8);
+  const rows = page.getByRole('table', { name:'Источники', exact:true }).locator('tbody tr');
+  await expect(rows).toHaveCount(9);
+  const boxes = await rows.evaluateAll(nodes => nodes.map(node => {
+    const { top, bottom } = node.getBoundingClientRect();
+    return { top, bottom };
+  }));
+  expect(boxes[0].top - (head.y + head.height)).toBe(8);
+  const gaps = boxes.slice(1).map((box, index) => box.top - boxes[index].bottom);
+  expect(gaps).toEqual(Array(boxes.length - 1).fill(8));
 });
 
 test('source modal drafts apply once and synchronize table headers, count, view and reload',async({page},testInfo)=>{
@@ -257,7 +264,7 @@ test('source identity stays pinned with an operable header while other columns s
     const style=getComputedStyle(element,'::before');
     return{color:style.backgroundColor,height:style.height,top:style.top};
   });
-  expect(divider).toEqual({color:'rgb(226, 228, 234)',height:'1px',top:'47px'});
+  expect(divider).toEqual({color:'rgb(215, 230, 245)',height:'1px',top:'47px'});
   await scroll.evaluate(element=>element.scrollLeft=0);
   await expect(frame).toHaveAttribute('data-source-table-scrolled','false');
   expect((await source.boundingBox())!.x).toBe(initial.source.x);

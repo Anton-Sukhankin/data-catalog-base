@@ -622,6 +622,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
     <div className={styles.preview} inert={panel.isOpen || sourcePanelOpen || aiPanelOpen}>
       <Header productName="AI&Data Hub" brandMarkSrc="/images/header/brand-mark.svg"
         avatarSrc="/images/header/profile-avatar.png"
+        assistant={<AiAssistant launcherPlacement="header" suspended={panel.isOpen || sourcePanelOpen || aiPanelOpen} requestReply={replyFromCatalogDemo} />}
         search={<CatalogSearch entries={searchEntries} sections={searchSections} loading={summaries.isPending} error={summaries.isError}
           routeKey={location.key} restoreFromHistory={navigationType === 'POP'} onChoose={chooseSearch}
           onClearQuery={() => setHighlightToken(createHighlightToken())}
@@ -636,7 +637,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
           <Sidebar items={paginationDemo ? paginatedNavigation : expandReportCatalog ? reportPaginationNavigation : navigationFixture} activeId={activeId} collapsed={collapsed}
             onSelect={openSectionStart} onCollapsedChange={setCollapsed} />
         </div>
-        <main ref={main} className={styles.review} data-catalog-screen data-list-scroll={isAiCatalog || isSystemReferences ? '' : undefined} data-ai-catalog={isAiCatalog} data-dictionary={activeId === 'dictionary' && !selectedReportId} data-source-detail={isSourceDetail} data-source-catalog={activeId === 'sources' && !hasDetail} data-report-detail={Boolean(selectedReportId)} data-metric-catalog={activeId === 'metrics' && !hasDetail} data-metric-detail={isMetricDetail} data-table-preview={activeId === 'reports' && !hasDetail} data-home-preview={activeId === 'home' && !selectedReportId} data-news-reading={isReadingNews} data-system-references={isSystemReferences ? params.has('systems.reference') ? 'detail' : 'catalog' : undefined} data-questions={isQuestions} data-tasks={isTasks}>
+        <main ref={main} className={`${styles.review}${isReportCatalog || isHomeReports ? ` ${styles.reportWorkspace}` : ''}`} data-catalog-screen data-list-scroll={isAiCatalog || isSystemReferences ? '' : undefined} data-ai-catalog={isAiCatalog} data-dictionary={activeId === 'dictionary' && !selectedReportId} data-source-detail={isSourceDetail} data-source-catalog={activeId === 'sources' && !hasDetail} data-report-detail={Boolean(selectedReportId)} data-metric-catalog={activeId === 'metrics' && !hasDetail} data-metric-detail={isMetricDetail} data-table-preview={activeId === 'reports' && !hasDetail} data-home-preview={activeId === 'home' && !selectedReportId} data-news-reading={isReadingNews} data-system-references={isSystemReferences ? params.has('systems.reference') ? 'detail' : 'catalog' : undefined} data-questions={isQuestions} data-tasks={isTasks}>
           <SearchLandingContext.Provider key={sidebarEntry} value={pendingDescription ? undefined : landingHit}>
           {!hasDetail && activeId !== 'metrics' && activeId !== 'sources' && activeId !== 'dictionary' && !isAiCatalog && !isSystemReferences && !isQuestions && !isTasks && <div className={styles.pageHeader}><h1>{activeSection.label}</h1>
             {activeId === 'reports' && !selectedReportId && tablePage && <span className={badges.sectionTotal}>{tablePage.total}</span>}
@@ -821,7 +822,6 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
           onSortChange={activeFilters.changeSort} />
       </div>, document.body)}
       <ReportFilterOverlay controller={panel} context={panelContext} />
-      <AiAssistant suspended={panel.isOpen || sourcePanelOpen || aiPanelOpen} requestReply={replyFromCatalogDemo} />
     </div>
   );
 }

@@ -116,7 +116,7 @@ test('term detail matches the Paper composition and distinguishes missing and co
   const firstPanelTop = (await firstPanel.boundingBox())!.y;
   await scroll.evaluate(node => { node.scrollTop = 96; });
   await expect(detail).toHaveAttribute('data-detail-compact', 'true');
-  await expect(header).toHaveCSS('box-shadow', 'rgb(220, 226, 234) 0px -1px 0px 0px inset');
+  await expect(header).toHaveCSS('box-shadow', 'rgb(191, 196, 204) 0px -1px 0px 0px inset');
   await expect.poll(informationInset).toBe(16);
   expect((await firstPanel.boundingBox())!.y).toBeLessThan(firstPanelTop);
   await scroll.evaluate(node => { node.scrollTop = 0; });

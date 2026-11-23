@@ -97,7 +97,11 @@ function DeleteChatDialog({ chat, onCancel, onConfirm }: {
   </dialog>;
 }
 
-export function AiAssistant({ suspended = false, requestReply }: { suspended?: boolean; requestReply: AssistantReplySource }) {
+export function AiAssistant({ suspended = false, requestReply, launcherPlacement = 'floating' }: {
+  suspended?: boolean;
+  requestReply: AssistantReplySource;
+  launcherPlacement?: 'floating' | 'sidebar' | 'header';
+}) {
   const [phase, setPhase] = useState<'closed' | 'open' | 'closing'>('closed');
   const [expanded, setExpanded] = useState(false);
   const [desktopHistoryOpen, setDesktopHistoryOpen] = useState(true);
@@ -209,16 +213,26 @@ export function AiAssistant({ suspended = false, requestReply }: { suspended?: b
   const resizeLabel = expanded ? 'Свернуть панель' : 'Развернуть панель';
   const ResizeIcon = expanded ? Minimize : Maximize;
   const heightLabel = geometryCustomized ? 'Вернуть исходный размер и положение панели' : 'Уменьшить высоту панели вдвое';
-  return createPortal(<>
-    <button ref={launcher} type="button" className={s.launcher} aria-label="Открыть AI-ассистента"
+  const inSidebar = launcherPlacement === 'sidebar';
+  const inHeader = launcherPlacement === 'header';
+  const isInline = inSidebar || inHeader;
+  const placementClass = inHeader ? s.headerLauncher : s.sidebarLauncher;
+  const launcherName = inSidebar ? 'Открыть AI Assistant' : 'Открыть AI-ассистента';
+  const launcherButton = <button ref={launcher} type="button" className={isInline ? `${s.launcher} ${placementClass}` : s.launcher}
+      aria-label={launcherName}
+      title={isInline ? launcherName : undefined}
       aria-hidden={shown || suspended || undefined} tabIndex={shown || suspended ? -1 : undefined}
-      data-ai-assistant-launcher data-hidden={shown || suspended} onClick={event => {
+      data-ai-assistant-launcher={launcherPlacement} data-hidden={shown || suspended} onClick={event => {
         openedByKeyboard.current = event.detail === 0;
         resetGeometry();
         setPhase('open');
       }}>
-      <AssistantStars />
-    </button>
+      <AssistantStars size={inHeader ? 16 : inSidebar ? 24 : undefined} />
+      {isInline && <span className={s.launcherLabel}>{inHeader ? 'AI ассистент' : 'AI Assistant'}</span>}
+    </button>;
+  return <>
+    {isInline ? launcherButton : createPortal(launcherButton, document.body)}
+    {createPortal(<>
     {shown && <div ref={reveal} className={s.reveal} data-ai-assistant-morph data-catalog-persistent-overlay
       inert={phase === 'closing' || suspended}>
       <section ref={panel} className={s.panel} aria-label="AI-ассистент" data-assistant-expanded={expanded}
@@ -309,5 +323,6 @@ export function AiAssistant({ suspended = false, requestReply }: { suspended?: b
       </section>
     </div>}
     {deleting && <DeleteChatDialog chat={deleting.chat} onCancel={() => closeDeleteDialog(false)} onConfirm={() => closeDeleteDialog(true)} />}
-  </>, document.body);
+    </>, document.body)}
+  </>;
 }

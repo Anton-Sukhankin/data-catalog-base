@@ -1,5 +1,47 @@
 import { expect, test } from '@playwright/test';
 
+test('the header divider matches the idle sidebar edge in both themes', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/preview/navigation?section=reports');
+  const header = page.getByRole('banner');
+  const sidebar = page.locator('aside[data-collapsed]');
+  const themeToggle = header.getByRole('button', { name: 'Тёмная тема', exact: true });
+
+  for (const [theme, color] of [
+    ['light', 'rgb(220, 226, 234)'],
+    ['dark', 'rgb(66, 69, 76)'],
+  ]) {
+    const dark = theme === 'dark';
+    if ((await themeToggle.getAttribute('aria-pressed') === 'true') !== dark) await themeToggle.click();
+    await page.mouse.move(3, 3);
+    await expect(page.locator('html')).toHaveAttribute('data-catalog-theme', theme);
+    expect(await sidebar.evaluate(element => {
+      const edge = getComputedStyle(element, '::after');
+      return { thickness: edge.width, color: edge.backgroundColor };
+    })).toEqual({ thickness: '1px', color });
+    expect(await header.evaluate(element => {
+      const edge = getComputedStyle(element, '::after');
+      return {
+        thickness: edge.height,
+        color: edge.backgroundColor,
+        width: edge.width,
+        bottom: edge.bottom,
+        pointerEvents: edge.pointerEvents,
+      };
+    })).toEqual({ thickness: '1px', color, width: '1440px', bottom: '0px', pointerEvents: 'none' });
+    expect(await header.boundingBox()).toEqual({ x: 0, y: 0, width: 1440, height: 48 });
+    await page.screenshot({ path: info.outputPath('global-header-boundary-' + theme + '.png'),
+      clip: { x: 0, y: 0, width: 1440, height: 156 } });
+  }
+
+  await sidebar.getByRole('button', { name: 'Свернуть панель', exact: true }).click();
+  await page.mouse.move(3, 3);
+  await expect(sidebar).toHaveAttribute('data-collapsed', 'true');
+  expect(await sidebar.evaluate(element => getComputedStyle(element, '::after').backgroundColor))
+    .toBe(await header.evaluate(element => getComputedStyle(element, '::after').backgroundColor));
+});
+
 test('profile menu toggles on click and stays open when choosing a demo item', async ({ page }, info) => {
   await page.goto('/preview/navigation?section=reports');
   const avatar = page.getByRole('button', { name: 'Профиль пользователя' });

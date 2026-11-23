@@ -176,7 +176,7 @@ function ReferenceTable({ rows, scrollRef, onScroll, paginated, compact, pinHead
   const expandable = rows.filter(row => row.options.length > 2).map(row => row.id);
   const anyExpanded = expandable.some(id => expandedRows.has(id));
   return <div ref={scrollRef} onScroll={onScroll} className={s.tableSurface} data-list-scroll data-paginated={paginated}
-    data-header-pinned={pinHeader} data-header-divider={pinHeader && compact}
+    data-header-pinned={pinHeader}
     role="region" aria-label="Таблица метаданных CRM" tabIndex={0}>
     <div className={s.tableContent} data-compact={compact}>
     <table className={s.table} aria-label="Метаданные CRM">

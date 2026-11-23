@@ -46,7 +46,9 @@ test('task cards use the Paper geometry and keep metadata readable when narrow',
   await page.goto(`${entry}?section=tasks&paginationDemo=1`);
   const sidebar = page.getByRole('navigation', { name: 'Разделы каталога' });
   await expect(sidebar.getByRole('button', { name: 'Задачи', exact: true }).getByText('6', { exact: true })).toBeVisible();
-  const cards = page.getByRole('list', { name: queue }).getByRole('button');
+  const list = page.getByRole('list', { name: queue });
+  await expect(list).toHaveCSS('row-gap', '4px');
+  const cards = list.getByRole('button');
   const first = cards.first();
   await expect(cards).toHaveCount(6);
   const dot = first.locator('[data-description-separator]').first();

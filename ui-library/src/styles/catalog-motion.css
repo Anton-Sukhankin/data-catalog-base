@@ -1,7 +1,7 @@
 :root[data-catalog-transition] { view-transition-name: none; }
 :root[data-catalog-transition='screen'] [data-catalog-screen] { view-transition-name: catalog-content; }
 :root[data-catalog-transition='view'] [data-catalog-view-results] { view-transition-name: catalog-content; }
-:root[data-catalog-transition] [data-ai-assistant-launcher][data-hidden='false'] { view-transition-name: assistant-launcher; }
+:root[data-catalog-transition] [data-ai-assistant-launcher='floating'][data-hidden='false'] { view-transition-name: assistant-launcher; }
 
 ::view-transition { pointer-events: none; }
 /* The document transition layer can cover fixed controls. Keep the live launcher above the content snapshots. */

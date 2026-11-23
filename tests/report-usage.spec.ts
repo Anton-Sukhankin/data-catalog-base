@@ -181,7 +181,13 @@ test('usage summary includes classifications in its grid and keeps local table s
       const sectionHeaders = Array.from(root.querySelectorAll(':scope > section')).map(section => {
         const header = section.firstElementChild!;
         const body = section.querySelector('[data-accordion-body]')!;
-        return { title: header.textContent, headerHeight: header.getBoundingClientRect().height, bodyBorder: getComputedStyle(body).borderTopWidth };
+        return {
+          title: header.textContent,
+          containsHistory: section.contains(historyScroll),
+          headerHeight: header.getBoundingClientRect().height,
+          headerBorder: getComputedStyle(header).borderBottomWidth,
+          bodyBorder: getComputedStyle(body).borderTopWidth,
+        };
       });
       const pairs = Array.from(root.querySelectorAll('dl dt')).map(label => {
         const isClassification = label.closest('dl')!.hasAttribute('data-summary-classifications');
@@ -221,7 +227,8 @@ test('usage summary includes classifications in its grid and keeps local table s
     for (const cell of dimensions.classifications) expect(cell.clipped).toBe(false);
     for (const pair of dimensions.pairs) expect(pair.gap).toBe(4);
     for (const header of dimensions.sectionHeaders) {
-      expect(header.bodyBorder).toBe('1px');
+      expect(header.bodyBorder, header.title ?? '').toBe(header.containsHistory ? '0px' : '1px');
+      expect(header.headerBorder, header.title ?? '').toBe(header.containsHistory ? '1px' : '0px');
       expect(header.headerHeight).toBeLessThanOrEqual(120);
     }
     expect(dimensions.summaryBorders).toEqual({ bodyPadding: '0px', bodyRadius: '0px', dividerLeft: 0, dividerRight: 0, dividerWidth: '1px', cellsHaveNoBottomBorder: true });

@@ -12,7 +12,7 @@ export interface HomeControlOption {
   count?: string | number;
   tabId?: string;
   panelId?: string;
-  /** Source-specific enabled surface for text segments; selected always uses white. */
+  /** Source-specific surface for an unselected text segment. */
   unselectedSurface?: 'track' | 'neutral';
 }
 

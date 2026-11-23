@@ -14,11 +14,11 @@
 .masterScope .reset { border:1px solid var(--catalog-theme-edge, #d7e6f5); }
 .tools { display:flex; align-items:center; gap:8px; }
 .reset { composes:typography from '../../components/ResetFiltersButton/ResetFiltersButton.module.css'; padding:0 12px; height:32px; background:var(--catalog-theme-surface, #fff); border:0; color:var(--catalog-theme-secondary, #52698c); border-radius:8px; cursor:pointer; }
-.results { display:flex; flex-direction:column; flex:1; min-height:0; position:relative; border-radius:20px 20px 0 0; background:var(--catalog-theme-section, #f3f4f9); }
+.results { composes:frame from '../../styles/catalog-surface-frame.module.css'; display:flex; flex-direction:column; flex:1; min-height:0; position:relative; border-radius:20px 20px 0 0; background:var(--catalog-theme-section, #f3f4f9); }
 .tree { display:flex; flex:1; flex-direction:column; min-height:0; background:var(--sidebar-surface); border-radius:inherit; }
 .treeHeader {
   display:flex; flex:none; align-items:center; height:48px; padding-inline:16px;
-  overflow:auto; scrollbar-width:none; border-bottom:1px solid var(--table-header-line);
+  overflow:auto; scrollbar-width:none; border-bottom:1px solid var(--catalog-theme-line, #e2e4ea);
 }
 .treeHeader > div { flex-wrap:nowrap; white-space:nowrap; }
 .treeRow :is(button, a):focus-visible, button.treeRow:focus-visible {
@@ -100,16 +100,20 @@ button.treeRow { cursor:pointer; }
 .eye { display:block; width:16px; height:16px; position:relative; }
 .eye img { position:absolute; left:-2px; top:-2px; transform:scale(.8); }
 .tableFrame { --source-divider:transparent; --source-actions-divider:var(--catalog-theme-line, #e2e4ea); --source-header-height:48px; position:relative; min-height:0; flex:1; padding:0 16px; }
-.tableFrame::before { position:absolute; z-index:4; top:calc(var(--source-header-height) - 1px); inset-inline:0; height:1px; background:var(--table-header-line); pointer-events:none; content:''; }
+.tableFrame::before { position:absolute; z-index:4; top:calc(var(--source-header-height) - var(--catalog-card-border-width)); inset-inline:0; height:var(--catalog-card-border-width); background:var(--catalog-card-border-color); pointer-events:none; content:''; }
 .tableFrame[data-source-table-scrolled='true'] { --source-divider:var(--catalog-theme-line, #e2e4ea); }
 .tableFrame[data-source-table-at-end='true'] { --source-actions-divider:transparent; }
 .tableScroll { overflow:auto; height:100%; padding-bottom:16px; outline-offset:-2px; }
-.table { --source-row-border:var(--catalog-theme-edge, #d7e6f5); table-layout:fixed; width:100%; min-width:1930px; margin-top:-4px; border-collapse:separate; border-spacing:0 4px; color:var(--catalog-theme-text, #243247); }
+.table {
+  --source-row-border:var(--catalog-theme-edge, #d7e6f5);
+  --source-row-gap:8px;
+  table-layout:fixed; width:100%; min-width:1930px;
+  margin-block-start:calc(-1 * var(--source-row-gap)); border-collapse:separate; border-spacing:0 var(--source-row-gap);
+  color:var(--catalog-theme-text, #243247);
+}
 .table th { position:sticky; top:0; z-index:2; height:var(--source-header-height); padding:8px 4px; border:0; vertical-align:top; background:var(--catalog-theme-section, #f3f4f9); color:var(--catalog-theme-secondary, #687d96); text-align:left; font-size:12px; line-height:18px; font-weight:500; }
 .table th:first-child { left:0; z-index:3; box-shadow:inset -1px 0 var(--source-divider); }
 .table .actionsHeading { right:0; z-index:3; box-shadow:inset 1px 0 var(--source-actions-divider); }
-/* A zero-height row adds the second 4px spacing interval inside the scrolling body. */
-.table tbody::before { display:table-row; content:''; }
 .tableRow { composes:surface from '../../components/CatalogEntityIcon/CatalogEntityIcon.module.css'; }
 .plainHeading, .filterHeading { display:flex; align-items:center; height:32px; padding:0 8px; }
 .plainHeading { white-space:nowrap; }

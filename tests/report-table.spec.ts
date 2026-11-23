@@ -178,7 +178,7 @@ test('the report table header divider spans the full surface while scrolling', a
     return { width:parseFloat(line.width), border:line.borderBottom, bottom:line.bottom };
   });
   const box = (await surface.boundingBox())!;
-  const expected = { width:box.width, border:'1px solid rgb(226, 228, 234)', bottom:'0px' };
+  const expected = { width:box.width, border:'1px solid rgb(215, 230, 245)', bottom:'0px' };
   expect(await divider()).toEqual(expected);
   const firstGroup = body.getByRole('button', { name: /Гостеприимство/ }).first();
   const initialHeader = (await header.boundingBox())!;

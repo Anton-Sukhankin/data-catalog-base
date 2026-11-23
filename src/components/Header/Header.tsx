@@ -10,6 +10,7 @@ interface HeaderProps {
   brandMarkSrc: string;
   avatarSrc: string;
   search: ReactNode;
+  assistant: ReactNode;
 }
 
 const profileItems = [
@@ -18,7 +19,7 @@ const profileItems = [
   { label: 'Выйти', Icon: LogOut },
 ];
 
-export function Header({ productName, brandMarkSrc, avatarSrc, search }: HeaderProps) {
+export function Header({ productName, brandMarkSrc, avatarSrc, search, assistant }: HeaderProps) {
   const [keyboard, setKeyboard] = useState(false);
   const { theme, toggle } = useCatalogTheme();
 
@@ -29,11 +30,14 @@ export function Header({ productName, brandMarkSrc, avatarSrc, search }: HeaderP
         <span>{productName}</span>
       </div>
       <div className={styles.searchSlot}>{search}</div>
-      <button className={styles.themeToggle} type="button" aria-label="Тёмная тема"
-        title={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
-        aria-pressed={theme === 'dark'} onClick={toggle}>
-        {theme === 'dark' ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
-      </button>
+      <div className={styles.headerActions}>
+        {assistant}
+        <button className={styles.themeToggle} type="button" aria-label="Тёмная тема"
+          title={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
+          aria-pressed={theme === 'dark'} onClick={toggle}>
+          {theme === 'dark' ? <Sun size={18} aria-hidden="true" /> : <Moon size={18} aria-hidden="true" />}
+        </button>
+      </div>
       <DropdownMenu.Root modal={false}>
         <DropdownMenu.Trigger asChild>
           <button className={styles.profile} type="button" aria-label="Профиль пользователя"

@@ -508,6 +508,15 @@ test('AI Hub tables pin the edges, keep the header aligned, and show overflow ti
   await expect(headers).toHaveCount(7);
   await expect(actions).toHaveText('');
   await page.evaluate(() => document.fonts.ready);
+  const rows = table.locator('tbody tr');
+  await expect(rows).toHaveCount(9);
+  const boxes = await rows.evaluateAll(nodes => nodes.map(node => {
+    const { top, bottom } = node.getBoundingClientRect();
+    return { top, bottom };
+  }));
+  const head = (await title.boundingBox())!;
+  expect(boxes[0].top - head.y - head.height).toBe(8);
+  expect(boxes.slice(1).map((box, index) => box.top - boxes[index].bottom)).toEqual(Array(boxes.length - 1).fill(8));
   expect(Math.abs((await headers.nth(1).boundingBox())!.width - 378)).toBeLessThan(1);
   expect(Math.abs((await headers.nth(2).boundingBox())!.width - 190)).toBeLessThan(1);
   expect((await title.boundingBox())!.width).toBe((await table.boundingBox())!.width - 1167);

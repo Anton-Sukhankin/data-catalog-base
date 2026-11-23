@@ -2,7 +2,7 @@
 .clear { display:grid; place-items:center; width:24px; height:24px; padding:0; border:0; border-radius:6px; background:transparent; cursor:pointer; }
 .clear:hover { background:var(--table-heading-hover); }
 
-.surface { display:flex; flex:0 1 auto; min-height:0; container-type:inline-size; border-radius:16px; background:var(--sidebar-surface); }
+.surface { composes:frame from '../../styles/catalog-surface-frame.module.css'; display:flex; flex:0 1 auto; min-height:0; container-type:inline-size; border-radius:16px; background:var(--sidebar-surface); }
 .scroll { width:100%; min-height:0; padding:16px; overflow:auto; scrollbar-width:none; }
 .scroll:focus-visible { outline:2px solid var(--catalog-theme-accent, #007bfc); outline-offset:-2px; border-radius:inherit; }
 .group + .group { margin-top:16px; }

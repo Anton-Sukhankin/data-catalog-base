@@ -2,10 +2,18 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 
 const viewport = { width: 1440, height: 900 };
 const assistant = (page: Page) => page.getByRole('region', { name: 'AI-ассистент', exact: true });
-const launcher = (page: Page) => page.getByRole('button', { name: 'Открыть AI-ассистента', exact: true });
+const launcher = (page: Page) => page.getByRole('banner').getByRole('button', { name: 'Открыть AI-ассистента', exact: true });
 const message = (page: Page) => assistant(page).getByRole('textbox', { name: 'Сообщение', exact: true });
 const close = (page: Page) => assistant(page).getByRole('button', { name: 'Закрыть AI-ассистента', exact: true });
 const mode = (page: Page, label = 'Ассистент') => assistant(page).getByRole('button', { name: label, exact: true });
+
+async function expectLauncherBesideSearch(page: Page) {
+  const search = page.getByRole('combobox', { name: 'Поиск по каталогу' }).locator('..');
+  const [field, button] = await Promise.all([search.boundingBox(), launcher(page).boundingBox()]);
+  expect(button!.x - (field!.x + field!.width)).toBeCloseTo(16, 1);
+  expect(button!.height).toBe(field!.height);
+  expect(button!.y).toBe(field!.y);
+}
 
 async function expectSideInsets(page: Page, inset: number) {
   const size = page.viewportSize()!;
@@ -38,6 +46,50 @@ async function send(page: Page, text: string) {
 
 test.beforeEach(async ({ page }) => {
   await page.setViewportSize(viewport);
+});
+
+test('header launcher aligns with the Navigator in both themes and keeps keyboard access', async ({ page }, info) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/preview/navigation?section=reports');
+  const header = page.getByRole('banner');
+  const sidebar = page.locator('aside').filter({ has: page.getByRole('navigation', { name: 'Разделы каталога' }) });
+  const button = launcher(page);
+  const label = button.getByText('AI ассистент', { exact: true });
+  const theme = header.getByRole('button', { name: 'Тёмная тема', exact: true });
+
+  await expect(label).toBeVisible();
+  await expect(sidebar.getByRole('button', { name: /Открыть AI/ })).toHaveCount(0);
+  await expectLauncherBesideSearch(page);
+  await expect(button).toHaveCSS('background-color', 'rgba(0, 0, 0, 0.18)');
+  await expect(button).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await expect(button.locator('svg')).toHaveCSS('stroke', 'rgb(255, 255, 255)');
+  await page.screenshot({ path: info.outputPath('header-assistant-light.png'), clip: { x: 0, y: 0, width: 1440, height: 156 } });
+
+  const desktopBounds = await button.boundingBox();
+  await sidebar.getByRole('button', { name: 'Свернуть панель', exact: true }).click();
+  expect(await button.boundingBox()).toEqual(desktopBounds);
+  await expect(label).toBeVisible();
+
+  await theme.click();
+  await page.mouse.move(5, 5);
+  await expect(button).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(button).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await expect(button.locator('svg')).toHaveCSS('stroke', 'rgb(255, 255, 255)');
+  await page.screenshot({ path: info.outputPath('header-assistant-dark.png'), clip: { x: 0, y: 0, width: 1440, height: 156 } });
+  for (const width of [800, 540, 420, 390, 320]) {
+    await page.setViewportSize({ width, height: 720 });
+    await expectLauncherBesideSearch(page);
+    if (width > 400) await expect(label).toBeVisible();
+    else await expect(label).toBeHidden();
+    await expect(button.locator('svg')).toBeInViewport({ ratio: 1 });
+    await expect(theme).toBeInViewport({ ratio: 1 });
+    await expect(header.getByRole('button', { name: 'Профиль пользователя' })).toBeInViewport({ ratio: 1 });
+    if (width === 390) await page.screenshot({ path: info.outputPath('header-assistant-narrow.png'), clip: { x: 0, y: 0, width, height: 48 } });
+  }
+  await button.press('Enter');
+  await expect(message(page)).toBeFocused();
+  await close(page).click();
+  await expect(button).toBeFocused();
 });
 
 test('assistant launcher stays visually stable during section transitions', async ({ page }) => {
@@ -112,9 +164,7 @@ test('assistant preserves the open chat and draft through sections, a report pas
   const startUrl = page.url();
   const button = launcher(page);
   await expect(button).toBeVisible();
-  await expect(button).toHaveCSS('background-color', 'rgb(120, 85, 207)');
-  const launchBox = (await button.boundingBox())!;
-  expect(launchBox).toEqual({ x: 1364, y: 800, width: 52, height: 52 });
+  await expectLauncherBesideSearch(page);
   await page.screenshot({ path: info.outputPath('01-launcher.png'), animations: 'disabled' });
   await button.click();
   await expect(assistant(page)).toBeVisible();
@@ -407,7 +457,7 @@ test('chat actions, minimum width and full-width view preserve their state', asy
   await expect(panel.getByRole('button', { name: 'Развернуть список чатов' })).toBeVisible();
   await close(page).click();
   await expect(launcher(page)).toBeVisible();
-  expect(await launcher(page).boundingBox()).toEqual({ x: 326, y: 500, width: 52, height: 52 });
+  await expectLauncherBesideSearch(page);
 });
 
 test('assistant confirms deletion for renamed chats, drafts and sent messages', async ({ page }) => {
@@ -862,7 +912,7 @@ test('assistant morph scales the opaque panel and its contents to the launcher',
   }
   await expect(launcher(page)).toBeFocused();
   await expect(surface).toHaveCount(0);
-  await expect(launcher(page)).toHaveCSS('background-color', 'rgb(120, 85, 207)');
+  await expectLauncherBesideSearch(page);
 
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await launcher(page).press('Enter');

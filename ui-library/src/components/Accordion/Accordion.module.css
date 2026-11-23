@@ -25,6 +25,8 @@
 .staticIcon { display:flex; align-items:center; justify-content:center; flex:0 0 32px; width:32px; height:32px; border-radius:50%; background:var(--accordion-chevron-background); color:var(--accordion-chevron-color); }
 .staticIcon svg { display:block; width:16px; height:16px; }
 .tableBody { padding:16px; }
+.accordion[data-table-body]:is([data-collapsible='false'], :has(> .reveal[data-open='true'])) > .top { border-block-end:var(--catalog-card-border); }
+.accordion .body.tableBody { border-block-start:0; box-shadow:none; }
 .body.flushBody { padding:0; }
 .accordion[data-collapsible='false'] .top { flex-wrap:wrap; }
 .accordion[data-collapsible='false'] .action { min-width:0; max-width:100%; }

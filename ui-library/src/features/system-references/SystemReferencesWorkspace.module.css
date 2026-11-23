@@ -6,8 +6,9 @@
 .catalog[data-paginated='true'] { padding-bottom:0; }
 .catalog > .header { align-items:flex-start; margin-block-end:var(--section-heading-gap); }
 .description { margin:4px 0 0; color:var(--catalog-theme-secondary, #52698c); font-size:14px; line-height:20px; }
-.catalogResults { display:flex; flex:1; flex-direction:column; min-width:0; min-height:160px; border-radius:16px 16px 0 0; background:var(--catalog-theme-section, #f3f4f9); }
+.catalogResults { composes:frame from '../../styles/catalog-surface-frame.module.css'; display:flex; flex:1; flex-direction:column; min-width:0; min-height:160px; border-radius:16px 16px 0 0; background:var(--catalog-theme-section, #f3f4f9); }
 .groupHeader { display:flex; flex:none; flex-wrap:wrap; align-items:center; gap:4px 8px; min-height:48px; padding:8px 16px; border-bottom:1px solid var(--catalog-theme-line, #e2e4ea); }
+.catalogResults[data-view='list'] > .groupHeader { border-block-end:var(--catalog-card-border); }
 .groupHeader h2 { margin:0; font-size:16px; font-weight:500; line-height:22px; }
 .groupCount { display:grid; flex:none; place-items:center; min-width:18px; height:18px; padding:0 4px; border-radius:9px; background:var(--catalog-theme-selected, #e2e4ea); color:var(--catalog-theme-text, #202028); font-size:11px; font-weight:500; line-height:14px; }
 .catalogFrame { position:relative; display:flex; flex:1; flex-direction:column; min-height:0; }
@@ -39,12 +40,12 @@
 .catalogTable col:first-child { width:var(--catalog-title-width); }
 .catalogTable col:nth-child(2) { width:var(--catalog-system-width); }
 .catalogTable thead, .tableSurface[data-header-pinned='true'] thead { position:sticky; inset-block-start:0; z-index:1; background:var(--crm-surface, var(--catalog-theme-section, #f3f4f9)); }
-:is(.catalogTable, .tableSurface[data-header-divider='true'] .table) th { position:relative; box-shadow:inset 0 -1px var(--table-header-line); }
-:is(.catalogTable, .tableSurface[data-header-divider='true'] .table) th:is(:first-child, :last-child)::after {
-  position:absolute; inset-block-end:0; inline-size:16px; block-size:1px; background:var(--table-header-line); content:''; pointer-events:none;
+:is(.catalogTable, .table) th { position:relative; box-shadow:inset 0 calc(-1 * var(--catalog-card-border-width)) var(--catalog-card-border-color); }
+:is(.catalogTable, .table) th:is(:first-child, :last-child)::after {
+  position:absolute; inset-block-end:0; inline-size:16px; block-size:var(--catalog-card-border-width); background:var(--catalog-card-border-color); content:''; pointer-events:none;
 }
-:is(.catalogTable, .tableSurface[data-header-divider='true'] .table) th:first-child::after { inset-inline-start:-16px; }
-:is(.catalogTable, .tableSurface[data-header-divider='true'] .table) th:last-child::after { inset-inline-end:-16px; }
+:is(.catalogTable, .table) th:first-child::after { inset-inline-start:-16px; }
+:is(.catalogTable, .table) th:last-child::after { inset-inline-end:-16px; }
 .catalogTable tr { position:relative; }
 .catalogTable th { height:36px; border:0; background:transparent; color:var(--catalog-theme-secondary, #52698c); font-size:12px; font-weight:500; line-height:18px; text-align:left; }
 .catalogTable th, .catalogTable td { padding:0 12px; vertical-align:middle; }
@@ -112,7 +113,7 @@
 .fixedHeader[data-search-hidden='true'] { padding-block-start:0; }
 .resultBar {
   display:flex; flex:none; align-items:center; flex-wrap:wrap; gap:8px 16px;
-  padding:0 32px 12px; border-bottom:1px solid var(--catalog-theme-line, #d7e6f5);
+  padding:0 32px 12px; border-block-end:var(--catalog-card-border);
   border-end-start-radius:inherit; border-end-end-radius:inherit;
 }
 .fixedHeader[data-search-hidden='true'] .resultBar { padding-block:12px; }
@@ -123,7 +124,7 @@
 .paginationMode input:focus-visible { outline:2px solid var(--catalog-theme-accent, #007bfc); outline-offset:2px; }
 .entry:focus-visible, .back:focus-visible, .tableSurface:focus-visible { outline:2px solid var(--catalog-theme-accent, #007bfc); outline-offset:2px; }
 
-.tableFrame { position:relative; flex:1; display:flex; flex-direction:column; min-height:160px; }
+.tableFrame { composes:frame from '../../styles/catalog-surface-frame.module.css'; position:relative; flex:1; display:flex; flex-direction:column; min-height:160px; }
 .tableSurface { flex:1; min-height:0; overflow:auto; overflow-anchor:none; overscroll-behavior-y:none; padding-inline:16px; }
 .tableContent { display:flow-root; }
 /* Keep a scroll position when the table almost fits after the breadcrumbs collapse. */

@@ -1,4 +1,4 @@
-import { useId, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react';
+import { useId, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import styles from './Sidebar.module.css';
 
 const defaultWidth = 280;
@@ -21,11 +21,12 @@ interface SidebarProps {
   items: readonly SidebarItem[];
   activeId: string;
   collapsed: boolean;
+  footer?: ReactNode;
   onSelect: (id: string) => void;
   onCollapsedChange: (collapsed: boolean) => void;
 }
 
-export function Sidebar({ items, activeId, collapsed, onSelect, onCollapsedChange }: SidebarProps) {
+export function Sidebar({ items, activeId, collapsed, footer, onSelect, onCollapsedChange }: SidebarProps) {
   const menuId = useId();
   const sidebar = useRef<HTMLElement>(null);
   const drag = useRef<{ pointerId: number; startX: number; startWidth: number } | null>(null);
@@ -115,6 +116,7 @@ export function Sidebar({ items, activeId, collapsed, onSelect, onCollapsedChang
           <span className={styles.toggleIcon} aria-hidden="true" />
         </button>
       </div>
+      {footer && <div className={styles.footer}>{footer}</div>}
     </aside>
   );
 }

@@ -43,7 +43,7 @@ export function Accordion({ title, description, metadata, inlineMetadata, count,
   const indicator = icon && <span className={s.icon} data-accordion-indicator aria-hidden="true">{icon}</span>;
   const trailing = <>{badge}{indicator}</>;
   return <section className={s.accordion} data-variant={variant} data-chevron-size={chevronSize} data-collapsible={collapsible}
-    data-wrap-action={wrapAction && action ? true : undefined}>
+    data-wrap-action={wrapAction && action ? true : undefined} data-table-body={bodyInset === 'table' ? true : undefined}>
     <div className={s.top}>
       {leadingAction && <div className={s.leadingAction}>{leadingAction}</div>}
       {collapsible ? <button type="button" className={s.header} aria-expanded={open} aria-controls={id} onClick={toggle}>

@@ -1,4 +1,4 @@
-.surface { position: relative; height: calc(100vh - 120px); min-height: 320px; border-radius: 16px 16px 0 0; background: var(--catalog-theme-section, #f3f4f9); color: var(--catalog-theme-text, #243247); overflow: hidden; }
+.surface { composes:frame from '../../styles/catalog-surface-frame.module.css'; position: relative; height: calc(100vh - 120px); min-height: 320px; border-radius: 16px 16px 0 0; background: var(--catalog-theme-section, #f3f4f9); color: var(--catalog-theme-text, #243247); overflow: hidden; }
 .table {
   --table-inset: 16px;
   --table-visible-width: calc(100cqw - 2 * var(--table-inset));
@@ -8,7 +8,7 @@
   display: flex; flex-direction: column; height: 100%; container-type: inline-size;
 }
 .header { background: var(--catalog-theme-section, transparent); position: relative; flex: 0 0 48px; height: 48px; padding: 0 var(--table-inset) 1px; }
-.header::after { position: absolute; inset: auto 0 0; z-index: 1; border-block-end: 1px solid var(--table-header-line); content: ''; pointer-events: none; }
+.header::after { position: absolute; inset: auto 0 0; z-index: 1; border-block-end: var(--catalog-card-border); content: ''; pointer-events: none; }
 .headerRow, .row { display: grid; grid-template-columns: var(--table-start-column) minmax(0,1fr) var(--table-end-column); }
 .headerRow { height: 100%; }
 .headerRow > .fixedReport, .headerRow > .fixedEdit { min-height: 0; overflow: hidden; background: var(--catalog-theme-section, #f3f4f9); }
@@ -45,7 +45,7 @@
 .groupReveal[data-search-target='true'] { transition:none; }
 .groupRows { display:grid; align-content:start; gap:4px; }
 .row { position: relative; height: 80px; border-radius: 12px; background: var(--catalog-theme-surface, #fff); overflow: hidden; cursor: pointer; }
-.row::after { position: absolute; inset: 0; border: 1px solid var(--catalog-theme-edge, #d7e6f5); border-radius: inherit; content: ''; pointer-events: none; z-index: 2; }
+.row::after { position: absolute; inset: 0; border: var(--catalog-card-border); border-radius: inherit; content: ''; pointer-events: none; z-index: 2; }
 .row:hover::after { border-color: var(--item-hover-border); }
 .fixedReport { min-width: 0; padding-right: 1px; background: inherit; box-shadow: none; }
 [data-table-scrolled='true'] .fixedReport { box-shadow: inset -1px 0 var(--catalog-theme-line, #e2e4ea); }

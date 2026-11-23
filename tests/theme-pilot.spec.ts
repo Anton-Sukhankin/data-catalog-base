@@ -4,6 +4,39 @@ const home = '/preview/navigation?section=home';
 const reports = '/preview/navigation?section=reports';
 test.use({ storageState: { cookies: [], origins: [] } });
 
+test('dark segmented groups distinguish the track, neutral options and the active selection', async ({ page }) => {
+  await page.goto(`${home}&tab=news&news=demo-news-1`);
+  const categories = page.getByRole('tablist', { name: 'Категории новостей' });
+  await expect(categories).toHaveCount(0);
+  await page.getByRole('button', { name: 'Все новости', exact: true }).first().click();
+  const all = categories.getByRole('tab', { name: /^Все/ });
+  const changes = categories.getByRole('tab', { name: /^Изменения/ });
+  const newItems = categories.getByRole('tab', { name: /^Новое/ });
+  await expect(categories).toHaveCSS('background-color', 'rgb(38, 39, 43)');
+  await expect(all).toHaveCSS('background-color', 'rgb(55, 58, 64)');
+  await expect(changes).toHaveCSS('background-color', 'rgb(32, 33, 37)');
+  await expect(newItems).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await changes.click();
+  await expect(changes).toHaveCSS('background-color', 'rgb(55, 58, 64)');
+  await expect(all).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+
+  await page.goto(reports);
+  const views = page.getByRole('group', { name: 'Вид представления' });
+  const cards = views.getByRole('button', { name: 'Карточный вид' });
+  await cards.click();
+  await expect(views).toHaveCSS('background-color', 'rgb(38, 39, 43)');
+  await expect(cards).toHaveCSS('background-color', 'rgb(55, 58, 64)');
+  await expect(views.getByRole('button', { name: 'Табличный вид' })).toHaveCSS('background-color', 'rgb(32, 33, 37)');
+
+  await page.goto(`${reports}&report=demo-report-sales-plan&reportTab=mailings`);
+  const mailings = page.getByRole('group', { name: 'Раздел рассылок' });
+  const manual = mailings.getByRole('button', { name: 'Ручная отправка' });
+  await expect(mailings).toHaveCSS('background-color', 'rgb(38, 39, 43)');
+  await expect(manual).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await manual.press('Enter');
+  await expect(manual).toHaveCSS('background-color', 'rgb(55, 58, 64)');
+});
+
 test('dark is the default and an explicit light choice survives direct links and reload', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light' });
   const toggle = page.getByRole('button', { name: 'Тёмная тема', exact: true });
@@ -49,7 +82,7 @@ test('switching the theme preserves catalog filters, location and assistant draf
   const heading = page.getByRole('button', { name: 'Фильтр «Домен»', exact: true });
   await expect(heading).toBeVisible();
 
-  await page.getByRole('button', { name: 'Открыть AI-ассистента' }).click();
+  await page.getByRole('button', { name: 'Открыть AI-ассистента', exact: true }).click();
   await page.getByRole('button', { name: 'Новая беседа' }).click();
   const draft = page.getByRole('textbox', { name: 'Сообщение' });
   await draft.fill('Черновик проверки темы');
@@ -218,6 +251,7 @@ test('report workspaces keep summary, rows and pinned actions distinct in both t
   await toggle.click();
   await expect(cards).toHaveCount(3);
   await expect(cards.first()).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(cards.first()).toHaveCSS('box-shadow', 'none');
   await expect(table).toHaveCSS('background-color', 'rgb(243, 244, 249)');
   await toggle.click();
 
@@ -226,7 +260,8 @@ test('report workspaces keep summary, rows and pinned actions distinct in both t
     await expect(page.getByRole('main')).toHaveCSS('background-color', 'rgb(23, 24, 27)');
     for (const card of await cards.all()) {
       await expect(card).toHaveCSS('background-color', 'rgb(38, 39, 43)');
-      await expect(card).toHaveCSS('box-shadow', /rgb\(89, 92, 101\).*inset/);
+      await expect(card).toHaveCSS('box-shadow', 'none');
+      expect(await card.evaluate(node => getComputedStyle(node, '::before').boxShadow)).not.toBe('none');
     }
     await expect(table).toHaveCSS('background-color', 'rgb(38, 39, 43)');
     await expect(row).toHaveCSS('background-color', 'rgb(32, 33, 37)');

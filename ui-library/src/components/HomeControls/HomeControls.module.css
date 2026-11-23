@@ -41,6 +41,17 @@
 .view[data-view-appearance='text'] .viewButton { flex:0 0 auto; width:auto; height:32px; padding:0 12px; border:1px solid var(--catalog-theme-edge, #d7e6f5); border-radius:16px; background:var(--catalog-theme-surface, #fff); color:var(--catalog-theme-text, #101d3b); font-size:13px; line-height:18px; }
 .view[data-view-appearance='text'] .viewButton:hover { background:var(--catalog-theme-hover, #f3f4f9); }
 .view[data-view-appearance='text'] .viewButton[aria-pressed='true'] { border-color:var(--catalog-theme-accent, #0067dc); background:var(--catalog-theme-selected, #0067dc); color:var(--catalog-theme-inverse, #fff); }
+[data-catalog-theme='dark'] :is(.segments, .view[data-view-appearance='icons']) {
+  background: var(--catalog-theme-section);
+}
+[data-catalog-theme='dark'] .segment:not([aria-selected='true']),
+[data-catalog-theme='dark'] .view[data-view-appearance='icons'] .viewButton:not([aria-pressed='true']) {
+  background: transparent;
+}
+[data-catalog-theme='dark'] .segment[data-unselected-surface='neutral']:not([aria-selected='true']),
+[data-catalog-theme='dark'] .view[data-view-appearance='icons'] .viewButton[data-inactive-surface='neutral']:not([aria-pressed='true']) {
+  background: var(--catalog-theme-surface);
+}
 .controls img { display: block; flex: 0 0 auto; }
 .filter { display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 1px solid var(--catalog-theme-edge, #d7e6f5); border-radius: 20px; background: var(--catalog-theme-surface, #fff); backdrop-filter: blur(20px); }
 .controls button:focus-visible { outline: 2px solid var(--catalog-theme-accent, #007bfc); outline-offset: 2px; }

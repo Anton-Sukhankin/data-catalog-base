@@ -8,6 +8,32 @@ async function expectHiddenValues(field: Locator, popup: Locator, selected: stri
   return hidden;
 }
 
+test('dark selected tags distinguish the value, removal and open overflow', async ({ page }) => {
+  await page.goto('/preview/navigation?section=reports');
+  await page.getByRole('button', { name: 'Тёмная тема', exact: true }).click();
+  await page.getByRole('button', { name: 'Открыть фильтры отчётов', exact: true }).click();
+  const panel = page.getByRole('dialog', { name: 'Фильтры', exact: true });
+  const field = panel.locator('[data-multi-select="owner"]');
+  await field.locator('[data-panel-field]').click();
+  const choices = page.locator('[data-panel-value-list="owner"]').getByRole('checkbox');
+  for (let index = 0; index < 3; index++) await choices.nth(index).check();
+  await panel.getByRole('heading', { name: 'Фильтры', exact: true }).click();
+  const tag = field.locator('[data-selected-tag]').first();
+  const remove = tag.locator('[data-selected-tag-remove]');
+  const counter = field.locator('[data-multi-select-counter]');
+  await expect(tag).toHaveCSS('background-color', 'rgb(55, 58, 64)');
+  await expect(tag).toHaveCSS('color', 'rgb(241, 242, 244)');
+  await expect(tag).toHaveCSS('box-shadow', 'rgb(89, 92, 101) 0px 0px 0px 1px inset');
+  await expect(counter).toHaveCSS('background-color', 'rgb(55, 58, 64)');
+  await remove.hover();
+  await expect(remove).toHaveCSS('background-color', 'rgb(89, 92, 101)');
+  await counter.hover();
+  await expect(counter).toHaveAttribute('aria-expanded', 'true');
+  await expect(counter).toHaveCSS('background-color', 'rgb(37, 54, 76)');
+  await expect(counter).toHaveCSS('color', 'rgb(134, 184, 255)');
+  await expect(panel.locator('[data-multi-selected-popup]').getByRole('listitem')).toHaveCount(2);
+});
+
 for (const context of ['reports', 'favorites'] as const) {
   test(`${context}: the counter shows only hidden draft values and Escape stays in the panel`, async ({ page }, testInfo) => {
     const errors: string[] = [];

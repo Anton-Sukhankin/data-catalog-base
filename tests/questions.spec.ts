@@ -165,7 +165,11 @@ for (const [width, height] of [[1440, 900], [1024, 768]]) {
 
     const panel = main.getByRole('tabpanel');
     const question = panel.getByRole('button', { name: accessQuestion, exact: true });
+    const accordions = panel.locator(':scope > [data-collapsible="true"]');
+    const gaps = () => accordions.evaluateAll(items => items.slice(1).map((item, index) =>
+      item.getBoundingClientRect().top - items[index].getBoundingClientRect().bottom));
     await expect(panel.locator('button[aria-expanded="true"]')).toHaveCount(0);
+    await expect.poll(gaps).toEqual([8, 8, 8, 8]);
     await page.screenshot({ path: testInfo.outputPath(`faq-closed-${width}.png`) });
     await question.press('Enter');
     await expect(question).toHaveAttribute('aria-expanded', 'true');
@@ -176,6 +180,7 @@ for (const [width, height] of [[1440, 900], [1024, 768]]) {
     await main.getByRole('heading', { name: 'Вопросы и ответы' }).click();
     await page.mouse.move(width - 6, 60);
     await expect(panel.locator('button[aria-expanded="true"]')).toHaveCount(1);
+    await expect.poll(gaps).toEqual([8, 8, 8, 8]);
     await expect(page.locator('vite-error-overlay')).toHaveCount(0);
     expect(errors).toEqual([]);
     await page.screenshot({ path: testInfo.outputPath(`faq-open-${width}.png`) });

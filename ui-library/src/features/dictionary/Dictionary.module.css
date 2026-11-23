@@ -22,6 +22,7 @@
 .filterPopup > div { max-width:100%; box-shadow:none; }
 .unavailableFilter { margin:0; padding:12px; color:var(--catalog-theme-secondary, #52698c); font-size:14px; line-height:20px; }
 .resultsFrame {
+  composes:frame from '../../styles/catalog-surface-frame.module.css';
   --results-inset:16px;
   --results-surface:var(--catalog-theme-workspace, #f3f4f9);
   position:relative; display:flex; flex:1; flex-direction:column; min-height:0; min-width:0;

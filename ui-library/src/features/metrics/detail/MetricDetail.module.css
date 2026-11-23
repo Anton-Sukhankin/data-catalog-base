@@ -30,7 +30,7 @@
 .reportLink:hover { text-decoration:underline; }
 .method { width:100%; border-collapse:collapse; table-layout:fixed; font-size:14px; line-height:22px; }
 .method th,.method td { background:none; border:0; border-bottom:1px solid var(--catalog-theme-line, #d4e0f0); padding:12px 0; text-align:left; font-weight:400; vertical-align:top; }
-.method th { font-weight:500; }
+.method th { border-block-end:var(--catalog-card-border); font-weight:500; }
 .method th:first-child,.method td:first-child { width:180px; padding-right:16px; }
 .method th,.method td { overflow-wrap:anywhere; }
 .method tr:last-child td { border:0; }

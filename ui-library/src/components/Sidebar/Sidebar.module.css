@@ -1,8 +1,10 @@
 .sidebar {
-  --sidebar-edge-color: var(--catalog-theme-edge, #dce2ea);
+  --sidebar-edge-color: var(--navigation-edge-color);
   --sidebar-toggle-ink: var(--catalog-theme-secondary, #687384);
   --sidebar-item-highlight: var(--catalog-theme-selected, #e2e6ec);
   position: relative;
+  display: flex;
+  flex-direction: column;
   flex: 0 0 var(--sidebar-expanded-width);
   width: var(--sidebar-expanded-width);
   height: 100%;
@@ -15,7 +17,8 @@
   line-height: 20px;
   transition: width var(--navigation-duration) var(--navigation-easing), flex-basis var(--navigation-duration) var(--navigation-easing);
 }
-.menu { width: 100%; height: 100%; overflow: hidden; }
+.menu { flex: 1; min-height: 0; width: 100%; overflow: hidden auto; scrollbar-width: none; }
+.footer { flex: none; margin: 8px 12px 0; container: sidebar-footer / inline-size; }
 .list { display: flex; flex-direction: column; gap: 0; padding: 8px 0; margin: 0; list-style: none; }
 .row { width:100%; height:36px; padding:0 8px; margin:0; }
 .item {
@@ -54,7 +57,7 @@
 .text { display:flex; position:relative; align-items:center; justify-content:space-between; gap:12px; min-width:0; opacity:1; visibility:visible; overflow:hidden; transition:opacity var(--navigation-hover-duration) ease 80ms, visibility 0s; }
 .label { white-space: nowrap; overflow:hidden; text-overflow:ellipsis; }
 .count { flex:none; color: var(--catalog-theme-secondary, #8e919a); line-height: 16px; }
-.sidebar::after { content:''; position:absolute; top:0; right:0; bottom:0; width:1px; background:var(--sidebar-edge-color); pointer-events:none; transition:background-color var(--navigation-hover-duration) ease; }
+.sidebar::after { content:''; position:absolute; top:0; right:0; bottom:0; width:var(--navigation-edge-width); background:var(--sidebar-edge-color); pointer-events:none; transition:background-color var(--navigation-hover-duration) ease; }
 .sidebar:is([data-resizing='true'], :has(:is(.resizeHandle, .toggle):is(:hover, :focus-visible))) { --sidebar-edge-color:var(--catalog-theme-accent, #007aff); --sidebar-toggle-ink:var(--catalog-theme-accent, #007aff); }
 .boundary { position: absolute; z-index: 2; right: -12px; top: 0; width: 24px; height: 100%; }
 .resizeHandle { position:absolute; inset:0; cursor:col-resize; touch-action:none; }

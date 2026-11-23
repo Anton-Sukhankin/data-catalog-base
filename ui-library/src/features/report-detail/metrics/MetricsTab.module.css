@@ -32,7 +32,7 @@
 .updated { display:flex; flex:none; gap:8px; white-space:nowrap; font-size:12px; line-height:18px; }
 .updated>span:first-child { color:var(--catalog-theme-accent, #6d84a6); }
 .table { composes:cellTable from "../../../components/MetricSurface/MetricSurface.module.css"; min-width:1046px; width:100%; margin-block-start:-4px; border-collapse:separate; border-spacing:0 4px; table-layout:fixed; }
-.table th { height:24px; border:0; background:var(--catalog-theme-section, #f3f4f9); font-size:12px; line-height:18px; color:var(--catalog-theme-secondary, #687d96); font-weight:500; text-align:left; padding:2px 12px; }
+.table th { height:24px; border:0; box-shadow:inset 0 calc(-1 * var(--catalog-card-border-width)) var(--catalog-card-border-color); background:var(--catalog-theme-section, #f3f4f9); font-size:12px; line-height:18px; color:var(--catalog-theme-secondary, #687d96); font-weight:500; text-align:left; padding:2px 12px; }
 .table th:first-child { padding-left:20px; }
 .table tbody tr { height:80px; }
 .card,.table tbody tr { cursor:pointer; }

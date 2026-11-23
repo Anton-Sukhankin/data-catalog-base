@@ -5,8 +5,8 @@
 .select { position:relative; display:block; width:220px; min-width:0; height:40px; }
 .selectControl { width:100%; min-width:0; border:0; box-shadow:inset 0 0 0 1px var(--catalog-theme-edge, #d7e6f5); color:var(--catalog-theme-text, #1f2126); line-height:14px; letter-spacing:-.14px; }
 .resetFilters { margin-inline-start:4px; }
-.results { --metric-header-height:48px; position:relative; height:calc(100vh - 148px - var(--section-heading-gap)); padding:0 16px; border-radius:16px 16px 0 0; background:var(--catalog-theme-section, #f3f4f9); overflow:hidden; }
-.results:has(.header)::before { position:absolute; z-index:2; inset:calc(var(--metric-header-height) - 1px) 0 auto; border-block-end:1px solid var(--table-header-line); pointer-events:none; content:''; }
+.results { composes:frame from '../../../styles/catalog-surface-frame.module.css'; --metric-header-height:48px; position:relative; height:calc(100vh - 148px - var(--section-heading-gap)); padding:0 16px; border-radius:16px 16px 0 0; background:var(--catalog-theme-section, #f3f4f9); overflow:hidden; }
+.results:has(.header)::after { position:absolute; z-index:2; inset:calc(var(--metric-header-height) - var(--catalog-card-border-width)) 0 auto; border-block-end:var(--catalog-card-border); pointer-events:none; content:''; }
 .cardResults { padding-top:16px; }
 .scroll { width:100%; height:100%; overflow:auto; scrollbar-width:none; container:metric-results / inline-size; }
 .scroll::-webkit-scrollbar { display:none; }
@@ -39,7 +39,7 @@
 .header > .grid { height:100%; }
 .headerCell:first-child { padding-left:20px; }
 .headerCell > span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.rows { display:flex; flex-direction:column; gap:4px; padding-block-start:8px; }
+.rows { display:flex; flex-direction:column; gap:8px; padding-block-start:8px; }
 .row { composes:outlinedRow from "../../../components/MetricSurface/MetricSurface.module.css"; position:relative; height:80px; overflow:hidden; border-radius:12px; background:var(--catalog-theme-surface, #fff); cursor:pointer; }
 .row::after { position:absolute; inset:0; border:1px solid var(--catalog-theme-edge, #d7e6f5); border-radius:inherit; content:''; pointer-events:none; }
 .card:has([data-catalog-search-match]), .cardHeading:has([data-catalog-search-match]), .row:has([data-catalog-search-match]), .nameCell:has([data-catalog-search-match]) { height:auto; }

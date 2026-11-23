@@ -46,7 +46,7 @@ test('opens the catalog, switches views and returns from the same reference', as
   const table = results.getByRole('table');
   await expect(table.getByRole('columnheader')).toHaveText(['Справочник', 'Информационная система', 'Код ИС']);
   await expect(table.locator('thead')).toHaveCSS('position', 'sticky');
-  await expect(results.locator('header')).toHaveCSS('border-bottom-color', 'rgb(226, 228, 234)');
+  await expect(results.locator('header')).toHaveCSS('border-bottom-color', 'rgb(215, 230, 245)');
   const headerBottom = (await results.locator('header').boundingBox())!;
   const firstRow = (await table.locator('tbody tr').first().boundingBox())!;
   const headings = await table.getByRole('columnheader').evaluateAll(cells => cells.map(cell => {
@@ -308,8 +308,9 @@ test('shows four aligned metadata columns and reaches the last row above paginat
   await expect(entityIcon).toHaveCSS('background-color', 'rgb(238, 242, 246)');
   await expect(entityIcon).toHaveCSS('color', 'rgb(113, 134, 165)');
   const header = table.getByRole('columnheader', { name: 'Опции' });
+  const headerDivider = 'rgb(215, 230, 245) 0px -1px 0px 0px inset';
   await expect(table.locator('thead')).toHaveCSS('position', 'static');
-  await expect(header).toHaveCSS('box-shadow', 'none');
+  await expect(header).toHaveCSS('box-shadow', headerDivider);
   const headerBox = (await header.boundingBox())!;
   expect((await rows.first().boundingBox())!.y - headerBox.y - headerBox.height).toBe(4);
   await expect(rows.first()).toContainText('1 — Продавец');
@@ -344,14 +345,14 @@ test('shows four aligned metadata columns and reaches the last row above paginat
   expect(await fixedHeader.evaluate(element => getComputedStyle(element, '::after').boxShadow))
     .toBe('rgba(16, 29, 59, 0.24) 0px 10px 20px -7px');
   await expect.poll(async () => (await header.boundingBox())!.y - (await scroll.boundingBox())!.y).toBeLessThan(0);
-  await expect(header).toHaveCSS('box-shadow', 'none');
+  await expect(header).toHaveCSS('box-shadow', headerDivider);
   const pagination = section.getByRole('navigation', { name: 'Страницы справочника CRM' });
   const lastRow = (await rows.last().boundingBox())!;
   expect(lastRow.y + lastRow.height).toBeLessThan((await pagination.boundingBox())!.y);
   await section.getByRole('button', { name: 'Скрыть поиск', exact: true }).click();
   await expect(table.locator('thead')).toHaveCSS('position', 'sticky');
   await expect.poll(async () => (await header.boundingBox())!.y - (await scroll.boundingBox())!.y).toBeCloseTo(0, 0);
-  await expect(header).toHaveCSS('box-shadow', 'rgb(226, 228, 234) 0px -1px 0px 0px inset');
+  await expect(header).toHaveCSS('box-shadow', headerDivider);
   await expect(fixedHeader).toHaveAttribute('data-scrolled', 'true');
   await expect.poll(shadowOpacity).toBe('0');
   await expect.poll(frameBorder).toMatch(/^0px/);
@@ -361,12 +362,12 @@ test('shows four aligned metadata columns and reaches the last row above paginat
   await expect(resultBar).toHaveCSS('padding-block', '12px');
   expect(await resultBar.evaluate(element => getComputedStyle(element, '::before').content)).toBe('none');
   await scroll.evaluate(node => { node.scrollTop = 0; });
-  await expect(header).toHaveCSS('box-shadow', 'none');
+  await expect(header).toHaveCSS('box-shadow', headerDivider);
   await scroll.evaluate(node => { node.scrollTop = 20; });
-  await expect(header).toHaveCSS('box-shadow', 'rgb(226, 228, 234) 0px -1px 0px 0px inset');
+  await expect(header).toHaveCSS('box-shadow', headerDivider);
   await section.getByRole('button', { name: 'Показать поиск', exact: true }).click();
   await expect(table.locator('thead')).toHaveCSS('position', 'static');
-  await expect(header).toHaveCSS('box-shadow', 'none');
+  await expect(header).toHaveCSS('box-shadow', headerDivider);
   await scroll.evaluate(node => { node.scrollTop = 0; });
   await expect.poll(shadowOpacity).toBe('0');
   await expect.poll(frameBorder).toMatch(/^0px/);
@@ -626,6 +627,33 @@ test('hidden CRM search counts applied and draft fields once and clears them wit
   await clear.press('Enter');
   await expect(show).toBeFocused();
   await expect(clear).toHaveCount(0);
+});
+
+test('dark CRM chips distinguish the active criterion and keep the overflow readable', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 900 });
+  await page.goto(crm);
+  await page.getByRole('button', { name: 'Тёмная тема', exact: true }).click();
+  const panel = page.getByRole('region', { name: 'Панель поиска CRM' });
+  for (const [label, value] of [
+    ['Отображаемое имя сущности', 'Организация'],
+    ['Логическое имя сущности', 'account'],
+    ['Отображаемое имя атрибута', 'Название'],
+    ['Логическое имя атрибута', 'name'],
+  ]) await panel.getByRole('textbox', { name: label, exact: true }).fill(value);
+  await panel.getByRole('button', { name: 'Свернуть параметры поиска' }).click();
+  const chip = panel.locator('[data-crm-chip]').first();
+  const counter = panel.locator('[data-crm-overflow]');
+  await expect(chip).toHaveCSS('background-color', 'rgb(55, 58, 64)');
+  await expect(chip).toHaveCSS('color', 'rgb(241, 242, 244)');
+  await expect(counter).toHaveCSS('background-color', 'rgb(55, 58, 64)');
+  await chip.locator('[data-crm-chip-action]').click();
+  await expect(chip).toHaveCSS('background-color', 'rgb(37, 54, 76)');
+  await expect(chip).toHaveCSS('border-top-color', 'rgb(134, 184, 255)');
+  await page.keyboard.press('Escape');
+  await counter.click();
+  await expect(counter).toHaveAttribute('aria-expanded', 'true');
+  await expect(counter).toHaveCSS('background-color', 'rgb(37, 54, 76)');
+  await expect(counter).toHaveCSS('color', 'rgb(134, 184, 255)');
 });
 
 test('keeps one anchored chip editor through empty and long input, cancel and switching chips', async ({ page }, testInfo) => {

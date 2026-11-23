@@ -8,6 +8,8 @@ test('each status filters the list while the tab keeps the complete count', asyn
   const statuses = page.getByRole('group', { name: 'Статус обращения' });
   const panel = page.getByRole('tabpanel', { name: /^Мои вопросы/ });
   const cards = panel.getByRole('list', { name: 'Список обращений' }).getByRole('listitem');
+  const gaps = () => cards.evaluateAll(items => items.slice(1).map((item, index) =>
+    item.getBoundingClientRect().top - items[index].getBoundingClientRect().bottom));
   const all = statuses.getByRole('button', { name: 'Все 6', exact: true });
   const counters = statuses.locator('[data-control-count]');
   await expect(all).toHaveAttribute('aria-pressed', 'true');
@@ -16,6 +18,7 @@ test('each status filters the list while the tab keeps the complete count', asyn
   const activeColor = await activeSegmentCounter.evaluate(element => getComputedStyle(element).backgroundColor);
   await expect(all.locator('[data-control-count]')).toHaveCSS('background-color', activeColor);
   await expect(cards).toHaveCount(6);
+  expect(await gaps()).toEqual([8, 8, 8, 8, 8]);
   await expect(panel.getByRole('status')).toBeEmpty();
 
   for (const [label, count] of [['Новый', 2], ['В работе', 2], ['Решён', 1], ['Закрыт', 1]] as const) {
@@ -27,6 +30,7 @@ test('each status filters the list while the tab keeps the complete count', asyn
     await expect(all.locator('[data-control-count]')).toHaveCSS('background-color', 'rgb(226, 228, 234)');
     await expect(counters).toHaveText(['6', '2', '2', '1', '1']);
     await expect(cards).toHaveCount(count);
+    expect(await gaps()).toEqual(count === 2 ? [8] : []);
     await expect(cards.getByText(label, { exact: true })).toHaveCount(count);
     await expect(panel.getByRole('status')).toHaveText(count === 1 ? '1 обращение' : '2 обращения');
     await expect(page.getByRole('tab', { name: 'Мои вопросы 6' })).toBeVisible();

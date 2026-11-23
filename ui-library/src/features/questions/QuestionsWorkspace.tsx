@@ -127,7 +127,7 @@ export function QuestionsWorkspace({ faq, appeals, onSubmitQuestion, onClearSear
             </div>
           </div>}
         </div>
-        <div className={s.list} id={`${id}-faq-panel`} role="tabpanel" aria-labelledby={`${id}-faq-tab`} hidden={!isFaq} data-detail-tab-content={isFaq || undefined}>
+        <div className={`${s.list} ${s.faqList}`} id={`${id}-faq-panel`} role="tabpanel" aria-labelledby={`${id}-faq-tab`} hidden={!isFaq} data-detail-tab-content={isFaq || undefined}>
           {faqPage.outside && <p className={s.resultCount} role="status">Найденный вопрос показан вне текущих условий поиска.</p>}
           {faqPage.rows.map(entry => {
             const target = searchId('faq', entry.id);

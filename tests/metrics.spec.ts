@@ -7,6 +7,10 @@ test('metric and indicator icons follow report spacing and change color with the
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const view of ['cards', 'list']) {
     await page.goto(entry + '&metricView=' + view);
+    const items = page.locator('[data-metrics-results] [data-metric-id]');
+    await expect(items.nth(1)).toBeVisible();
+    const [first, second] = await Promise.all([items.first().boundingBox(), items.nth(1).boundingBox()]);
+    expect(second!.y - first!.y - first!.height).toBeCloseTo(8);
     for (const kind of ['metric', 'indicator']) {
       const icon = page.locator(`[data-catalog-entity-icon="${kind}"]`).first();
       const item = icon.locator('xpath=ancestor::*[@data-metric-id][1]');
