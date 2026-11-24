@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
 
 test('column range validates incomplete input and synchronizes the slider endpoints', async ({ page }) => {
   await page.goto('/preview/navigation?section=reports&tableCase=single-page');
@@ -212,3 +212,80 @@ test('dark range defaults are visible and neutral in the panel and both column m
     await page.keyboard.press('Escape');
   }
 });
+
+for (const [theme, accent] of [['light', 'rgb(0, 123, 252)'], ['dark', 'rgb(134, 184, 255)']]) {
+  test(`range handles and the active value stay highlighted through a drag in ${theme}`, async ({ page }, info) => {
+    await page.setViewportSize({ width: 1920, height: 1000 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/preview/navigation?section=reports');
+    const toggle = page.getByRole('button', { name: 'Тёмная тема', exact: true });
+    if ((await toggle.getAttribute('aria-pressed') === 'true') !== (theme === 'dark')) await toggle.click();
+
+    async function captureRange(field: Locator, filename: string) {
+      const { x, y, width, height } = (await field.boundingBox())!;
+      await page.screenshot({ path: info.outputPath(filename), clip: { x: x - 4, y: y - 4, width: width + 8, height: height + 8 } });
+    }
+
+    async function checkRange(field: Locator, panel: boolean) {
+      for (const [bound, label, direction] of [['min', 'от', 1], ['max', 'до', -1]] as const) {
+        const marker = field.locator(`[data-range-knob="${bound}"]`);
+        const otherMarker = field.locator(`[data-range-knob]:not([data-range-knob="${bound}"])`);
+        const slider = field.locator(`[data-range-bound="${bound}"]`);
+        const number = field.getByRole('spinbutton', { name: new RegExp(`: ${label}$`) });
+        const caption = number.locator('..').locator('span');
+        const values = number.locator('..').locator('..');
+        const paint = () => marker.evaluate(node => {
+          const active = getComputedStyle(node, '::after');
+          return { content: active.content, outline: active.borderColor, center: active.backgroundImage };
+        });
+        const neutral = () => otherMarker.evaluate(node => getComputedStyle(node, '::after').content);
+
+        await number.scrollIntoViewIfNeeded();
+        await page.mouse.move(12, 48);
+        const initial = Number(await slider.inputValue());
+        const box = (await marker.boundingBox())!;
+        const x = box.x + box.width / 2;
+        const y = box.y + box.height / 2;
+        await page.mouse.move(x, y);
+        await expect.poll(paint).toMatchObject({ content: '""', outline: accent });
+        expect((await paint()).center).toContain(accent);
+        await number.focus();
+        await expect(values).toHaveCSS('outline-color', accent);
+        await page.mouse.down();
+        try {
+          await page.mouse.move(x + direction * 50, y, { steps: 5 });
+          await expect.poll(async () => Number(await slider.inputValue())).not.toBe(initial);
+          await expect(number).toHaveValue(await slider.inputValue());
+          await expect(values).toHaveCSS('outline-width', '2px');
+          await expect(caption).toHaveCSS('color', accent);
+          await expect.poll(paint).toMatchObject({ content: '""', outline: accent });
+          await expect.poll(neutral).toBe('none');
+          if (theme === 'dark' && panel && bound === 'min' && await field.getAttribute('data-report-range') === 'mau')
+            await captureRange(field, 'range-mau-drag-dark.png');
+        } finally {
+          await page.mouse.up();
+        }
+        await page.mouse.move(12, 48);
+        await expect(slider).toBeFocused();
+        await expect(values).toHaveCSS('outline-color', accent);
+        await expect(caption).toHaveCSS('color', accent);
+        await expect.poll(paint).toMatchObject({ content: '""', outline: accent });
+        if (theme === 'dark' && !panel && bound === 'max' && await field.getAttribute('data-report-range') === 'lastViewed')
+          await captureRange(field, 'range-viewed-focus-dark.png');
+        await slider.evaluate(element => (element as HTMLInputElement).blur());
+        await expect(values).toHaveCSS('outline-style', 'none');
+        await expect.poll(paint).toMatchObject({ content: 'none' });
+      }
+    }
+
+    await page.getByRole('button', { name: 'Открыть фильтры отчётов', exact: true }).click();
+    const panel = page.locator('[data-report-filter-panel]');
+    for (const attribute of ['mau', 'lastViewed']) await checkRange(panel.locator(`[data-report-range="${attribute}"]`), true);
+    await page.keyboard.press('Escape');
+    for (const column of ['MAU', 'Просмотр']) {
+      await page.getByRole('button', { name: `Фильтр «${column}»`, exact: true }).click();
+      await checkRange(page.getByRole('dialog').locator('[data-report-range]'), false);
+      await page.keyboard.press('Escape');
+    }
+  });
+}

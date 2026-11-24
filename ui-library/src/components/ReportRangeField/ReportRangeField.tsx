@@ -59,10 +59,15 @@ export function ReportRangeField({ attribute, value = {}, scaleMax, onChange }: 
         value={maxInput ?? ''} placeholder="Любое" {...numberInputEvents('max')} /></label>
       <div className={s.slider}>
         <div className={s.track} data-range-track /><div className={s.progress} data-range-band style={{ left:`calc(${left}% + ${10 - left / 5}px)`, right:`calc(${100 - right}% + ${10 - (100 - right) / 5}px)` }} />
-        {[left, right].map((position, index) => <span key={index} className={s.knob} style={{ left:`calc(${position}% - ${position / 5}px)` }} aria-hidden="true"><img src={new URL('../../assets/images/report-range/thumb.svg', import.meta.url).href} width="68" height="68" alt="" /></span>)}
-        <input className={s.range} type="range" min="0" max={maximum} step="1" value={lower} aria-label={`${label}: нижняя граница`} style={{ zIndex:lower === maximum ? 4 : 2 }}
+        {(['min', 'max'] as const).map(bound => {
+          const position = bound === 'min' ? left : right;
+          return <span key={bound} className={s.knob} data-range-knob={bound} style={{ left:`calc(${position}% - ${position / 5}px)` }} aria-hidden="true">
+            <img src={new URL('../../assets/images/report-range/thumb.svg', import.meta.url).href} width="68" height="68" alt="" />
+          </span>;
+        })}
+        <input className={s.range} data-range-bound="min" type="range" min="0" max={maximum} step="1" value={lower} aria-label={`${label}: нижняя граница`} style={{ zIndex:lower === maximum ? 4 : 2 }}
           onChange={event => onChange({ ...value, min:Math.min(event.currentTarget.valueAsNumber, upper) })} />
-        <input className={s.range} type="range" min="0" max={maximum} step="1" value={upper} aria-label={`${label}: верхняя граница`}
+        <input className={s.range} data-range-bound="max" type="range" min="0" max={maximum} step="1" value={upper} aria-label={`${label}: верхняя граница`}
           onChange={event => onChange({ ...value, max:Math.max(event.currentTarget.valueAsNumber, lower) })} />
       </div>
     </div>
