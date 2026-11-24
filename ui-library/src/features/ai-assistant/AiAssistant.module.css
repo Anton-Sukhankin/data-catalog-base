@@ -61,6 +61,7 @@
 .panel {
   --assistant-resize-accent:var(--catalog-theme-accent, #007bfc);
   --assistant-panel-surface:var(--catalog-theme-raised, #fff);
+  --assistant-icon-surface:var(--catalog-theme-icon, #eef2f6);
   position:absolute; top:calc(var(--assistant-header-height) + var(--assistant-inset));
   right:var(--assistant-inset); bottom:var(--assistant-inset);
   display:flex; flex-direction:column;
@@ -99,7 +100,7 @@
 .headerActions .close { backdrop-filter:none; }
 .historyToggle {
   composes:badge surface from '../../components/CatalogEntityIcon/CatalogEntityIcon.module.css';
-  padding:0; border:0; background:var(--catalog-icon-fill,var(--catalog-theme-section, #eef2f6));
+  padding:0; border:0; background:var(--catalog-icon-fill,var(--assistant-icon-surface));
   color:var(--catalog-icon-ink,var(--catalog-theme-accent, #7186a5)); cursor:pointer;
 }
 .historyToggle:focus-visible {
@@ -271,7 +272,7 @@
 }
 .emptyIllustration {
   display:grid; place-items:center; width:58px; height:58px; margin-bottom:4px;
-  border-radius:18px; background:var(--catalog-theme-section, #f3f4f9); color:var(--assistant-muted);
+  border-radius:18px; background:var(--assistant-icon-surface); color:var(--assistant-muted);
 }
 .empty h3, .empty p { margin:0; }
 .empty h3 { font-size:20px; line-height:28px; font-weight:500; }
