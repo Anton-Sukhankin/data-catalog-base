@@ -21,6 +21,8 @@ export interface ColumnFilterMenuProps {
   onToggleValue: (value: string) => void;
   sortDirection?: 'asc' | 'desc';
   onSortChange: (direction: 'asc' | 'desc') => void;
+  canReset: boolean;
+  canApply: boolean;
   onReset: () => void;
   onApply: () => void;
   range?: ReportRangeFieldProps;
@@ -35,7 +37,7 @@ function sortLabels(label: string): readonly [string, string] {
 /** Controlled view only. Positioning, closing, draft/apply and data belong to the caller. */
 export function ColumnFilterMenu({
   label, options, totalOptionsCount, selectedValues, searchValue, onSearchChange, onToggleValue,
-  sortDirection, onSortChange, onReset, onApply, range,
+  sortDirection, onSortChange, canReset, canApply, onReset, onApply, range,
 }: ColumnFilterMenuProps) {
   const captions = sortLabels(label);
   return (
@@ -57,8 +59,8 @@ export function ColumnFilterMenu({
       {range ? <div className={styles.rangeBody}><ReportRangeField {...range} /></div> : <FilterValueList label={label} options={options} totalOptionsCount={totalOptionsCount} selectedValues={selectedValues} searchValue={searchValue}
         onSearchChange={onSearchChange} onToggleValue={onToggleValue} embedded />}
       <div className={styles.actions} data-filter-actions>
-        <button type="button" className={styles.reset} onClick={onReset}>Сбросить</button>
-        <button type="button" data-catalog-action="apply" className={styles.apply} disabled={range && !isReportRangeValid(range.value)} onClick={onApply}>Применить</button>
+        <button type="button" className={styles.reset} disabled={!canReset} onClick={onReset}>Сбросить</button>
+        <button type="button" data-catalog-action="apply" className={styles.apply} disabled={!canApply || !isReportRangeValid(range?.value)} onClick={onApply}>Применить</button>
       </div>
     </div>
   );

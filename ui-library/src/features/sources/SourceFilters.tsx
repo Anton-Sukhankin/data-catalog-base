@@ -144,6 +144,8 @@ export function useSourceFilterOverlay({ records, applied, onApply, onModalChang
   const activeColumn = state?.kind === 'column' ? state : undefined;
   const column = activeColumn ?? exiting?.menu;
   if (column && state?.kind !== 'panel') {
+    const hasChanges = !sourceFiltersEqual(applied, column.draft);
+    const canReset = hasChanges || column.attributes.some(id => Boolean(applied[id]?.length));
     const bounds = activeColumn ? columnBounds(activeColumn.opener) : exiting!.bounds;
     const grouped = column.attributes.length > 1;
     const preferredWidth = grouped ? 320 : column.attributes[0] === 'analytics' ? 264 : 240;
@@ -156,7 +158,10 @@ export function useSourceFilterOverlay({ records, applied, onApply, onModalChang
         {grouped && <h3>{sourceLabels[id]}</h3>}
         {list(id,column.queries[id] ?? '',undefined,column.draft)}
       </section>)}</div>
-      <div className={s.columnActions}><button type="button" className={s.columnReset} onClick={reset}>Сбросить</button><button type="button" data-catalog-action="apply" disabled={sourceFiltersEqual(applied,column.draft)} onClick={apply}>Применить</button></div>
+      <div className={s.columnActions}>
+        <button type="button" className={s.columnReset} disabled={!canReset} onClick={reset}>Сбросить</button>
+        <button type="button" data-catalog-action="apply" disabled={!hasChanges} onClick={apply}>Применить</button>
+      </div>
     </div>,document.body);
   }
   return { overlay,openPanel,openColumn,close,isOpen:Boolean(state),activeColumn:activeColumn?.label };

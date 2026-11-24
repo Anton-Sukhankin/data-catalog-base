@@ -21,11 +21,14 @@ function ExampleController({ example }: { example: FilterPreviewExample }) {
   const [appliedRange,setAppliedRange] = useState(range);
   const [search, setSearch] = useState('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | undefined>(initialDirection);
+  const [appliedSort, setAppliedSort] = useState<'asc' | 'desc' | undefined>(initialDirection);
   const [open, setOpen] = useState(true);
   const [log, setLog] = useState<string[]>([]);
   const visibleOptions = example.options.filter(option => option.label.toLowerCase().includes(search.toLowerCase()));
+  const hasChanges = sortDirection !== appliedSort || range.min !== appliedRange.min || range.max !== appliedRange.max
+    || draft.length !== applied.length || draft.some(value => !applied.includes(value));
   function record(message: string) { setLog(previous => [...previous, message]); }
-  function closeWithoutApplying() { setOpen(false); setDraft([...applied]); setRange(appliedRange); setSearch(''); record('close: cancel draft'); }
+  function closeWithoutApplying() { setOpen(false); setDraft([...applied]); setRange(appliedRange); setSortDirection(appliedSort); setSearch(''); record('close: cancel draft'); }
   return (
     <div onKeyDown={event => { if (event.key === 'Escape' && open) { event.stopPropagation(); closeWithoutApplying(); } }}>
       <aside className={styles.controller} aria-label="Технический контроллер">
@@ -42,8 +45,9 @@ function ExampleController({ example }: { example: FilterPreviewExample }) {
           onToggleValue={value => { setDraft(previous => previous.includes(value) ? previous.filter(item => item !== value) : [...previous, value]); record(`toggle: ${value}`); }}
           sortDirection={sortDirection}
           onSortChange={direction => { record(`sort: ${direction}`); setSortDirection(previous => previous === direction ? undefined : direction); }}
-          onReset={() => { setDraft([]); setRange({}); setApplied([]); setAppliedRange({}); setOpen(false); record('reset: clear applied column; close'); }}
-          onApply={() => { if(!isReportRangeValid(range))return;setApplied([...draft]);setAppliedRange(range);setOpen(false);record(`apply: ${numeric ? JSON.stringify(range) : draft.join(',')}`); }} />}
+          canApply={hasChanges} canReset={hasChanges || applied.length > 0 || appliedSort !== undefined || appliedRange.min !== undefined || appliedRange.max !== undefined}
+          onReset={() => { setDraft([]); setRange({}); setSortDirection(undefined); setApplied([]); setAppliedRange({}); setAppliedSort(undefined); setOpen(false); record('reset: clear applied column; close'); }}
+          onApply={() => { if(!isReportRangeValid(range))return;setApplied([...draft]);setAppliedRange(range);setAppliedSort(sortDirection);setOpen(false);record(`apply: ${numeric ? JSON.stringify(range) : draft.join(',')}`); }} />}
       </div>
       <aside className={styles.log} aria-label="Журнал намерений">
         <h2>Технический журнал</h2>

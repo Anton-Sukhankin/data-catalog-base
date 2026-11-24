@@ -1,8 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-test('every table column menu gives its footer actions equal space on one row', async ({ page }) => {
+test('every table column menu starts with two disabled actions sharing one row', async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 900 });
-  for (const query of ['section=reports', 'section=home&segment=favorites', 'section=sources']) {
+  for (const query of [
+    'section=reports', 'section=home&segment=favorites',
+    `section=home&segment=domains&reportDomain=${encodeURIComponent('Гостеприимство')}`,
+    'section=sources', 'section=ai&ai.view=list',
+  ]) {
     await page.goto('/preview/navigation?' + query);
     const triggers = page.getByRole('columnheader').getByRole('button', { name: /^Фильтр(?: «|: )/ });
     await expect(triggers).not.toHaveCount(0);
@@ -17,6 +21,8 @@ test('every table column menu gives its footer actions equal space on one row', 
         const apply = menu.getByRole('button', { name: 'Применить', exact: true });
         await expect(reset).toBeVisible();
         await expect(apply).toBeVisible();
+        await expect(reset).toBeDisabled();
+        await expect(apply).toBeDisabled();
         const geometry = await apply.evaluate(button => {
           const footer = button.parentElement!;
           const footerBox = footer.getBoundingClientRect();

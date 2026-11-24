@@ -9,12 +9,17 @@ test('column range validates incomplete input and synchronizes the slider endpoi
   const lower = menu.getByRole('slider', { name: 'MAU: нижняя граница', exact: true });
   const upper = menu.getByRole('slider', { name: 'MAU: верхняя граница', exact: true });
   const apply = menu.getByRole('button', { name: 'Применить', exact: true });
+  const reset = menu.getByRole('button', { name: 'Сбросить', exact: true });
 
   await heading.click();
+  await expect(apply).toBeDisabled();
+  await expect(reset).toBeDisabled();
   await to.press('-');
   await expect(menu.getByRole('alert')).toBeVisible();
   await expect(apply).toBeDisabled();
+  await expect(reset).toBeEnabled();
   await menu.getByRole('button', { name: 'От 50', exact: true }).click();
+  await expect(apply).toBeEnabled();
   await expect(from).toHaveValue('50');
   expect(await to.evaluate(field => (field as HTMLInputElement).validity.badInput)).toBe(false);
   await expect(lower).toHaveValue('50');
@@ -32,6 +37,8 @@ test('column range validates incomplete input and synchronizes the slider endpoi
   await heading.click();
   await expect(from).toHaveValue('');
   await expect(to).toHaveValue('');
+  await expect(apply).toBeDisabled();
+  await expect(reset).toBeDisabled();
 });
 
 test('report resets preserve sorting and return to the first page', async ({ page }) => {

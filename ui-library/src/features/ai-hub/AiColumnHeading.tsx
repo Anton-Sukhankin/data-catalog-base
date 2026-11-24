@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Popover } from 'radix-ui';
 import { ColumnFilterMenu } from '../../components/ColumnFilterMenu/ColumnFilterMenu';
 import { ColumnReset } from '../../components/ColumnReset/ColumnReset';
-import { aiFilterFields, toggleAiValue, type AiColumn, type AiFilterOptions, type AiSort } from './aiFilters';
+import { aiFilterFields, sameValues, toggleAiValue, type AiColumn, type AiFilterOptions, type AiSort } from './aiFilters';
 import s from './AiHubCatalog.module.css';
 
 interface ColumnDraft { open: boolean; values: readonly string[]; search: string; sort?: AiSort }
@@ -20,6 +20,8 @@ export function AiColumnHeading({ column, options, values, sort, onApply, onClea
   const { label } = aiFilterFields[column];
   const direction = sort?.column === column ? sort.direction : undefined;
   const open = draft?.open ?? false;
+  const draftDirection = draft?.sort?.column === column ? draft.sort.direction : undefined;
+  const hasChanges = Boolean(draft && (!sameValues(values, draft.values) || direction !== draftDirection));
   function close() { setDraft(previous => previous?.open ? { ...previous, open: false } : previous); }
   return <th scope="col" aria-label={label} aria-sort={direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : undefined}>
     <Popover.Root open={open} onOpenChange={next => { if (next) setDraft({ open: true, values, sort, search: '' }); else close(); }}>
@@ -43,9 +45,10 @@ export function AiColumnHeading({ column, options, values, sort, onApply, onClea
             totalOptionsCount={options.length} selectedValues={draft.values} searchValue={draft.search}
             onSearchChange={search => setDraft(previous => previous && { ...previous, search })}
             onToggleValue={value => setDraft(previous => previous && { ...previous, values: toggleAiValue(previous.values, value) })}
-            sortDirection={draft.sort?.column === column ? draft.sort.direction : undefined}
+            sortDirection={draftDirection}
             onSortChange={next => setDraft(previous => previous && { ...previous, sort: previous.sort?.column === column && previous.sort.direction === next
-              ? undefined : { column, direction: next } })}
+              ? (sort?.column === column ? undefined : sort) : { column, direction: next } })}
+            canApply={hasChanges} canReset={hasChanges || values.length > 0 || direction !== undefined}
             onReset={() => { onApply([], sort?.column === column ? undefined : sort); close(); }}
             onApply={() => { onApply(draft.values, draft.sort); close(); }} />
         </Popover.Content>

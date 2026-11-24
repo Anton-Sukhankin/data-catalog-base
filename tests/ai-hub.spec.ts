@@ -452,12 +452,21 @@ test('AI Hub column filters share applied values with the dialog and reset indep
   const catalog = page.getByRole('region', { name: 'Каталог AI Hub' });
   const table = catalog.getByRole('table');
   const domain = table.getByRole('columnheader', { name: 'Домен' });
-  const heading = domain.getByRole('button', { name: 'Фильтр «Домен»' });
+  const heading = domain.getByRole('button', { name: 'Фильтр «Домен»', exact: true });
   const menu = page.getByRole('dialog', { name: 'Фильтр: Домен' });
   const modal = page.getByRole('dialog', { name: 'Фильтры', exact: true });
   const values = () => new URL(page.url()).searchParams.getAll('ai.domain');
+  const apply = menu.getByRole('button', { name: 'Применить', exact: true });
+  const reset = menu.getByRole('button', { name: 'Сбросить', exact: true });
+  const descending = menu.getByRole('button', { name: 'Я → А' });
 
   await heading.click();
+  await descending.click();
+  await expect(apply).toBeEnabled();
+  await expect(reset).toBeEnabled();
+  await descending.click();
+  await expect(apply).toBeDisabled();
+  await expect(reset).toBeDisabled();
   await menu.getByRole('checkbox', { name: 'Операции', exact: true }).check();
   await page.keyboard.press('Escape');
   await expect(menu).toHaveCount(0);
@@ -466,8 +475,8 @@ test('AI Hub column filters share applied values with the dialog and reset indep
   await heading.click();
   await menu.getByRole('checkbox', { name: 'Операции', exact: true }).check();
   await menu.getByRole('checkbox', { name: 'Применимо ко всем доменам', exact: true }).check();
-  await menu.getByRole('button', { name: 'Я → А' }).click();
-  await menu.getByRole('button', { name: 'Применить' }).click();
+  await descending.click();
+  await apply.click();
   await expect(menu).toHaveCount(0);
   expect(values()).toEqual(['Операции', 'Все домены']);
   await expect(domain).toHaveAttribute('aria-sort', 'descending');
@@ -476,6 +485,11 @@ test('AI Hub column filters share applied values with the dialog and reset indep
   expect(domains).toContain('Все домены');
   expect(domains).toEqual([...domains].sort((a,b) => b.localeCompare(a,'ru')));
 
+  await heading.click();
+  await expect(apply).toBeDisabled();
+  await expect(reset).toBeEnabled();
+  await page.keyboard.press('Escape');
+  await expect(menu).toHaveCount(0);
   await catalog.getByRole('button', { name: 'Открыть фильтры AI Hub' }).click();
   await expect(modal.locator('[data-panel-count]')).toHaveText('2');
   await expect(modal.getByRole('button', { name: 'Есть UI' })).toHaveAttribute('aria-pressed', 'true');

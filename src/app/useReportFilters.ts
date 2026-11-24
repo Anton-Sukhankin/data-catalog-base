@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useColumnDropdownExit } from '@data-catalog/ui/source/components/ColumnFilterMenu/useColumnDropdownExit';
-import { applyReportColumnDraft, applyReportRangeDraft, copyReportFilters, isReportNumericAttribute, isReportRangeValid, reportFilterValues, reportFilterColumns, reportFilterLabels, type ReportFilterColumn, type ReportFilters, type ReportNumberRange } from '@data-catalog/ui/source/data/reportFilters';
+import { applyReportColumnDraft, applyReportRangeDraft, copyReportFilters, isReportNumericAttribute, isReportRangeValid, reportFilterActive, reportFiltersEqual, reportFilterValues, reportFilterColumns, reportFilterLabels, type ReportFilterColumn, type ReportFilters, type ReportNumberRange } from '@data-catalog/ui/source/data/reportFilters';
 import type { ReportSort } from '@data-catalog/ui/source/data/reportSort';
 
 interface OpenColumn {
@@ -16,12 +16,25 @@ interface OpenColumn {
 
 const menuLeft = (anchorLeft: number) => Math.max(0, Math.min(anchorLeft, window.innerWidth - 320));
 
+function applyColumnDraft(applied: ReportFilters, menu: OpenColumn) {
+  return isReportNumericAttribute(menu.column)
+    ? applyReportRangeDraft(applied, menu.column, menu.range)
+    : applyReportColumnDraft(applied, menu.column, menu.values);
+}
+
 export function useReportFilters(onAppliedChange: () => void) {
   const [applied, setApplied] = useState<ReportFilters>({});
   const [menu, setMenu] = useState<OpenColumn>();
   const [sort, setSort] = useState<ReportSort>();
   const popup = useRef<HTMLDivElement>(null);
   const { exiting, startExit, clearExit, onExitAnimationEnd } = useColumnDropdownExit<OpenColumn>();
+  const visibleMenu = menu ?? exiting;
+  const hasChanges = Boolean(visibleMenu && (
+    !reportFiltersEqual(applied, applyColumnDraft(applied, visibleMenu))
+    || sort?.column !== visibleMenu.sort?.column || sort?.direction !== visibleMenu.sort?.direction
+  ));
+  const canReset = Boolean(visibleMenu && (hasChanges
+    || reportFilterActive(applied, visibleMenu.column) || sort?.column === visibleMenu.column));
   function close() { setMenu(undefined); clearExit(); }
   function dismiss() {
     if (menu) startExit(menu);
@@ -49,8 +62,8 @@ export function useReportFilters(onAppliedChange: () => void) {
     onAppliedChange();
   }
   function apply() {
-    if (!menu || !isReportRangeValid(menu.range)) return;
-    setApplied(previous => isReportNumericAttribute(menu.column) ? applyReportRangeDraft(previous,menu.column,menu.range) : applyReportColumnDraft(previous, menu.column, menu.values));
+    if (!menu || !hasChanges || !isReportRangeValid(menu.range)) return;
+    setApplied(previous => applyColumnDraft(previous, menu));
     setSort(menu.sort);
     dismiss();
     menu.anchor.focus();
@@ -66,7 +79,7 @@ export function useReportFilters(onAppliedChange: () => void) {
       ? previous.values.filter(item => item !== value) : [...previous.values, value] });
   }
   function resetColumn() {
-    if (!menu) return;
+    if (!menu || !canReset) return;
     const anchor = menu.anchor;
     setSort(previous => previous?.column === menu.column ? undefined : previous);
     clearColumn(reportFilterLabels[menu.column]);
@@ -82,7 +95,7 @@ export function useReportFilters(onAppliedChange: () => void) {
   function search(value: string) { setMenu(previous => previous && { ...previous, search: value }); }
   function changeSort(direction: 'asc' | 'desc') {
     setMenu(previous => previous && { ...previous, sort: previous.sort?.column === previous.column && previous.sort.direction === direction
-      ? undefined : { column: previous.column, direction } });
+      ? (sort?.column === previous.column ? undefined : sort) : { column: previous.column, direction } });
   }
   const reposition = useCallback(() => {
     const bounds = menu?.anchor.closest('[role="columnheader"]')?.getBoundingClientRect();
@@ -115,5 +128,5 @@ export function useReportFilters(onAppliedChange: () => void) {
     };
   }, [menu?.anchor, reposition]);
 
-  return { applied, sort, menu, visibleMenu: menu ?? exiting, onExitAnimationEnd, popup, open, close, resetForNavigation, clearColumn, clearSort, apply, replaceApplied, toggle, resetColumn, search, changeSort, changeRange, reposition };
+  return { applied, sort, menu, visibleMenu, canApply: hasChanges, canReset, onExitAnimationEnd, popup, open, close, resetForNavigation, clearColumn, clearSort, apply, replaceApplied, toggle, resetColumn, search, changeSort, changeRange, reposition };
 }

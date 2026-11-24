@@ -817,6 +817,7 @@ export function NavigationPreview({ tablePageSize = listPageSize, favoritePageSi
           totalOptionsCount={reportFilterOptions(activeRows ?? [], reportColumnMenu.column).length}
           selectedValues={reportColumnMenu.values} searchValue={reportColumnMenu.search}
           onSearchChange={activeFilters.search} onToggleValue={activeFilters.toggle}
+          canApply={activeFilters.canApply} canReset={activeFilters.canReset}
           onReset={activeFilters.resetColumn} onApply={activeFilters.apply}
           sortDirection={reportColumnMenu.sort?.column === reportColumnMenu.column ? reportColumnMenu.sort.direction : undefined}
           onSortChange={activeFilters.changeSort} />

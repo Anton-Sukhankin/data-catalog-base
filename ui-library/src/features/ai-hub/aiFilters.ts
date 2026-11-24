@@ -62,7 +62,7 @@ export function sameAiFilters(first: AiFilters, second: AiFilters) {
   return aiFilterIds.every(id => sameValues(first.fields[id] ?? [], second.fields[id] ?? [])) && sameValues(first.flags, second.flags);
 }
 
-function sameValues(first: readonly string[], second: readonly string[]) {
+export function sameValues(first: readonly string[], second: readonly string[]) {
   return first.length === second.length && first.every(value => second.includes(value));
 }
 

@@ -46,11 +46,19 @@ test('dark column filters share checkbox and Apply states across the catalog', a
       await page.getByRole('button', { name: trigger, exact: true }).click();
       const menu = page.getByRole('dialog', { name: `Фильтр: ${label}`, exact: true });
       const apply = action(menu);
-      if (evidence === 'sources') {
-        await expect(apply).toBeDisabled();
-        await expect(apply).toHaveCSS('background-color', 'rgb(38, 39, 43)');
+      const reset = menu.getByRole('button', { name: 'Сбросить', exact: true });
+      for (const button of [apply, reset]) {
+        await expect(button).toBeDisabled();
+        await expect(button).toHaveCSS('background-color', 'rgb(38, 39, 43)');
       }
-      await verifyListChoice(menu.getByRole('checkbox', { name: option, exact: true }));
+      const choice = menu.getByRole('checkbox', { name: option, exact: true });
+      await choice.check();
+      await expect(apply).toBeEnabled();
+      await expect(reset).toBeEnabled();
+      await choice.uncheck();
+      await expect(apply).toBeDisabled();
+      await expect(reset).toBeDisabled();
+      await verifyListChoice(choice);
       await verifyApply(apply);
       if (evidence === 'report') {
         await menu.screenshot({ path: info.outputPath('dark-column-filter-choice.png') });
@@ -73,9 +81,13 @@ test('dark column filters share checkbox and Apply states across the catalog', a
   await page.getByRole('button', { name: 'Тёмная тема', exact: true }).click();
   await page.getByRole('button', { name: 'Фильтр «Домен»', exact: true }).click();
   const lightMenu = page.getByRole('dialog', { name: 'Фильтр: Домен', exact: true });
-  await expect(action(lightMenu)).toHaveCSS('background-color', 'rgba(0, 123, 252, 0.1)');
+  await expect(action(lightMenu)).toBeDisabled();
+  await expect(action(lightMenu)).toHaveCSS('background-color', 'rgb(240, 241, 244)');
   const lightCheck = lightMenu.getByRole('checkbox', { name: 'Гостеприимство', exact: true });
   await expect(lightCheck.locator('xpath=following-sibling::span').locator('span')).toHaveCSS('border-color', 'rgb(210, 211, 215)');
+  await lightCheck.check();
+  await expect(action(lightMenu)).toBeEnabled();
+  await expect(action(lightMenu)).toHaveCSS('background-color', 'rgba(0, 123, 252, 0.1)');
 });
 
 test('dark catalog filter panels show enabled Apply only after editing the draft', async ({ page }, info) => {
