@@ -55,7 +55,7 @@
 .chip { border-radius:6px; background:var(--catalog-theme-section, #f0f1f4); padding:3px 8px; font-size:12px; }
 .info h2 { border-bottom:var(--information-divider); }
 .info dl { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:0; padding:24px 16px; border-bottom:var(--information-divider); }
-.info dt { font-size:12px; color:var(--catalog-theme-accent, #6d84a6); }.info dd { margin:4px 0 0; }
+.info dt { font-size:12px; color:var(--catalog-theme-secondary, #52698c); }.info dd { margin:4px 0 0; }
 .detail[data-report-tab='technical'] .information dl { padding-block:16px; }
 .detail[data-report-tab='technical'] .information dt { line-height:16px; }
 .detail[data-report-tab='technical'] .information dd { font-size:16px; line-height:20px; overflow-wrap:anywhere; }

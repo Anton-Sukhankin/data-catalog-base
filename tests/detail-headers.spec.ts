@@ -348,6 +348,39 @@ test('metric detail keeps information below the header while its sections scroll
   await expect(information.getByText('Аналитик', { exact: true })).toBeInViewport();
 });
 
+for (const theme of ['light', 'dark'] as const) {
+  test(`information captions and role labels use the same secondary color in ${theme}`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.addInitScript(value => localStorage.setItem('data-catalog.theme', value), theme);
+    const color = theme === 'light' ? 'rgb(82, 105, 140)' : 'rgb(178, 181, 189)';
+    const roleBackground = theme === 'light' ? 'rgb(243, 244, 249)' : 'rgb(38, 39, 43)';
+
+    for (const [query, name, roleCount] of [
+      ['section=dictionary&dictionaryTerm=term-bcr', 'Сведения', 2],
+      ['section=reports&report=demo-report-summary&reportTab=overview', 'Сведения об отчёте', 3],
+      ['section=sources&source=source-reportcrm-date', 'Сведения об источнике', 0],
+      ['section=metrics&metric=4', 'Сведения о показателе', 3],
+    ] as const) {
+      await page.goto('/preview/navigation?' + query);
+      await expect(page.locator('html')).toHaveAttribute('data-catalog-theme', theme);
+      const information = page.getByRole('complementary', { name, exact: true });
+      await expect(information).toBeVisible();
+      const captions = information.locator('dt, small, :scope > header > p');
+      await expect(captions).not.toHaveCount(0);
+      for (const caption of await captions.all()) {
+        await expect(caption).toHaveCSS('color', color);
+      }
+
+      const roles = information.locator('span[class*="_role_"]');
+      await expect(roles).toHaveCount(roleCount);
+      for (const role of await roles.all()) {
+        await expect(role).toHaveCSS('color', color);
+        await expect(role).toHaveCSS('background-color', roleBackground);
+      }
+    }
+  });
+}
+
 test('information role dividers span the same width and match the header divider', async ({ page }) => {
   const entries = [
     ['section=reports&report=demo-report-summary&reportTab=overview', 'Сведения об отчёте', ':scope > div:has(> img)'],

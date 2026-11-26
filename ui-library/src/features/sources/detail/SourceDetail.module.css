@@ -97,11 +97,11 @@ a.similarSource:is(:hover,:focus-visible) .similarSourceName { color:var(--item-
 .passport { composes:pinnedInformation from "../../../components/DetailHeader/DetailHeader.module.css"; --information-divider:var(--catalog-card-border); width:380px; border:var(--catalog-card-border); border-radius:12px; scrollbar-width:none; background:var(--catalog-theme-surface, #fff); }
 .passport header { padding:14px 16px; border-bottom:var(--information-divider); }
 .passport h2 { margin:0; font-size:16px; font-weight:500; line-height:20px; }
-.passport header p { margin:0; color:var(--catalog-theme-accent, #6d84a6); font-size:12px; line-height:16px; }
+.passport header p { margin:0; color:var(--catalog-theme-secondary, #52698c); font-size:12px; line-height:16px; }
 .passportBody { display:flex; flex-direction:column; gap:16px; padding-block:16px; }
 .passportBody > * { padding-inline:16px; }
 .attribute { display:flex; flex-direction:column; gap:4px; }
-.attribute small,.person small { color:var(--catalog-theme-accent, #6d84a6); font-size:12px; line-height:16px; }
+.attribute small,.person small { color:var(--catalog-theme-secondary, #52698c); font-size:12px; line-height:16px; }
 .attribute span,.person span { font-size:14px; line-height:20px; overflow-wrap:anywhere; }
 .person { display:flex; align-items:center; gap:12px; padding-top:16px; border-top:var(--information-divider); }
 .person img { flex:0 0 32px; border-radius:50%; }

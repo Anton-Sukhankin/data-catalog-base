@@ -65,7 +65,7 @@
 .personText { min-width:0; flex:1; }
 .personText > div { display:flex; gap:8px; align-items:center; min-height:24px; }
 .personText > div > span:first-child { flex:1; min-width:0; }
-.role { display:inline-flex; align-items:center; flex:none; height:24px; padding:0 8px; border-radius:8px; font-size:12px; line-height:12px; letter-spacing:-.12px; font-weight:500; background:var(--catalog-theme-tint, rgba(0,123,252,.1)); color:var(--catalog-theme-accent, #007bfc); }
+.role { display:inline-flex; align-items:center; flex:none; height:24px; padding:0 8px; border-radius:8px; font-size:12px; line-height:12px; letter-spacing:-.12px; font-weight:500; background:var(--catalog-theme-section, #f3f4f9); color:var(--catalog-theme-secondary, #52698c); }
 .missing { background:var(--catalog-theme-surface, white); border:var(--catalog-card-border); border-radius:12px; padding:24px; }
 .missing h2 { margin:0 0 16px; font-size:16px; font-weight:500; }
 .missing p { margin:0 0 12px; font-size:14px; line-height:22px; }
