@@ -24,13 +24,13 @@
 .card {
   composes:surface from '../../components/CatalogEntityIcon/CatalogEntityIcon.module.css';
   display:flex; align-items:center; gap:10px; width:100%; min-height:72px; padding:10px 12px;
-  border:1px solid var(--catalog-theme-edge, #d7e6f5); border-radius:12px; background:var(--catalog-theme-surface, #fff); color:var(--catalog-theme-text, #101d3b);
-  text-align:left; cursor:pointer; transition:border-color var(--navigation-hover-duration) ease;
+  border:var(--catalog-card-border); border-radius:12px; background:var(--catalog-theme-surface, #fff); color:var(--catalog-theme-text, #101d3b);
+  text-align:left; cursor:pointer; transition:background-color var(--navigation-hover-duration) ease;
 }
 .information { display:grid; gap:2px; min-width:0; overflow-wrap:anywhere; }
 .title { font-size:14px; font-weight:500; line-height:18px; transition:color var(--navigation-hover-duration) ease; }
 .count { color:var(--catalog-theme-secondary, #52698c); font-size:13px; line-height:18px; }
-.card:hover { border-color:var(--item-hover-border); }
+.card:hover { background-color:var(--item-hover-fill); }
 .card:hover .title { color:var(--item-hover-ink); }
 /* Keep the shared focus ring inside the card's animated clip. */
 .scroll .card:focus-visible { outline-offset:-3px; }

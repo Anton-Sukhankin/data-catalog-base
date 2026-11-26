@@ -17,7 +17,7 @@
   margin-block-start:4px;
   padding:0 16px;
   min-block-size:32px;
-  border:1px solid var(--catalog-theme-edge, #d7e6f5);
+  border:var(--catalog-card-border);
   border-radius:999px;
   background:var(--catalog-theme-surface, #fff);
   color:inherit;

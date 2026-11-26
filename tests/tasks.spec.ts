@@ -47,10 +47,13 @@ test('task cards use the Paper geometry and keep metadata readable when narrow',
   const sidebar = page.getByRole('navigation', { name: 'Разделы каталога' });
   await expect(sidebar.getByRole('button', { name: 'Задачи', exact: true }).getByText('6', { exact: true })).toBeVisible();
   const list = page.getByRole('list', { name: queue });
-  await expect(list).toHaveCSS('row-gap', '4px');
+  await expect(list).toHaveCSS('row-gap', '8px');
   const cards = list.getByRole('button');
   const first = cards.first();
   await expect(cards).toHaveCount(6);
+  await expect(first).toHaveCSS('border', '1px solid rgb(215, 230, 245)');
+  await first.hover();
+  await expect(first).toHaveCSS('border', '1px solid rgb(215, 230, 245)');
   const dot = first.locator('[data-description-separator]').first();
   await expect(first.locator('[data-description-separator]')).toHaveCount(3);
   await expect(dot).toHaveCSS('width', '3px');
@@ -58,6 +61,8 @@ test('task cards use the Paper geometry and keep metadata readable when narrow',
   await expect(dot).toHaveCSS('margin-inline-start', '4px');
   await expect(dot).toHaveCSS('margin-inline-end', '4px');
   const icon = first.locator('[data-catalog-entity-icon="task"]');
+  await expect(icon).toHaveCSS('background-color', 'rgb(229, 231, 235)');
+  await expect(icon).toHaveCSS('color', 'rgb(54, 56, 61)');
   await expect(icon).toHaveCSS('width', '40px');
   await expect(icon).toHaveCSS('height', '40px');
   await expect.poll(() => icon.evaluate(node => getComputedStyle(node, '::before').width)).toBe('16px');

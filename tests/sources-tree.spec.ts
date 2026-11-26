@@ -83,7 +83,7 @@ test('tree preserves disclosures and breadcrumb path around detail navigation, a
   const header = tree.locator('[data-source-tree-header]');
   await expect(current).toHaveText('Источники');
   await expect(header).toHaveCSS('height','48px');
-  await expect(header).toHaveCSS('border-bottom-color','rgb(226, 228, 234)');
+  await expect(header).toHaveCSS('border-bottom-color','rgb(215, 230, 245)');
   await expect(header.getByRole('button')).toHaveCount(0);
   const sql = group(tree,'SQL Server');
   await sql.focus();
@@ -101,7 +101,7 @@ test('tree preserves disclosures and breadcrumb path around detail navigation, a
   for (const width of [1440,1024]) {
     await page.setViewportSize({width,height:900});
     await leafRow.hover();
-    await expect(leafRow).toHaveCSS('background-color','rgb(243, 244, 249)');
+    await expect(leafRow).toHaveCSS('background-color','rgb(249, 250, 252)');
     await expect(leafRow).toHaveCSS('border-radius','8px');
     await expect(leafRow).toHaveCSS('border-bottom-width','0px');
     await expect(leaf).toHaveCSS('color','rgb(0, 103, 220)');

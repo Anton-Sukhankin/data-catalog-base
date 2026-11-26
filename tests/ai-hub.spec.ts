@@ -10,7 +10,7 @@ test('the whole solution card opens its details and footer controls act independ
   const bookmark = card.getByRole('button', { name: /^Закладка/ });
 
   await card.getByText('ИИ-утилита', { exact: true }).hover();
-  await expect(card.getByRole('heading').getByRole('button')).toHaveCSS('color', 'rgb(0, 103, 220)');
+  await expect(card.getByRole('heading').getByRole('button')).toHaveCSS('color', 'rgb(54, 56, 61)');
   await bookmark.click();
   await expect(bookmark).toHaveAttribute('aria-pressed', 'false');
   await expect(detail).toHaveCount(0);

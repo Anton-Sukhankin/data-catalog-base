@@ -1,7 +1,7 @@
 .control { position:relative; display:flex; flex:none; margin-inline-start:auto; }
 .button {
   display:inline-flex; align-items:center; justify-content:center; gap:8px; height:40px; padding:0 12px;
-  border:1px solid var(--catalog-theme-edge, #d7e6f5); border-radius:20px; background:var(--catalog-theme-surface, #fff); color:var(--catalog-theme-text, #101d3b);
+  border:var(--catalog-card-border); border-radius:20px; background:var(--catalog-theme-surface, #fff); color:var(--catalog-theme-text, #101d3b);
   white-space:nowrap; cursor:pointer;
 }
 .toggle { font:inherit; font-size:13px; line-height:18px; font-weight:500; }

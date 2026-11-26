@@ -143,7 +143,7 @@ test('monthly history keeps ten distinct columns and a sticky header during loca
   });
   expect(new Set(rowBounds.headings).size).toBe(10);
   expect(rowBounds.headings).toEqual(rowBounds.cells);
-  expect(rowBounds.gap).toBe(4);
+  expect(rowBounds.gap).toBe(8);
   expect(rowBounds.left).toBe(await scroll.evaluate(el => el.getBoundingClientRect().left));
   const grayInsets = { left: 16, right: 16, bottom: 16, color: 'rgb(243, 244, 249)', corners: ['16px', '16px'] };
   expect(await frameEdges()).toEqual(grayInsets);

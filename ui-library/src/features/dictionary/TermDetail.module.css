@@ -9,7 +9,7 @@
 .columns { display:grid; grid-template-columns:minmax(0, 1fr) 380px; align-items:start; gap:8px; }
 .mainColumn { --accordion-header-min-size:64px; display:grid; gap:8px; min-width:0; }
 .tags { display:flex; flex-wrap:wrap; gap:8px; margin-block-end:16px; }
-.relations, .information { --information-divider:1px solid var(--catalog-theme-edge, #d6e6fb); border:var(--information-divider); border-radius:12px; background:var(--catalog-theme-surface, #fff); }
+.relations, .information { --information-divider:var(--catalog-card-border); border:var(--catalog-card-border); border-radius:12px; background:var(--catalog-theme-surface, #fff); }
 .relations { display:grid; grid-template-columns:repeat(3,minmax(0, 1fr)); margin:0; overflow:hidden; }
 .relations > div { padding:12px 20px; border-inline-end:var(--information-divider); border-block-end:var(--information-divider); }
 .relations > div:nth-child(3n) { border-inline-end:0; }

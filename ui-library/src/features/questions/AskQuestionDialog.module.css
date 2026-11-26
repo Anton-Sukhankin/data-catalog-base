@@ -40,7 +40,7 @@
 .fileList { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
 .file {
   display: grid; grid-template-columns: 16px minmax(0, 1fr) 28px; align-items: center; gap: 8px;
-  padding: 4px 6px 4px 12px; border: 1px solid var(--catalog-theme-edge, #d7e6f5); border-radius: 8px;
+  padding: 4px 6px 4px 12px; border: var(--catalog-card-border); border-radius: 8px;
   background: var(--catalog-theme-section, #f3f4f9); font-size: 14px; line-height: 20px; overflow-wrap: anywhere;
 }
 .file > svg { color: var(--catalog-theme-secondary, #52698c); }
@@ -54,7 +54,7 @@
 .actions { padding-top: 8px; }
 .submitActions { justify-content: flex-end; margin-inline-start: auto; }
 .button {
-  height: 36px; padding: 0 16px; border: 1px solid var(--catalog-theme-edge, #d7e6f5); border-radius: 18px;
+  height: 36px; padding: 0 16px; border: var(--catalog-card-border); border-radius: 18px;
   background: var(--catalog-theme-surface, #fff); color: inherit; font-size: 14px; font-weight: 500; line-height: 20px; cursor: pointer;
 }
 .button:hover { background: var(--catalog-theme-hover, #f3f4f9); }

@@ -1,10 +1,10 @@
 /* Service-screen presentation only; product DS bindings belong to later implementation. */
 .shell { min-height: 100vh; }
-.header { display: flex; justify-content: space-between; gap: 24px; padding: 20px 32px; background: var(--catalog-theme-section, #fff); border-bottom: 1px solid var(--catalog-theme-line, #dce2ea); font-weight: 500; }
+.header { display: flex; justify-content: space-between; gap: 24px; padding: 20px 32px; background: var(--catalog-theme-section, #fff); border-bottom: var(--catalog-card-border); font-weight: 500; }
 .note { color: var(--catalog-theme-secondary, #515a68); font-weight: 400; }
 .nav { display: flex; flex-wrap: wrap; gap: 24px; padding: 20px 32px; }
 .nav :global(a[aria-current='page']) { color: var(--catalog-theme-text, #20242b); font-weight: 500; }
-.main { max-width: 920px; margin: 20px auto; padding: 32px; background: var(--catalog-theme-surface, #fff); border: 1px solid var(--catalog-theme-edge, #dce2ea); border-radius: 12px; }
+.main { max-width: 920px; margin: 20px auto; padding: 32px; background: var(--catalog-theme-surface, #fff); border: var(--catalog-card-border); border-radius: 12px; }
 .label { color: var(--catalog-theme-secondary, #515a68); font-size: 14px; }
 .action { display: inline-block; margin-top: 12px; }
 @media (max-width: 960px) { .main { margin: 16px; } }

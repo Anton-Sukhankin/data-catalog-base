@@ -18,11 +18,11 @@
 }
 .chrome:not(:has(.tabStrip)) { box-shadow:inset 0 -1px var(--detail-divider-color); }
 .frame[data-detail-compact='true'] > .chrome, .chrome[data-detail-compact='true'] {
-  --detail-divider-color:var(--catalog-theme-line, #bfc4cc);
+  --detail-divider-color:var(--catalog-card-border-color);
 }
 .tabStrip {
   --detail-tabs-gap:8px;
-  --detail-tabs-divider-color:var(--catalog-theme-edge, #d7e6f5);
+  --detail-tabs-divider-color:var(--catalog-card-border-color);
   column-gap:var(--horizontal-tab-gap);
   margin-block-start:var(--detail-tabs-gap);
   box-shadow:inset 0 -1px var(--detail-tabs-divider-color);

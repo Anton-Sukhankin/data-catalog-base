@@ -5,5 +5,5 @@
 .example { margin: 24px 0; }
 .master { width: 986px; }
 .consumer { width: 1094px; }
-.group { width: 1096px; overflow: hidden; border: 1px solid var(--catalog-theme-edge, #d7e6f5); border-radius: 12px; background: var(--catalog-theme-surface, #fff); }
+.group { width: 1096px; overflow: hidden; border: var(--catalog-card-border); border-radius: 12px; background: var(--catalog-theme-surface, #fff); }
 .group > article:last-child { border-bottom: 0; }

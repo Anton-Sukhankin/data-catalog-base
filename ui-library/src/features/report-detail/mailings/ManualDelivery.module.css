@@ -19,7 +19,7 @@
 .recipientActions button:last-child { color:var(--catalog-theme-inverse, #fff); background:var(--catalog-theme-primary, #007bfc); }
 .recipientActions button:last-child:hover { background:var(--catalog-theme-primary-hover, #006ee5); }
 .recipientActions button:first-child:hover { background:var(--catalog-theme-hover, #e2e4ea); }
-.attachment { display:flex; flex-wrap:wrap; align-items:end; gap:12px 24px; padding:16px; border-top:1px solid var(--catalog-theme-line, #e2e4ea); }
+.attachment { display:flex; flex-wrap:wrap; align-items:end; gap:12px 24px; padding:16px; border-top:var(--catalog-card-border); }
 .attachmentGroup { min-width:0; margin:0; padding:0; border:0; }
 .attachmentGroup legend { margin:0 0 4px; padding:0; color:var(--catalog-theme-secondary, #52698c); font-size:12px; font-weight:500; line-height:16px; }
 .radioOptions { display:flex; flex-wrap:wrap; gap:4px 12px; }
@@ -40,10 +40,10 @@
 :global([data-catalog-theme='dark']) .switch input::before { background:var(--catalog-theme-control); }
 :global([data-catalog-theme='dark']) .switch input:checked { background:var(--catalog-theme-accent); box-shadow:none; }
 :global([data-catalog-theme='dark']) .switch input:checked::before { background:var(--catalog-theme-input); }
-.sheetControls { border:1px solid var(--catalog-theme-edge, #d6e6fb); border-radius:12px; background:var(--catalog-theme-surface, #fff); }
+.sheetControls { border:var(--catalog-card-border); border-radius:12px; background:var(--catalog-theme-surface, #fff); }
 .sheetIntro { display:grid; gap:4px; padding:14px 20px; }
 .sheetIntro h2 { display:flex; align-items:center; gap:8px; }
-.sheetModes { display:flex; flex-wrap:wrap; gap:8px 20px; padding:16px 20px; border-top:1px solid var(--catalog-theme-line, #d7e6f5); }
+.sheetModes { display:flex; flex-wrap:wrap; gap:8px 20px; padding:16px 20px; border-top:var(--catalog-card-border); }
 .sheetList { gap:4px; }
 .sheet :global(section[data-collapsible]) { --accordion-header-padding:10px; --accordion-leading-action-width:49px; }
 .sheet :global([data-accordion-body]) { padding-inline-start:calc(var(--accordion-leading-action-width) + var(--accordion-header-inline-padding)); }

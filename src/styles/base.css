@@ -31,7 +31,7 @@ a { color: var(--catalog-theme-accent, #164bc4); text-underline-offset: 4px; }
 a:focus-visible { outline: 2px solid var(--catalog-theme-accent, #164bc4); outline-offset: 5px; }
 table { width: 100%; border-collapse: collapse; text-align: left; }
 caption { text-align: left; color: var(--catalog-theme-secondary, #515a68); margin: 16px 0; }
-th, td { padding: 16px 12px; border-bottom: 1px solid var(--catalog-theme-line, #dce2ea); vertical-align: top; }
+th, td { padding: 16px 12px; border-bottom: var(--catalog-card-border); vertical-align: top; }
 th { font-weight: 500; background: var(--catalog-theme-section, #f4f6f9); }
 @media (max-width: 600px) {
   h1 { font-size: 24px; }

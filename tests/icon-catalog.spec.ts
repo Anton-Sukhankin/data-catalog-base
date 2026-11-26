@@ -19,6 +19,7 @@ test('icon catalog exposes the complete installed library, previews settings and
   expect(allNames).toHaveLength(2020);expect(new Set(allNames).size).toBe(2020);
   await expect(page.getByRole('button',{name:'Далее',exact:true})).toBeDisabled();
   const search=page.getByLabel('Найти иконку',{exact:true});
+  await expect(search).toHaveCSS('border', '1px solid rgb(215, 230, 245)');
   await search.fill('FileText');
   await page.getByRole('button',{name:'FileText',exact:true}).click();
   const detail=page.getByRole('complementary',{name:'Выбранная иконка',exact:true});

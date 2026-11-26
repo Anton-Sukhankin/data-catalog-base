@@ -174,12 +174,12 @@ test('similar sources show the observed rows, label business metric counts and d
   await expect(icon).toHaveCSS('width', referenceIconSize);
   await expect(icon).toHaveCSS('height', referenceIconSize);
   expect(await icon.evaluate(element => getComputedStyle(element, '::before').width)).toBe('16px');
-  await expect(first).toHaveCSS('border-color', 'rgb(214, 230, 251)');
+  await expect(first).toHaveCSS('border-color', 'rgb(215, 230, 245)');
   await first.hover();
-  await expect(first).toHaveCSS('border-color', 'rgb(64, 143, 231)');
-  await expect(name).toHaveCSS('color', 'rgb(0, 103, 220)');
-  await expect(icon).toHaveCSS('color', 'rgb(0, 123, 252)');
-  await expect(icon).toHaveCSS('background-color', 'rgb(231, 242, 255)');
+  await expect(first).toHaveCSS('border-color', 'rgb(215, 230, 245)');
+  await expect(name).toHaveCSS('color', 'rgb(54, 56, 61)');
+  await expect(icon).toHaveCSS('color', 'rgb(54, 56, 61)');
+  await expect(icon).toHaveCSS('background-color', 'rgb(229, 231, 235)');
   await expect(count).toHaveCSS('background-color', 'rgb(226, 228, 234)');
   await expect(count).toHaveCSS('height', '16px');
   for (const width of [1440, 1024]) {
@@ -474,7 +474,7 @@ test('direct, missing and other source IDs never inherit the reference passport'
   ]);
   expect(icon!.x + icon!.width / 2).toBeCloseTo(chevron!.x + chevron!.width / 2);
   await firstMetric.hover();
-  await expect(firstMetric).toHaveCSS('background-color', 'rgb(243, 244, 249)');
+  await expect(firstMetric).toHaveCSS('background-color', 'rgb(249, 250, 252)');
   await expect(firstMetric).toHaveCSS('border-radius', '8px');
   await expect(date.getByRole('list', { name: 'Связанные метрики' }).getByRole('link')).toHaveCount(0);
   const fieldsUrl = page.url();
@@ -535,7 +535,7 @@ test('dimdate shows the observed report cards in order without changing the tab 
   await page.mouse.move(0,0);
   await expect(first).toHaveCSS('background-color','rgb(255, 255, 255)');
   await expect(first).toHaveCSS('border-radius','12px');
-  await expect(first).toHaveCSS('border-color','rgb(214, 230, 251)');
+  await expect(first).toHaveCSS('border-color','rgb(215, 230, 245)');
   await expect(icon).toHaveCSS('width','32px');
   await expect(icon).toHaveCSS('height','32px');
   expect(await icon.evaluate(element => {
@@ -551,18 +551,18 @@ test('dimdate shows the observed report cards in order without changing the tab 
     const [rowBox, badgeBox] = await Promise.all([first.boundingBox(),icon.boundingBox()]);
     expect(badgeBox!.x - rowBox!.x).toBeCloseTo(17);
     await firstLink.locator('p').hover();
-    await expect(first).toHaveCSS('border-color','rgb(64, 143, 231)');
-    await expect(title).toHaveCSS('color','rgb(0, 103, 220)');
-    await expect(icon).toHaveCSS('background-color','rgb(231, 242, 255)');
-    await expect(icon).toHaveCSS('color','rgb(0, 123, 252)');
+    await expect(first).toHaveCSS('border-color','rgb(215, 230, 245)');
+    await expect(title).toHaveCSS('color','rgb(54, 56, 61)');
+    await expect(icon).toHaveCSS('background-color','rgb(229, 231, 235)');
+    await expect(icon).toHaveCSS('color','rgb(54, 56, 61)');
     await page.mouse.move(0,0);
-    await expect(first).toHaveCSS('border-color','rgb(214, 230, 251)');
+    await expect(first).toHaveCSS('border-color','rgb(215, 230, 245)');
   }
   await page.keyboard.press('Tab');
   await firstLink.focus();
   await expect(firstLink).toHaveCSS('outline-width','2px');
   await expect(firstLink).toHaveCSS('outline-style','solid');
-  await expect(first).toHaveCSS('border-color','rgb(64, 143, 231)');
+  await expect(first).toHaveCSS('border-color','rgb(215, 230, 245)');
   await expect(list.getByRole('link')).toHaveCount(5);
   await expect(list.getByRole('listitem').last()).toBeInViewport();
   const [listBox, passportBox] = await Promise.all([list.boundingBox(), passport.boundingBox()]);
@@ -645,13 +645,13 @@ test('source table action column is pinned and its divider clears only at the ri
   const start = (await access.boundingBox())!.x;
   const divider = () => access.locator('xpath=ancestor::td').evaluate(cell=>getComputedStyle(cell,'::before').boxShadow);
   await expect(tableFrame).toHaveAttribute('data-source-table-at-end','false');
-  expect(await divider()).toContain('rgb(226, 228, 234)');
+  expect(await divider()).toContain('rgb(215, 230, 245) 1px 0px 0px 0px inset');
   await scroller.evaluate(element=>{element.scrollLeft = (element.scrollWidth - element.clientWidth) / 2;});
   await expect.poll(async()=>(await access.boundingBox())!.x).toBeCloseTo(start);
   await expect(tableFrame).toHaveAttribute('data-source-table-at-end','false');
   await scroller.evaluate(element=>{element.scrollLeft = element.scrollWidth;});
   await expect(tableFrame).toHaveAttribute('data-source-table-at-end','true');
-  expect(await divider()).not.toContain('rgb(226, 228, 234)');
+  expect(await divider()).not.toContain('rgb(215, 230, 245) 1px 0px 0px 0px inset');
   await expect.poll(async()=>(await access.boundingBox())!.x).toBeCloseTo(start);
   await download.click();
   await expect(page.getByText('Выгрузка метаданных не подключена. Файл не создан.')).toBeVisible();

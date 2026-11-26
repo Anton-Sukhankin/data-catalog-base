@@ -55,7 +55,7 @@ test('dark is the default and an explicit light choice survives direct links and
     await page.goto(section === 'home' ? '/preview/navigation' : '/preview/navigation?section=' + section);
     await expect(navigation.getByRole('button', { name: label, exact: true })).toHaveAttribute('aria-current', 'page');
     await expect(toggle).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(23, 24, 27)');
+    await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(27, 28, 31)');
   }
   await toggle.press('Space');
   await expect(toggle).toBeFocused();
@@ -257,7 +257,7 @@ test('report workspaces keep summary, rows and pinned actions distinct in both t
 
   for (const location of [reports, home]) {
     if (location === home) await page.goto(home);
-    await expect(page.getByRole('main')).toHaveCSS('background-color', 'rgb(23, 24, 27)');
+    await expect(page.getByRole('main')).toHaveCSS('background-color', 'rgb(32, 33, 37)');
     for (const card of await cards.all()) {
       await expect(card).toHaveCSS('background-color', 'rgb(38, 39, 43)');
       await expect(card).toHaveCSS('box-shadow', 'none');
@@ -265,6 +265,7 @@ test('report workspaces keep summary, rows and pinned actions distinct in both t
     }
     await expect(table).toHaveCSS('background-color', 'rgb(38, 39, 43)');
     await expect(row).toHaveCSS('background-color', 'rgb(32, 33, 37)');
+    expect(await row.evaluate(element => getComputedStyle(element, '::after').borderTop)).toBe('1px solid rgb(66, 69, 76)');
     await expect(actions).toHaveCSS('background-color', 'rgb(32, 33, 37)');
   }
 
@@ -272,6 +273,8 @@ test('report workspaces keep summary, rows and pinned actions distinct in both t
   for (const name of ['Свернуть панель', 'Развернуть панель']) {
     await body.evaluate(element => { element.scrollLeft = element.scrollWidth; });
     await expect(table).toHaveAttribute('data-table-scrolled', 'true');
+    await expect(row.locator(':scope > :first-child')).toHaveCSS('box-shadow', 'rgb(66, 69, 76) -1px 0px 0px 0px inset');
+    await expect(actions).toHaveCSS('box-shadow', 'rgb(66, 69, 76) 1px 0px 0px 0px inset');
     await page.getByRole('button', { name, exact: true }).click();
     await expect.poll(async () => {
       const boundary = await body.boundingBox();
@@ -323,8 +326,8 @@ test('entity icons share the report palette in both themes and verification foll
   await expect(page.locator('[data-card-report-id="demo-report-occupancy"] [data-verification-mark]')).toHaveCount(0);
   await card.screenshot({ path: info.outputPath('dark-report-card.png') });
   await card.hover();
-  await expect(card.locator(icon)).toHaveCSS('background-color', 'rgb(37, 54, 76)');
-  await expect(card.locator(icon)).toHaveCSS('color', 'rgb(134, 184, 255)');
+  await expect(card.locator(icon)).toHaveCSS('background-color', 'rgb(69, 71, 77)');
+  await expect(card.locator(icon)).toHaveCSS('color', 'rgb(241, 242, 244)');
   await card.screenshot({ path: info.outputPath('dark-report-card-hover.png') });
   await selectView('Табличный вид');
   await expect(row.locator(icon)).toHaveCSS('background-color', 'rgb(58, 58, 62)');

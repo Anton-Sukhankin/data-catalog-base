@@ -143,7 +143,7 @@ for (const [width, height] of [[1440, 900], [1024, 768]]) {
     const background = await first.evaluate(element => getComputedStyle(element).backgroundColor);
     await expect(first).toHaveCSS('border-top-color', 'rgb(215, 230, 245)');
     await first.hover();
-    await expect(first).toHaveCSS('border-top-color', 'rgb(64, 143, 231)');
+    await expect(first).toHaveCSS('border-top-color', 'rgb(215, 230, 245)');
     await expect(first).toHaveCSS('background-color', background);
     await expect(heading).not.toHaveAttribute('data-overflow-clipped');
     await first.click();

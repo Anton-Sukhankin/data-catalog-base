@@ -14,6 +14,29 @@ const borderDividers: Record<string, string> = {
   subscriptions: '[data-subscriptions-content] ' + header,
   contribution: '[data-contribution-content] ' + header,
 };
+const catalogRows: Record<string, string> = {
+  'reports-table': '[data-table-report-id]',
+  'favorites-table': '[data-table-report-id]',
+  'metrics-table': '[data-metric-id]',
+  'sources-table': 'tbody tr',
+  'references-list': 'tbody tr',
+  crm: 'tbody tr',
+  'ai-table': 'tbody tr',
+  subscriptions: '[data-subscription-row-id]',
+  contribution: '[data-contributor-row-id]',
+};
+const catalogCards: Record<string, string> = {
+  'reports-cards': '[data-card-report-id]',
+  favorites: '[data-card-report-id]',
+  'metrics-cards': 'article[data-metric-id]',
+  'sources-cards': 'article[data-source-id]',
+  'master-systems': '[data-master-system]',
+  'ai-cards': 'article[data-ai-solution]',
+  'references-cards': 'a[aria-label^="Открыть справочник"]',
+  dictionary: '[data-dictionary-term]',
+  tasks: 'ul[aria-label="Очередь заявок на рассылку"] button',
+  news: 'article[data-news-id]',
+};
 
 const surfaces = [
   { name: 'reports-table', query: 'section=reports', selector: reportTable, withSummary: true },
@@ -49,8 +72,62 @@ async function topBorder(target: Locator) {
   });
 }
 
+async function expectRowBorders(rows: Locator, color: string, hoverFill?: string) {
+  const row = rows.first();
+  await expect(row).toBeVisible();
+  const measure = () => row.evaluate(element => {
+    const table = element.closest('table');
+    const next = element.nextElementSibling;
+    const cells = [...element.children];
+    return {
+      spacing: table ? getComputedStyle(table).borderSpacing : getComputedStyle(element.parentElement!).rowGap,
+      gap: next ? next.getBoundingClientRect().top - element.getBoundingClientRect().bottom : null,
+      cellShadows: table ? cells.map(cell => {
+        const shadow = getComputedStyle(cell).boxShadow;
+        return shadow === 'none' ? getComputedStyle(cell, '::before').boxShadow : shadow;
+      }) : [],
+      border: getComputedStyle(element, '::after').borderTop,
+      groupBorder: getComputedStyle(element.parentElement!).borderTop,
+      shadow: getComputedStyle(element).boxShadow,
+    };
+  });
+  const resting = await measure();
+  expect(resting.spacing).toMatch(/^(0px )?8px$/);
+  if (resting.gap !== null) expect(resting.gap).toBeCloseTo(8);
+  const expected = `1px solid ${color}`;
+  if (resting.cellShadows.length) {
+    for (const shadow of resting.cellShadows) {
+      expect(shadow).toContain(`${color} 0px 1px 0px 0px inset`);
+      expect(shadow).toContain(`${color} 0px -1px 0px 0px inset`);
+    }
+    expect(resting.cellShadows[0]).toContain(`${color} 1px 0px 0px 0px inset`);
+    expect(resting.cellShadows.at(-1)).toContain(`${color} -1px 0px 0px 0px inset`);
+  } else if (resting.border !== expected) {
+    expect(resting.groupBorder).toBe(expected);
+    if (resting.gap !== null) expect(resting.shadow).toBe(`${color} 0px -1px 0px 0px inset`);
+  }
+  await row.hover({ position: { x: 32, y: 20 } });
+  expect(await measure()).toEqual(resting);
+  if (hoverFill) {
+    const fills = await row.evaluate(element => {
+      if (element.closest('table')) {
+        return Array.from(element.children, cell => {
+          const backing = getComputedStyle(cell, '::before');
+          return backing.content === 'none' ? getComputedStyle(cell).backgroundColor : backing.backgroundColor;
+        });
+      }
+      const surfaces = element.hasAttribute('data-table-report-id')
+        ? [element, element.firstElementChild!, element.lastElementChild!]
+        : [element];
+      return surfaces.map(surface => getComputedStyle(surface).backgroundColor);
+    });
+    expect(new Set(fills)).toEqual(new Set([hoverFill]));
+  }
+  await row.page().mouse.move(5, 5);
+}
+
 for (const theme of ['dark', 'light']) {
-  test(`catalog surfaces omit outer borders and keep internal dividers in ${theme}`, async ({ page }, info) => {
+  test(`catalog surfaces use select borders and keep row spacing in ${theme}`, async ({ page }, info) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -58,9 +135,15 @@ for (const theme of ['dark', 'light']) {
     if (theme === 'light') await page.getByRole('button', { name: 'Тёмная тема', exact: true }).click();
     await page.mouse.move(5, 5);
     const frame = await topBorder(page.locator('[data-collapsible="true"]').first());
-    expect(frame.color).toBe(theme === 'dark' ? 'rgb(66, 69, 76)' : 'rgb(214, 230, 251)');
+    expect(frame.color).toBe(theme === 'dark' ? 'rgb(66, 69, 76)' : 'rgb(215, 230, 245)');
     expect(frame.width).toBe('1px');
     expect(frame.type).toBe('solid');
+    await page.goto(preview + 'section=metrics&metricView=cards');
+    const selectColor = theme === 'dark' ? 'rgb(66, 69, 76)' : 'rgb(215, 230, 245)';
+    const hoverFill = theme === 'dark' ? 'rgb(50, 52, 58)' : 'rgb(249, 250, 252)';
+    const select = page.getByRole('combobox', { name: 'Тип метрики' });
+    await expect(select).toHaveCSS('box-shadow', `${selectColor} 0px 0px 0px 1px inset`);
+    const selectDivider = `1px solid ${selectColor}`;
     await page.goto(preview + 'section=reports');
     await page.getByRole('button', { name: 'Карточный вид', exact: true }).click();
     await page.mouse.move(5, 5);
@@ -79,8 +162,9 @@ for (const theme of ['dark', 'light']) {
         const target = page.locator(selector);
         const surface = withSummary ? page.locator('main[data-catalog-screen]') : parent ? target.locator('..') : target;
         await expect(target).toBeVisible();
-        expect(await surface.evaluate(element => getComputedStyle(element, '::before').content)).toBe('none');
-        await expect(surface).toHaveCSS('border-style', 'none');
+        if (name !== 'news') {
+          expect(await surface.evaluate(element => getComputedStyle(element, '::before').borderTop)).toBe(selectDivider);
+        }
         if (borderDividers[name]) {
           const divider = page.locator(borderDividers[name]);
           expect(await divider.evaluate(element => getComputedStyle(element, '::after').borderBlockEnd))
@@ -96,6 +180,39 @@ for (const theme of ['dark', 'light']) {
             return { color: style.backgroundColor, width: style.height };
           }, pseudo)).toEqual({ color: card.color, width: card.width });
         }
+        if (name === 'reports-table' && theme === 'dark') {
+          const filter = target.getByRole('button', { name: 'Фильтр «Отчёт»', exact: true });
+          await filter.hover();
+          await expect(filter.locator('..')).toHaveCSS('background-color', hoverFill);
+        }
+        if (catalogRows[name]) await expectRowBorders(target.locator(catalogRows[name]), selectColor, hoverFill);
+        if (catalogCards[name]) {
+          const item = target.locator(catalogCards[name]).first();
+          await item.hover({ position: { x: 32, y: 20 } });
+          await expect(item).toHaveCSS('background-color', hoverFill);
+          await page.mouse.move(5, 5);
+        }
+        if (name === 'metrics-cards') {
+          const item = target.locator('article[data-metric-id]').first();
+          const footer = item.locator(':scope > :last-child');
+          await expect(footer).toHaveCSS('border-top', selectDivider);
+          await item.hover();
+          await expect(footer).toHaveCSS('border-top', selectDivider);
+        }
+        if (name === 'questions') {
+          const accordion = target.locator('[data-collapsible="true"]').first();
+          const trigger = accordion.getByRole('button').first();
+          const chevron = trigger.locator(':scope > [aria-hidden="true"]').first();
+          await trigger.hover();
+          await expect(accordion).toHaveCSS('border-top', selectDivider);
+          await expect(trigger).toHaveCSS('background-color', hoverFill);
+          await expect(chevron).toHaveCSS('background-color', theme === 'dark' ? 'rgb(69, 71, 77)' : 'rgb(229, 231, 235)');
+          await expect(chevron).toHaveCSS('color', theme === 'dark' ? 'rgb(241, 242, 244)' : 'rgb(54, 56, 61)');
+          await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+          await trigger.click();
+          await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+          await expect(accordion.locator('[data-accordion-body]')).toHaveCSS('border-top', selectDivider);
+        }
         if (name === 'references-list' || name === 'crm') {
           const columnHeader = target.getByRole('columnheader').first();
           await expect(columnHeader).toHaveCSS('box-shadow', cardRule);
@@ -109,12 +226,6 @@ for (const theme of ['dark', 'light']) {
             await expect(target.locator('header')).toHaveCSS('border-block-end', cardDivider);
           }
         }
-        if (name === 'subscriptions' || name === 'contribution') {
-          const rows = ':is([data-subscription-row-id], [data-contributor-row-id])';
-          const list = target.locator(`div:has(> ${rows})`).first();
-          await expect(list).toHaveCSS('border-style', 'none');
-          await expect(list.locator(`:scope > ${rows}:not(:last-child)`).first()).toHaveCSS('border-bottom-width', '1px');
-        }
         if (withSummary) {
           const heading = surface.getByRole('heading', { level: 1 });
           const summary = surface.getByRole('region', { name: 'Сводка каталога отчётов' });
@@ -127,7 +238,9 @@ for (const theme of ['dark', 'light']) {
           expect(headingBox.y).toBeGreaterThan(workspace.y + 8);
           expect(summaryBox.y).toBeGreaterThan(headingBox.y + headingBox.height);
           expect(resultsBox.y + resultsBox.height).toBeLessThanOrEqual(workspace.y + workspace.height + 1);
-          expect(await target.evaluate(element => getComputedStyle(element, '::before').content)).toBe('none');
+          if (name !== 'domains') {
+            expect(await target.evaluate(element => getComputedStyle(element, '::before').borderTop)).toBe(selectDivider);
+          }
         }
         if (['reports-table', 'reports-cards', 'metrics-table', 'sources-table', 'references-list', 'ai-table', 'subscriptions', 'contribution', 'crm'].includes(name)) {
           await page.screenshot({ path: info.outputPath(`catalog-frame-${name}.png`) });
@@ -141,6 +254,7 @@ for (const theme of ['dark', 'light']) {
       const linked = page.getByRole('table', { name: 'Связанные показатели', exact: true });
       await expect(linked.getByRole('columnheader').first()).toHaveCSS('box-shadow', cardRule);
       await expect(linked.locator('tbody')).toHaveCSS('border-top-width', '0px');
+      await expectRowBorders(linked.locator('tbody tr'), selectColor, hoverFill);
 
       await page.goto(report + '&reportTab=usage');
       const history = page.getByRole('table', { name: 'История по месяцам', exact: true });
@@ -149,6 +263,13 @@ for (const theme of ['dark', 'light']) {
       await expect(page.locator('[data-table-body] [data-accordion-body]')).toHaveCSS('border-top-width', '0px');
       const historyHeader = history.locator(header);
       expect(await historyHeader.evaluate(node => getComputedStyle(node, '::after').borderBlockEnd)).toBe(cardDivider);
+      await expectRowBorders(history.getByRole('row').nth(1), selectColor);
+
+      await page.goto(report + '&reportTab=sources');
+      const attributes = page.locator('[data-report-sources] [data-accordion-body] dl').first();
+      const fields = attributes.locator(':scope > div');
+      await expect(fields.nth(1)).toHaveCSS('border-left', selectDivider);
+      await expect(fields.nth(4)).toHaveCSS('border-top', selectDivider);
 
       await page.goto(preview + 'section=metrics&metric=4');
       const method = page.locator('section[data-variant="metric"]').filter({ has: page.getByRole('button', { name: /^Методика расчёта/ }) });

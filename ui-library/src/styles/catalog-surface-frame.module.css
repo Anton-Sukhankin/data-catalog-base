@@ -1,3 +1,21 @@
 .frame {
   position: relative;
 }
+.frame::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: var(--catalog-card-border);
+  border-radius: inherit;
+  content: '';
+  pointer-events: none;
+}
+.row::after {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: var(--catalog-card-border);
+  border-radius: inherit;
+  content: '';
+  pointer-events: none;
+}

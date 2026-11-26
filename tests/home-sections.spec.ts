@@ -14,9 +14,10 @@ test('Home saved sources and AI solutions open details and share bookmark state 
   await expect(source).toContainText('PostgreSQL · Без слоя');
   await page.screenshot({ path: info.outputPath('saved-sources.png'), animations: 'disabled' });
   const sourceCard = sourceList.locator('[data-home-favorite-id]');
-  const idleBorder = await sourceCard.evaluate(element => getComputedStyle(element).borderTopColor);
+  await expect(sourceCard).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   await source.hover();
-  await expect.poll(() => sourceCard.evaluate(element => getComputedStyle(element).borderTopColor)).not.toBe(idleBorder);
+  await expect(sourceCard).toHaveCSS('background-color', 'rgb(249, 250, 252)');
+  await expect(sourceCard).toHaveCSS('border-top-color', 'rgb(215, 230, 245)');
   await source.press('Enter');
   await expect(sourceBookmark).toHaveAttribute('aria-pressed', 'true');
   await page.goBack();
@@ -361,13 +362,13 @@ test('Home news card hover highlights the full card without opening it', async (
   const card = page.locator('[data-news-id="demo-news-1"]');
   await expect(card).toHaveCSS('border-top-color', 'rgb(215, 230, 245)');
   await card.getByRole('heading').hover();
-  await expect(card).toHaveCSS('border-top-color', 'rgb(64, 143, 231)');
+  await expect(card).toHaveCSS('border-top-color', 'rgb(215, 230, 245)');
   await expect(card.getByRole('heading')).toHaveCSS('color', 'rgb(0, 103, 220)');
   await expect(page).not.toHaveURL(/[?&]news=/);
   await page.getByRole('tablist', { name: 'Категории новостей' }).hover();
   await expect(card).toHaveCSS('border-top-color', 'rgb(215, 230, 245)');
   await card.getByRole('button', { name: /^Читать/ }).hover();
-  await expect(card).toHaveCSS('border-top-color', 'rgb(64, 143, 231)');
+  await expect(card).toHaveCSS('border-top-color', 'rgb(215, 230, 245)');
   await expect(card.getByRole('heading')).toHaveCSS('color', 'rgb(0, 103, 220)');
   await card.getByRole('button', { name: /^Читать/ }).click();
   await expect(page.getByRole('region', { name: 'Чтение новости', exact: true })).toHaveAttribute('data-news-reading', 'demo-news-1');

@@ -5,7 +5,7 @@
 .surface[data-layout='catalog']::before { content:none; }
 .catalogSurface { composes:frame from '../../styles/catalog-surface-frame.module.css'; padding-block-start: 16px; padding-inline: 16px; border-radius: 16px 16px 0 0; background: var(--sidebar-surface); }
 .group { display: flex; flex-direction: column; flex: 0 0 auto; min-width: 0; }
-.group[data-collapsed='true']:not(:last-child) { border-bottom:1px solid var(--catalog-theme-line, #e2e4ea); }
+.group[data-collapsed='true']:not(:last-child) { border-bottom:var(--catalog-card-border); }
 .heading { display: flex; align-items: center; gap: 8px; height: 20px; margin: 0; color: var(--catalog-theme-secondary, #52698c); font-size: 14px; line-height: 20px; font-weight: 500; }
 .group + .group .heading { padding-top: 8px; height: 28px; }
 .count { composes: neutral from '../CountBadge/CountBadge.module.css'; }

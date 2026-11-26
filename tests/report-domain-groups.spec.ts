@@ -33,7 +33,7 @@ for (const { section, view } of [
     await expect(collapsedToggle.locator('span:not([data-group-chevron])').last()).toHaveText(initialCount);
     await expect(collapsedToggle.locator('span:not([data-group-chevron])').last()).toHaveCSS('background-color', 'rgb(0, 123, 252)');
     await expect(chevron).toHaveCSS('transform', 'none');
-    await expect(group).toHaveCSS('border-bottom', '1px solid rgb(226, 228, 234)');
+    await expect(group).toHaveCSS('border-bottom', '1px solid rgb(215, 230, 245)');
     await expect(neighbor.locator(row).first()).toBeVisible();
     const divider = (await group.boundingBox())!;
     const scrollArea = view === 'table' ? surface.getByLabel('Прокрутка таблицы отчётов') : surface.locator('[data-report-card-scroll]');

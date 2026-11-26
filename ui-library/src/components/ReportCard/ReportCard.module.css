@@ -1,4 +1,4 @@
-.card { composes:surface from '../CatalogEntityIcon/CatalogEntityIcon.module.css'; position: relative; min-width: 0; border: var(--catalog-card-border); border-radius: 12px; background: var(--catalog-theme-surface, #fff); color: var(--catalog-theme-text, #101d3b); transition:border-color 160ms ease; }
+.card { composes:surface from '../CatalogEntityIcon/CatalogEntityIcon.module.css'; position: relative; min-width: 0; border: var(--catalog-card-border); border-radius: 12px; background: var(--catalog-theme-surface, #fff); color: var(--catalog-theme-text, #101d3b); transition:background-color var(--navigation-hover-duration) ease; }
 .open { display: flex; align-items: center; gap: 16px; width: 100%; min-height: 96px; padding: 24px 76px 24px 24px; border: 0; border-radius: 11px; background: transparent; color: inherit; text-align: left; cursor: pointer; }
 .open.openWithoutActions { padding-inline-end:24px; }
 .verifiedBadge { position: absolute; left: 24px; top: -2px; }
@@ -11,7 +11,7 @@
 .verification > span:first-child { flex:none; }
 .descriptionValue { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .edit { position:absolute; top:50%; right:24px; transform:translateY(-50%); }
-.card:hover { border-color: var(--item-hover-border); }
+.card:hover:not(:where([aria-current='page'])) { background-color:var(--item-hover-fill); }
 .card:hover .title { color:var(--item-hover-ink); }
 .card button:not([data-round-action]):focus-visible { outline: 2px solid var(--catalog-theme-accent, #007aff); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .card { transition:none; } }

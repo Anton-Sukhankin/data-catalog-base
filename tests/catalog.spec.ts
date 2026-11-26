@@ -99,7 +99,9 @@ test('sort directions are drafts until Apply, work on displayed values and resto
   await numeric.getByRole('button',{name:'Применить',exact:true}).click();
   expect((await ids()).slice(0,5)).toEqual(['demo-report-management','demo-report-debt','demo-report-motivation','demo-report-occupancy','demo-report-summary']);
   await open('Отчёт');
-  await menu.getByRole('button',{name:'Сбросить',exact:true}).click();
+  await expect(menu.getByRole('button',{name:'Сбросить',exact:true})).toBeDisabled();
+  await page.keyboard.press('Escape');
+  await expect(menu).toHaveCount(0);
   await expect(table.getByRole('button',{name:'Сбросить сортировку «MAU»',exact:true})).toBeVisible();
   await table.getByRole('button',{name:'Сбросить сортировку «MAU»',exact:true}).press('Enter');
   expect(await ids()).toEqual(original);

@@ -63,10 +63,10 @@ test('cards match the reference within domain groups and preserve their chosen i
   await verified.screenshot({ path: 'verification/current/cards/verified.png' });
   await unverified.screenshot({ path: 'verification/current/cards/unverified.png' });
   await verified.hover();
-  await expect(verified).toHaveCSS('border-color', 'rgb(64, 143, 231)');
-  await expect(mainTitle).toHaveCSS('color', 'rgb(0, 103, 220)');
-  await expect(documentIcon).toHaveCSS('background-color', 'rgb(231, 242, 255)');
-  await expect(documentIcon).toHaveCSS('color', 'rgb(0, 103, 220)');
+  await expect(verified).toHaveCSS('border-color', 'rgb(215, 230, 245)');
+  await expect(mainTitle).toHaveCSS('color', 'rgb(54, 56, 61)');
+  await expect(documentIcon).toHaveCSS('background-color', 'rgb(229, 231, 235)');
+  await expect(documentIcon).toHaveCSS('color', 'rgb(54, 56, 61)');
   expect(await documentIcon.evaluate(element => getComputedStyle(element, '::before').width)).toBe('16px');
   await expect(reviewer).toHaveText('Губина Екатерина Игоревна');
   await verified.screenshot({ path: 'verification/current/cards/hover.png' });

@@ -40,9 +40,9 @@ test('source modal drafts apply once and synchronize table headers, count, view 
   await expect.poll(() => icon.evaluate(element => getComputedStyle(element, '::before').maskImage))
     .toMatch(/sources(?:-[\w-]+)?\.svg|data:image\/svg\+xml/);
   await firstRow.getByRole('cell').nth(1).hover();
-  await expect(firstRow.getByRole('button').first()).toHaveCSS('color', 'rgb(0, 103, 220)');
-  await expect(icon).toHaveCSS('color', 'rgb(0, 103, 220)');
-  await expect(icon).toHaveCSS('background-color', 'rgb(231, 242, 255)');
+  await expect(firstRow.getByRole('button').first()).toHaveCSS('color', 'rgb(54, 56, 61)');
+  await expect(icon).toHaveCSS('color', 'rgb(54, 56, 61)');
+  await expect(icon).toHaveCSS('background-color', 'rgb(229, 231, 235)');
   await firstRow.getByRole('cell').first().screenshot({ path: testInfo.outputPath('source-identity-hover.png') });
   await page.getByRole('heading', { name: 'Источники', exact: true }).hover();
   await expect(icon).toHaveCSS('background-color', 'rgb(238, 242, 246)');
@@ -63,7 +63,7 @@ test('source modal drafts apply once and synchronize table headers, count, view 
   await expect(page.locator('article[data-source-id]')).toHaveCount(2);
   const firstCard = page.locator('article[data-source-id]').first();
   await firstCard.locator('footer').hover();
-  await expect(firstCard.getByRole('heading').getByRole('button')).toHaveCSS('color', 'rgb(0, 103, 220)');
+  await expect(firstCard.getByRole('heading').getByRole('button')).toHaveCSS('color', 'rgb(54, 56, 61)');
   await page.getByRole('button',{name:'Сбросить',exact:true}).click();
   await expect(page.locator('article[data-source-id]')).toHaveCount(9);
   await expect(page.getByRole('button',{name:'Сбросить',exact:true})).toHaveCount(0);

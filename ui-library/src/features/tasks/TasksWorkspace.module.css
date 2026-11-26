@@ -2,7 +2,7 @@
 .heading { composes: heading from '../questions/QuestionsWorkspace.module.css'; }
 .workspace { composes: workspace from '../questions/QuestionsWorkspace.module.css'; }
 .scroll { composes: workspaceScroll from '../questions/QuestionsWorkspace.module.css'; }
-.list { composes: appeals from '../questions/QuestionsWorkspace.module.css'; }
+.list { composes: appeals from '../questions/QuestionsWorkspace.module.css'; row-gap:var(--catalog-list-row-gap); }
 
 .card {
   composes: card from '../../components/ReportCard/ReportCard.module.css';

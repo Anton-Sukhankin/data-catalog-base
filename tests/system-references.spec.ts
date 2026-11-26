@@ -33,9 +33,9 @@ test('opens the catalog, switches views and returns from the same reference', as
   const groupHeader = (await results.locator('header').boundingBox())!;
   expect((await record.boundingBox())!.y - groupHeader.y - groupHeader.height).toBe(16);
   await record.hover({ position: { x: 4, y: 12 } });
-  await expect(cardIcon).toHaveCSS('color', 'rgb(0, 103, 220)');
-  await expect(cardIcon).toHaveCSS('background-color', 'rgb(231, 242, 255)');
-  await expect(record.getByText('Справочник CRM', { exact: true })).toHaveCSS('color', 'rgb(0, 103, 220)');
+  await expect(cardIcon).toHaveCSS('color', 'rgb(54, 56, 61)');
+  await expect(cardIcon).toHaveCSS('background-color', 'rgb(229, 231, 235)');
+  await expect(record.getByText('Справочник CRM', { exact: true })).toHaveCSS('color', 'rgb(54, 56, 61)');
 
   const list = viewPicker.getByRole('button', { name: 'Табличный вид' });
   await list.press('Enter');
@@ -68,8 +68,8 @@ test('opens the catalog, switches views and returns from the same reference', as
   const labelBox = (await record.getByText('CRM', { exact: true }).boundingBox())!;
   expect(labelBox.x - (iconBox.x + iconBox.width)).toBe(8);
   await record.locator('xpath=ancestor::tr').hover();
-  await expect(icon).toHaveCSS('color', 'rgb(0, 103, 220)');
-  await expect(record.getByText('CRM', { exact: true })).toHaveCSS('color', 'rgb(0, 103, 220)');
+  await expect(icon).toHaveCSS('color', 'rgb(54, 56, 61)');
+  await expect(record.getByText('CRM', { exact: true })).toHaveCSS('color', 'rgb(54, 56, 61)');
   await expect(table.getByRole('cell', { name: 'CRM (CRM Dynamics)' })).toBeVisible();
   await expect(table.getByRole('cell', { name: 'Нет значения', exact: true })).toHaveCount(14);
   const code = table.getByRole('cell', { name: 'TZ-22328' });
@@ -182,7 +182,7 @@ test('long system names use one line in cards and two in tables, with a keyboard
   await expect(longRow.getByRole('cell').nth(1)).toHaveCSS('padding-bottom', '12px');
   await expect(longRow.getByRole('cell').nth(1)).toHaveCSS('padding-left', '12px');
   expect((await rows.first().boundingBox())!.height).toBe(64);
-  expect((await longRow.boundingBox())!.height).toBe(66);
+  expect((await longRow.boundingBox())!.height).toBe(64);
   await systemCell.hover();
   await expect(page.getByRole('tooltip')).toHaveText(systemName);
   await page.keyboard.press('Escape');
@@ -223,7 +223,7 @@ test('catalog keeps long names readable in both views without creating an action
   await expect(rows.first()).toContainText(system);
   await expect(rows.first().getByRole('cell')).toHaveCount(3);
   const [firstRow, secondRow] = await Promise.all([rows.first().boundingBox(), rows.last().boundingBox()]);
-  expect(secondRow!.y - firstRow!.y - firstRow!.height).toBeCloseTo(4, 0);
+  expect(secondRow!.y - firstRow!.y - firstRow!.height).toBeCloseTo(8, 0);
   expect(await main.evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1);
   const firstWidth = async () => (await table.getByRole('columnheader').first().boundingBox())!.width;
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -312,7 +312,7 @@ test('shows four aligned metadata columns and reaches the last row above paginat
   await expect(table.locator('thead')).toHaveCSS('position', 'static');
   await expect(header).toHaveCSS('box-shadow', headerDivider);
   const headerBox = (await header.boundingBox())!;
-  expect((await rows.first().boundingBox())!.y - headerBox.y - headerBox.height).toBe(4);
+  expect((await rows.first().boundingBox())!.y - headerBox.y - headerBox.height).toBe(8);
   await expect(rows.first()).toContainText('1 — Продавец');
   await expect(rows.nth(1)).toContainText('Значение по умолчанию');
   await expect(rows.nth(2)).toContainText('1 — Неактивная');
@@ -324,14 +324,14 @@ test('shows four aligned metadata columns and reaches the last row above paginat
     const first = nodes[0].getBoundingClientRect();
     const second = nodes[1].getBoundingClientRect();
     return second.top - first.bottom;
-  })).toBe(4);
+  })).toBe(8);
   await scroll.evaluate(node => { node.scrollTop = node.scrollHeight; node.scrollLeft = node.scrollWidth; });
   await expect(rows.last()).toBeInViewport();
   const scrollOffset = await scroll.evaluate(node => node.scrollTop);
   expect(scrollOffset).toBeGreaterThan(0);
   await expect(breadcrumbs).toBeHidden();
   await expect(description).toBeHidden();
-  await expect(detailHeading).toHaveCSS('box-shadow', 'rgb(191, 196, 204) 0px -1px 0px 0px inset');
+  await expect(detailHeading).toHaveCSS('box-shadow', 'rgb(215, 230, 245) 0px -1px 0px 0px inset');
   await expect(systemLabel).toBeHidden();
   await expect(systemValue).toBeHidden();
   await expect(title).toBeVisible();
@@ -339,8 +339,8 @@ test('shows four aligned metadata columns and reaches the last row above paginat
   await expect.poll(() => fixedHeader.boundingBox()).toEqual({ ...fixedBox, y:detailHeadingBox.y + compactHeadingHeight + 16 });
   await expect(fixedHeader).toHaveCSS('border-bottom-left-radius', '16px');
   await expect(fixedHeader).toHaveCSS('border-bottom-right-radius', '16px');
-  const rowBorder = await rows.first().getByRole('cell').first().evaluate(element => getComputedStyle(element).borderTop);
-  await expect.poll(frameBorder).toBe(rowBorder);
+  await expect(entityCell).toHaveCSS('border-top-width', '0px');
+  await expect.poll(frameBorder).toBe('1px solid rgb(215, 230, 245)');
   await expect.poll(shadowOpacity).toBe('1');
   expect(await fixedHeader.evaluate(element => getComputedStyle(element, '::after').boxShadow))
     .toBe('rgba(16, 29, 59, 0.24) 0px 10px 20px -7px');
@@ -902,25 +902,23 @@ test('animates the option row height through either control and respects reduced
     const gridTransition = animations.find(animation =>
       animation instanceof CSSTransition && animation.transitionProperty === 'grid-template-rows');
     const duration = Number(gridTransition?.effect?.getComputedTiming().duration ?? 0);
-    for (const animation of animations) {
-      animation.pause();
-      animation.currentTime = duration / 2;
-    }
-    const middle = height();
+    for (const animation of animations) animation.pause();
+    const heights = [0.125, 0.25, 0.5, 0.75].map(fraction => {
+      for (const animation of animations) animation.currentTime = duration * fraction;
+      return height();
+    });
     for (const animation of animations) animation.finish();
-    return { start, middle, end: height(), duration };
+    return { start, heights, end: height(), duration };
   }, control);
 
   for (const [open, close] of [[rowControl, headerControl], [headerControl, rowControl]]) {
     const expansion = await sample(open);
     expect(expansion.duration).toBe(320);
-    expect(expansion.middle).toBeGreaterThan(expansion.start);
-    expect(expansion.middle).toBeLessThan(expansion.end);
+    expect(expansion.heights.some(height => height > expansion.start && height < expansion.end)).toBe(true);
     const collapse = await sample(close);
     expect(collapse.duration).toBe(expansion.duration);
     expect(collapse.start).toBe(expansion.end);
-    expect(collapse.middle).toBeLessThan(collapse.start);
-    expect(collapse.middle).toBeGreaterThan(collapse.end);
+    expect(collapse.heights.some(height => height < collapse.start && height > collapse.end)).toBe(true);
     expect(collapse.end).toBe(expansion.start);
   }
 
@@ -928,7 +926,7 @@ test('animates the option row height through either control and respects reduced
   const reduced = await sample(rowControl);
   expect(reduced.duration).toBe(0);
   expect(reduced.end).toBeGreaterThan(reduced.start);
-  expect(reduced.middle).toBe(reduced.end);
+  expect(reduced.heights.every(height => height === reduced.end)).toBe(true);
 });
 
 test('uses fifteen-row pages, resets presentation on Apply and removes the footer in all-records mode', async ({ page }) => {

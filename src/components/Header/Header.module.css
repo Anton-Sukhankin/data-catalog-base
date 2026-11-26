@@ -34,7 +34,7 @@
 .profile img { width: 32px; height: 32px; object-fit: cover; border-radius: 50%; }
 .profileMenu {
   z-index:95; display:grid; gap:4px; min-width:168px; padding:6px;
-  border:1px solid var(--catalog-theme-edge, #d7e6f5); border-radius:12px; background:var(--catalog-theme-raised, #fff); color:var(--catalog-theme-text, #101d3b);
+  border:var(--catalog-card-border); border-radius:12px; background:var(--catalog-theme-raised, #fff); color:var(--catalog-theme-text, #101d3b);
   box-shadow:0 4px 20px var(--catalog-theme-thin-shadow, #101d3b1f);
 }
 .profileItem {

@@ -1,5 +1,5 @@
 .grid { display:grid; margin:0; min-width:0; }
-.grid > div { display:flex; flex-direction:column; gap:4px; min-width:0; padding:12px 20px; border:solid var(--catalog-theme-line, #d6e6fb); border-width:1px 0 0 1px; }
+.grid > div { display:flex; flex-direction:column; gap:4px; min-width:0; padding:12px 20px; border:var(--catalog-card-border); border-width:var(--catalog-card-border-width) 0 0 var(--catalog-card-border-width); }
 .grid dt { color:var(--catalog-theme-secondary, #52627c); font-size:13px; line-height:18px; }
 .grid dd { margin:0; min-width:0; overflow-wrap:anywhere; color:var(--catalog-theme-text, #34445d); font-size:18px; line-height:24px; font-weight:500; }
 
@@ -15,7 +15,7 @@
 
 @container (max-width:640px) {
   .sources { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .sources > div:nth-child(n) { border-width:1px 0 0 1px; }
+  .sources > div:nth-child(n) { border-width:var(--catalog-card-border-width) 0 0 var(--catalog-card-border-width); }
   .sources > div:nth-child(-n+2) { border-top:0; }
   .sources > div:nth-child(2n+1), .sources > div[data-wide] { border-left:0; }
 }

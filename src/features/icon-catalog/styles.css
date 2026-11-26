@@ -1,3 +1,4 @@
+@import "@data-catalog/ui/source/styles/theme.css";
 @import "tailwindcss" source(none);
 @source "./";
 
@@ -53,7 +54,7 @@
 .catalog-header > p { max-width:780px; margin:8px 0 24px; color:var(--muted-foreground); font-size:14px; line-height:22px; }
 .catalog-settings { display:grid; grid-template-columns:minmax(280px,1fr) 180px 180px; gap:24px; align-items:start; max-width:1040px; }
 .catalog-search { display:flex; align-items:center; gap:8px; }
-.catalog-search input { min-width:0; flex:1; }
+.catalog-search input { min-width:0; flex:1; border:var(--catalog-card-border); }
 .catalog-settings input[type='range'] { padding:0; border:0; box-shadow:none; accent-color:var(--primary); cursor:pointer; }
 .catalog-layout { display:grid; grid-template-columns:minmax(0,1fr) 300px; align-items:start; gap:24px; }
 .catalog-results { min-width:0; }

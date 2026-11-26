@@ -1,15 +1,18 @@
 import { expect, test } from '@playwright/test';
 
-test('the header divider matches the idle sidebar edge in both themes', async ({ page }, info) => {
+test('header, sidebar and Navigator search borders match the select in both themes', async ({ page }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/preview/navigation?section=reports');
   const header = page.getByRole('banner');
   const sidebar = page.locator('aside[data-collapsed]');
   const themeToggle = header.getByRole('button', { name: 'Тёмная тема', exact: true });
+  const search = header.locator('[data-appearance="header"]').filter({
+    has: page.getByRole('combobox', { name: 'Поиск по каталогу' }),
+  });
 
   for (const [theme, color] of [
-    ['light', 'rgb(220, 226, 234)'],
+    ['light', 'rgb(215, 230, 245)'],
     ['dark', 'rgb(66, 69, 76)'],
   ]) {
     const dark = theme === 'dark';
@@ -30,6 +33,7 @@ test('the header divider matches the idle sidebar edge in both themes', async ({
         pointerEvents: edge.pointerEvents,
       };
     })).toEqual({ thickness: '1px', color, width: '1440px', bottom: '0px', pointerEvents: 'none' });
+    await expect(search).toHaveCSS('border', `1px solid ${color}`);
     expect(await header.boundingBox()).toEqual({ x: 0, y: 0, width: 1440, height: 48 });
     await page.screenshot({ path: info.outputPath('global-header-boundary-' + theme + '.png'),
       clip: { x: 0, y: 0, width: 1440, height: 156 } });

@@ -43,11 +43,11 @@ test('master systems match the Paper grouping, geometry and shared card feedback
   await expect(icon).toHaveCSS('width', '40px');
   expect(await icon.evaluate(element => getComputedStyle(element, '::before').width)).toBe('16px');
   await first.hover();
-  await expect(first).toHaveCSS('border-top-color', 'rgb(64, 143, 231)');
-  await expect(first.locator('[data-master-name]')).toHaveCSS('color', 'rgb(0, 103, 220)');
+  await expect(first).toHaveCSS('border-top-color', 'rgb(215, 230, 245)');
+  await expect(first.locator('[data-master-name]')).toHaveCSS('color', 'rgb(54, 56, 61)');
   await expect(first.locator('[data-master-count]')).toHaveCSS('color', 'rgb(82, 105, 140)');
-  await expect(icon).toHaveCSS('background-color', 'rgb(231, 242, 255)');
-  await expect(icon).toHaveCSS('color', 'rgb(0, 103, 220)');
+  await expect(icon).toHaveCSS('background-color', 'rgb(229, 231, 235)');
+  await expect(icon).toHaveCSS('color', 'rgb(54, 56, 61)');
   expect(await first.boundingBox()).toEqual(firstBox);
   await page.getByRole('button', { name: '1С 3', exact: true }).focus();
   await page.keyboard.press('Tab');

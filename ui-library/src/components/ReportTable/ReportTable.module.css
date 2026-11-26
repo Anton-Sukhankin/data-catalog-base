@@ -37,19 +37,18 @@
 }
 .group { display: flex; flex-direction: column; gap: 4px; }
 .group + .group { margin-top: 8px; }
-.group[data-collapsed='true']:not(:last-child) { border-bottom:1px solid var(--catalog-theme-line, #e2e4ea); }
+.group[data-collapsed='true']:not(:last-child) { border-bottom:var(--catalog-card-border); }
 .groupHeading { display: flex; align-items: center; gap: 8px; height: 20px; margin-bottom: 4px; padding:0; border:0; background:transparent; color: var(--catalog-theme-secondary, #52698c); font-family:inherit; font-size:14px; font-weight:500; line-height:20px; text-align:start; cursor:pointer; }
 .group + .group .groupHeading { height: 28px; padding-top: 8px; }
 .count { composes: neutral from '../CountBadge/CountBadge.module.css'; }
 .groupHeading[aria-expanded='false'] .count { background:var(--catalog-theme-primary, #007bfc); color:var(--catalog-theme-inverse, #fff); }
 .groupReveal[data-search-target='true'] { transition:none; }
-.groupRows { display:grid; align-content:start; gap:4px; }
-.row { position: relative; height: 80px; border-radius: 12px; background: var(--catalog-theme-surface, #fff); overflow: hidden; cursor: pointer; }
-.row::after { position: absolute; inset: 0; border: var(--catalog-card-border); border-radius: inherit; content: ''; pointer-events: none; z-index: 2; }
-.row:hover::after { border-color: var(--item-hover-border); }
+.groupRows { display:grid; align-content:start; gap:var(--catalog-list-row-gap); }
+.row { composes:row from '../../styles/catalog-surface-frame.module.css'; position: relative; height: 80px; border-radius: 12px; background: var(--catalog-theme-surface, #fff); overflow: hidden; cursor: pointer; transition:background-color var(--navigation-hover-duration) ease; }
+.row.entitySurface:hover { background-color:var(--item-hover-fill); }
 .fixedReport { min-width: 0; padding-right: 1px; background: inherit; box-shadow: none; }
-[data-table-scrolled='true'] .fixedReport { box-shadow: inset -1px 0 var(--catalog-theme-line, #e2e4ea); }
-.fixedEdit { min-width: 0; display: flex; align-items: center; justify-content: center; box-shadow: inset 1px 0 var(--catalog-theme-line, #e2e4ea); background: inherit; }
+[data-table-scrolled='true'] .fixedReport { box-shadow: inset -1px 0 var(--catalog-card-border-color); }
+.fixedEdit { min-width: 0; display: flex; align-items: center; justify-content: center; box-shadow: inset 1px 0 var(--catalog-card-border-color); background: inherit; }
 .middleMask { min-width: 0; overflow: hidden; }
 .header .middleMask { overflow: clip; }
 .middleGrid {

@@ -16,8 +16,8 @@ test('term cards highlight the whole surface and keep the edit action independen
     await expect(page).toHaveURL(path);
     await page.getByRole('button', { name: 'Закрыть уведомление' }).click();
     await card.hover({ position: { x: 32, y: 85 } });
-    await expect(card).toHaveCSS('border-top-color', 'rgb(64, 143, 231)');
-    await expect(link).toHaveCSS('color', 'rgb(0, 103, 220)');
+    await expect(card).toHaveCSS('border-top-color', 'rgb(215, 230, 245)');
+    await expect(link).toHaveCSS('color', 'rgb(54, 56, 61)');
     await card.click({ position: { x: 32, y: 85 } });
     await expect(page).toHaveURL(/dictionaryTerm=term-bcr/);
     await expect(page.getByRole('heading', { name: 'Business Client Response (BCR)', level: 1 })).toBeFocused();
@@ -116,7 +116,7 @@ test('term detail matches the Paper composition and distinguishes missing and co
   const firstPanelTop = (await firstPanel.boundingBox())!.y;
   await scroll.evaluate(node => { node.scrollTop = 96; });
   await expect(detail).toHaveAttribute('data-detail-compact', 'true');
-  await expect(header).toHaveCSS('box-shadow', 'rgb(191, 196, 204) 0px -1px 0px 0px inset');
+  await expect(header).toHaveCSS('box-shadow', 'rgb(215, 230, 245) 0px -1px 0px 0px inset');
   await expect.poll(informationInset).toBe(16);
   expect((await firstPanel.boundingBox())!.y).toBeLessThan(firstPanelTop);
   await scroll.evaluate(node => { node.scrollTop = 0; });
@@ -208,7 +208,7 @@ test('dictionary counters follow available results without changing object ident
   await expect(termBody).toBeVisible();
   await expect(domainToggle.locator('span:not([data-group-chevron])')).toHaveCSS('background-color', 'rgb(0, 123, 252)');
   await expect(domainToggle.locator('[data-group-chevron]')).toHaveCSS('transform', 'none');
-  await expect(domains).toHaveCSS('border-bottom', '1px solid rgb(226, 228, 234)');
+  await expect(domains).toHaveCSS('border-bottom', '1px solid rgb(215, 230, 245)');
   await expect(workspace.locator('[data-dictionary-total]')).toHaveText('20');
   await expect(page).toHaveURL(entry);
   await termToggle.press('Space');

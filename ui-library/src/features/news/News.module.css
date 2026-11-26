@@ -1,8 +1,8 @@
 .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .card, .card *, .empty, .empty * { box-sizing: border-box; }
-.card { position: relative; display: flex; flex-direction: column; min-width: 0; height: 300px; border: 1px solid var(--catalog-theme-edge, #d7e6f5); border-radius: 12px; background: var(--catalog-theme-surface, #fff); font-family: 'CoFo Sans', sans-serif; font-synthesis: none; }
-.card { transition: border-color 160ms ease; }
-.card:hover { border-color: var(--item-hover-border); }
+.card { position: relative; display: flex; flex-direction: column; min-width: 0; height: 300px; border: var(--catalog-card-border); border-radius: 12px; background: var(--catalog-theme-surface, #fff); font-family: 'CoFo Sans', sans-serif; font-synthesis: none; }
+.card { transition: background-color var(--navigation-hover-duration) ease; }
+.card:hover { background-color: var(--item-hover-fill); }
 @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
 .cover { display: block; flex: 0 0 156px; width: 100%; height: 156px; object-fit: cover; border-radius: 11px 11px 0 0; }
 .content { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; min-width: 0; height: 142px; padding: 12px; overflow: clip; }
@@ -12,7 +12,7 @@
 .changeLabel { width: 66px; color: var(--catalog-theme-accent, #175cd3); background: var(--catalog-theme-selected, #e8f2ff); }
 .text { width: 100%; min-width: 0; }
 .title { margin: 0; overflow: hidden; color: var(--catalog-theme-text, #172438); font-size: 14px; font-weight: 500; line-height: 20px; text-overflow: ellipsis; white-space: nowrap; transition:color var(--navigation-hover-duration) ease; }
-.card:hover .title { color:var(--item-hover-ink); }
+.card:hover .title { color:var(--accent-hover-ink); }
 .summary { display: -webkit-box; height: 36px; margin: 4px 0 0; overflow: hidden; color: var(--catalog-theme-secondary, #586b83); font-size: 12px; font-weight: 400; line-height: 18px; overflow-wrap: anywhere; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .footer { display: flex; align-items: center; gap: 8px; width: 100%; height: 16px; }
 .read { position: relative; z-index: 1; display: flex; flex: 0 0 39px; align-items: center; width: 39px; height: 16px; padding: 0; border: 0; background: transparent; color: var(--catalog-theme-accent, #007bfc); font-family: inherit; font-size: 12px; font-weight: 500; line-height: 12px; letter-spacing: -.12px; cursor: pointer; }

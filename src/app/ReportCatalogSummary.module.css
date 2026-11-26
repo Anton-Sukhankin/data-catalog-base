@@ -53,7 +53,7 @@
   max-height:var(--radix-tooltip-content-available-height);
   overflow:auto;
   padding:12px 14px;
-  border:1px solid var(--catalog-theme-edge, #d7e6f5);
+  border:var(--catalog-card-border);
   border-radius:12px;
   background:var(--catalog-theme-raised, #fff);
   box-shadow:0 8px 20px var(--catalog-theme-thin-shadow, rgb(16 29 59 / 12%));

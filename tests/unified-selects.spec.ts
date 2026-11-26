@@ -149,27 +149,58 @@ for (const { section, opener, fieldId, label, option, defaultLabel } of [
   });
 }
 
-test('only header search has a pill shape and all search surfaces share the blue focus border', async ({ page }) => {
-  const blue = 'rgb(0, 123, 252)';
-  const checkField = async (input: Locator, radius: string) => {
-    const surface = input.locator('..');
-    await expect(surface).toHaveCSS('border-top-left-radius', radius);
-    await input.click();
-    await expect(input).toBeFocused();
-    await expect(surface).toHaveCSS('border-top-color', blue);
-    await expect(surface).toHaveCSS('box-shadow', `${blue} 0px 0px 0px 1px inset`);
-    await input.blur();
-    await expect(surface).not.toHaveCSS('border-top-color', blue);
-  };
+for (const theme of ['light', 'dark']) {
+  test(`search fields match the select when idle and keep the focus border in ${theme}`, async ({ page }) => {
+    const dark = theme === 'dark';
+    const edge = dark ? 'rgb(66, 69, 76)' : 'rgb(215, 230, 245)';
+    const focus = dark ? 'rgb(134, 184, 255)' : 'rgb(0, 123, 252)';
+    const idle = `1px solid ${edge}`;
+    const entry = '/preview/navigation?';
+    const checkField = async (input: Locator, radius = '8px') => {
+      const surface = input.locator('..');
+      await input.blur();
+      await expect(surface).toHaveCSS('border-top-left-radius', radius);
+      await expect(surface).toHaveCSS('border', idle);
+      await input.click();
+      await expect(input).toBeFocused();
+      await expect(surface).toHaveCSS('border-top-color', focus);
+      await expect(surface).toHaveCSS('box-shadow', `${focus} 0px 0px 0px 1px inset`);
+      await input.blur();
+      await expect(surface).toHaveCSS('border', idle);
+    };
 
-  await page.goto('/preview/navigation?section=ai');
-  await checkField(page.getByRole('combobox', { name: 'Поиск по каталогу' }), '24px');
-  await page.goto('/preview/navigation?section=ai');
-  await checkField(page.getByRole('searchbox', { name: 'Поиск по решениям AI Hub' }), '8px');
-  await page.goto('/preview/navigation?section=reports');
-  await page.getByRole('button', { name: 'Фильтр «Отчёт»', exact: true }).click();
-  await checkField(page.getByRole('searchbox', { name: 'Поиск значений' }), '8px');
-});
+    await page.goto(entry + 'section=metrics');
+    const toggle = page.getByRole('button', { name: 'Тёмная тема', exact: true });
+    if ((await toggle.getAttribute('aria-pressed') === 'true') !== dark) await toggle.click();
+    await expect(page.getByRole('combobox', { name: 'Тип метрики' }))
+      .toHaveCSS('box-shadow', `${edge} 0px 0px 0px 1px inset`);
+    await checkField(page.getByRole('combobox', { name: 'Поиск по каталогу' }), '24px');
+
+    const localSearches = [
+      ['section=ai', 'Поиск по решениям AI Hub'],
+      ['section=questions', 'Поиск в FAQ'],
+      ['section=questions&questions.tab=mine', 'Поиск по темам и сообщениям'],
+      ['section=sources&sourceSection=master', 'Поиск по мастер-системам'],
+      ['section=systems&systems.reference=crm', 'Поиск в справочнике CRM'],
+    ];
+    for (const [route, name] of localSearches) {
+      await page.goto(entry + route);
+      await checkField(page.getByRole('searchbox', { name, exact: true }));
+    }
+    await checkField(page.getByRole('textbox', { name: 'Отображаемое имя сущности', exact: true }));
+
+    const report = entry + 'section=reports&report=demo-report-summary';
+    await page.goto(report + '&reportTab=metrics');
+    await checkField(page.getByRole('textbox', { name: 'Поиск метрик по названию, домену или формуле' }));
+    await page.goto(report + '&reportTab=mailings');
+    await page.getByRole('button', { name: 'Создать рассылку', exact: true }).click();
+    await checkField(page.getByPlaceholder('Поиск значения', { exact: true }).first());
+
+    await page.goto(entry + 'section=reports');
+    await page.getByRole('button', { name: 'Фильтр «Отчёт»', exact: true }).click();
+    await checkField(page.getByRole('searchbox', { name: 'Поиск значений' }));
+  });
+}
 
 test('single filter checks follow the draft and never turn into multiple choice',async({page})=>{
   await page.goto('/preview/navigation?section=sources');

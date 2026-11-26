@@ -223,6 +223,7 @@ test('report table preserves the documented fixed edges and scrolls real records
   expect((await first.getByRole('button', { name: 'Открыть отчёт «Сводный отчёт Гостеприимства»' }).boundingBox())?.width).toBe(359);
   await expect(surface).toHaveAttribute('data-table-scrolled', 'false');
   await expect(rowCells.first()).toHaveCSS('box-shadow', 'none');
+  expect(await first.evaluate(row => getComputedStyle(row, '::after').borderTop)).toBe('1px solid rgb(215, 230, 245)');
   await page.evaluate(() => document.fonts.ready);
   await page.mouse.move(1200, 100);
   await page.screenshot({ path: 'verification/current/table/start.png', fullPage: false });
@@ -233,7 +234,8 @@ test('report table preserves the documented fixed edges and scrolls real records
   await expect.poll(() => body.evaluate((element) => element.scrollLeft)).toBe(288);
   expect(await rowCells.first().boundingBox()).toEqual(firstStart);
   expect(await rowCells.last().boundingBox()).toEqual(editStart);
-  await expect(rowCells.first()).toHaveCSS('box-shadow', 'rgb(226, 228, 234) -1px 0px 0px 0px inset');
+  await expect(rowCells.first()).toHaveCSS('box-shadow', 'rgb(215, 230, 245) -1px 0px 0px 0px inset');
+  await expect(rowCells.last()).toHaveCSS('box-shadow', 'rgb(215, 230, 245) 1px 0px 0px 0px inset');
   await page.mouse.move(1200, 100);
   await page.screenshot({ path: 'verification/current/table/end.png', fullPage: false });
   await body.hover({ position: { x: 700, y: 300 } });
@@ -242,11 +244,11 @@ test('report table preserves the documented fixed edges and scrolls real records
   await expect(surface).toHaveAttribute('data-table-scrolled', 'false');
   await expect(rowCells.first()).toHaveCSS('box-shadow', 'none');
   await first.hover();
-  await expect.poll(() => first.evaluate(row => getComputedStyle(row, '::after').borderColor)).toBe('rgb(64, 143, 231)');
-  await expect(first.getByText('Сводный отчёт Гостеприимства', { exact: true })).toHaveCSS('color', 'rgb(0, 103, 220)');
+  expect(await first.evaluate(row => getComputedStyle(row, '::after').borderTop)).toBe('1px solid rgb(215, 230, 245)');
+  await expect(first.getByText('Сводный отчёт Гостеприимства', { exact: true })).toHaveCSS('color', 'rgb(54, 56, 61)');
   const reportIcon = first.locator('[data-catalog-entity-icon="report"]');
-  await expect(reportIcon).toHaveCSS('background-color', 'rgb(231, 242, 255)');
-  await expect(reportIcon).toHaveCSS('color', 'rgb(0, 103, 220)');
+  await expect(reportIcon).toHaveCSS('background-color', 'rgb(229, 231, 235)');
+  await expect(reportIcon).toHaveCSS('color', 'rgb(54, 56, 61)');
   await first.screenshot({ path: 'verification/current/table/row-hover.png' });
   const edit = first.getByRole('button', { name: 'Редактировать отчёт «Сводный отчёт Гостеприимства»' });
   await edit.hover();

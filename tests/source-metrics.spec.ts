@@ -31,7 +31,7 @@ test('source metrics show the observed fragment, shared hover and responsive inf
   const title = first.getByRole('heading');
   const description = first.locator('p');
   const icon = first.locator('[data-catalog-entity-icon="metric"]');
-  await expect(first).toHaveCSS('border-top-color', 'rgb(214, 230, 251)');
+  await expect(first).toHaveCSS('border-top-color', 'rgb(215, 230, 245)');
   await expect(first).toHaveCSS('border-radius', '12px');
   await expect(card).toHaveCSS('padding', '12px 16px');
   await expect(card).toHaveCSS('column-gap', '12px');
@@ -47,11 +47,11 @@ test('source metrics show the observed fragment, shared hover and responsive inf
   expect(iconBox!.y + iconBox!.height / 2).toBeCloseTo(rowBox!.y + rowBox!.height / 2);
 
   await card.hover();
-  await expect(first).toHaveCSS('border-top-color', 'rgb(64, 143, 231)');
-  await expect(title).toHaveCSS('color', 'rgb(0, 103, 220)');
+  await expect(first).toHaveCSS('border-top-color', 'rgb(215, 230, 245)');
+  await expect(title).toHaveCSS('color', 'rgb(54, 56, 61)');
   await expect(description).toHaveCSS('color', 'rgb(82, 102, 131)');
-  await expect(icon).toHaveCSS('background-color', 'rgb(231, 242, 255)');
-  await expect(icon).toHaveCSS('color', 'rgb(0, 123, 252)');
+  await expect(icon).toHaveCSS('background-color', 'rgb(229, 231, 235)');
+  await expect(icon).toHaveCSS('color', 'rgb(54, 56, 61)');
 
   const information = page.getByRole('complementary', { name: 'Сведения об источнике' });
   const [wideList, wideInformation] = await Promise.all([list.boundingBox(), information.boundingBox()]);

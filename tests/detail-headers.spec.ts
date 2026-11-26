@@ -1,5 +1,7 @@
 import { test,expect } from '@playwright/test';
 
+const compactDetailDivider = 'rgb(215, 230, 245) 0px -1px 0px 0px inset';
+
 test('wheel input at the detail scroll boundaries keeps the shell and detail header fixed', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 700 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -26,14 +28,14 @@ test('wheel input at the detail scroll boundaries keeps the shell and detail hea
     await expect(card).toHaveAttribute('data-detail-compact', 'true');
     const tabStrip = header.getByRole('tablist');
     if (await tabStrip.count()) {
-      await expect(tabStrip).toHaveCSS('box-shadow', 'rgb(191, 196, 204) 0px -1px 0px 0px inset');
+      await expect(tabStrip).toHaveCSS('box-shadow', compactDetailDivider);
       const activeTab = tabStrip.getByRole('tab', { selected: true });
       expect(await activeTab.evaluate(tab => {
         const underline = getComputedStyle(tab, '::after');
         return [underline.backgroundColor, underline.height, underline.bottom];
       })).toEqual(['rgb(0, 123, 252)', '4px', '0px']);
     } else {
-      await expect(header).toHaveCSS('box-shadow', 'rgb(191, 196, 204) 0px -1px 0px 0px inset');
+      await expect(header).toHaveCSS('box-shadow', compactDetailDivider);
     }
     await scroll.evaluate(el => { el.scrollTop = el.scrollHeight; });
     for (const delta of [700, -700]) {
@@ -221,7 +223,7 @@ test('report, source and metric details keep their controls above the scroll sur
       const titleBox = (await title.boundingBox())!;
       expect((await description.boundingBox())!.y - titleBox.y - titleBox.height).toBe(0);
       await expect(header).toHaveCSS('padding-block-end', '16px');
-      await expect(header).toHaveCSS('box-shadow', /rgb\(191, 196, 204\)/);
+      await expect(header).toHaveCSS('box-shadow', compactDetailDivider);
     }
     const boundary = tabs ? (await tabs.boundingBox())! : compact;
     expect((await scroll.boundingBox())!.y).toBeCloseTo(boundary.y + boundary.height, 0);

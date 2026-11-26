@@ -5,13 +5,13 @@
   box-shadow: inset 0 0 0 1px var(--search-focus-color);
   outline: 1px solid var(--search-focus-separator, transparent);
 }
-.field { composes: surface; display: flex; align-items: center; gap: 8px; width: 100%; height: 32px; padding: 4px 8px; border: 1px solid var(--search-idle-border, var(--catalog-theme-control, #d2d3d7)); background: var(--catalog-theme-surface, #fff); }
+.field { composes: surface; display: flex; align-items: center; gap: 8px; width: 100%; height: 32px; padding: 4px 8px; border: var(--catalog-card-border); background: var(--catalog-theme-surface, #fff); }
 /* A neutral edge separates the blue focus border from the blue header. */
 .field[data-appearance='header'] { --search-focus-separator: var(--catalog-theme-workspace, #d2d3d7); border-radius: 24px; }
 .field img { flex: 0 0 16px; width: 16px; height: 16px; }
 .field input { flex: 1; min-width: 0; width: 100%; height: 20px; padding: 0; border: 0; outline: none; background: transparent; color: var(--catalog-theme-text, #101d3b); font-family: inherit; font-size: 14px; font-weight: 400; line-height: 20px; }
 .field input::placeholder { color: var(--catalog-theme-secondary, #a5a7af); opacity: 1; }
 .field input::-webkit-search-cancel-button { appearance: none; }
-.field[data-appearance='local'] { --search-idle-border: var(--catalog-theme-control, #d7e6f5); height: 40px; gap: 10px; padding-inline: 12px; background: var(--catalog-theme-section, #f3f4f9); }
+.field[data-appearance='local'] { height: 40px; gap: 10px; padding-inline: 12px; background: var(--catalog-theme-section, #f3f4f9); }
 .field[data-appearance='local'] input::placeholder { color: var(--catalog-theme-secondary, #52698c); }
 @media (forced-colors: active) { .surface:focus-within { outline: 2px solid Highlight; } }

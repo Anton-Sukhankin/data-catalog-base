@@ -27,9 +27,9 @@ test('metric and indicator icons follow report spacing and change color with the
       expect((await title.boundingBox())!.x - box.x - box.width).toBe(view === 'cards' ? 16 : 12);
 
       await item.hover({ position: { x: 4, y: 12 } });
-      await expect(icon).toHaveCSS('background-color', 'rgb(231, 242, 255)');
-      await expect(icon).toHaveCSS('color', 'rgb(0, 103, 220)');
-      await expect(title).toHaveCSS('color', 'rgb(0, 103, 220)');
+      await expect(icon).toHaveCSS('background-color', 'rgb(229, 231, 235)');
+      await expect(icon).toHaveCSS('color', 'rgb(54, 56, 61)');
+      await expect(title).toHaveCSS('color', 'rgb(54, 56, 61)');
       if (kind === 'indicator') await item.screenshot({ path: testInfo.outputPath(`indicator-${view}-hover.png`) });
       await page.getByRole('heading', { level: 1, name: 'Метрики и показатели' }).hover();
       await expect(title).toHaveCSS('color', 'rgb(16, 29, 59)');
