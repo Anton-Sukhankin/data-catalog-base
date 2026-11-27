@@ -14,7 +14,7 @@ test('master systems match the Paper grouping, geometry and shared card feedback
   await expect(page.getByRole('tab', { name: 'Мастер-системы', exact: true })).toHaveAttribute('aria-selected', 'true');
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator(catalog)).toHaveCSS('background-color', 'rgb(243, 244, 249)');
-  await expect(page.locator(catalog)).toHaveCSS('border-top-left-radius', '16px');
+  await expect(page.locator(catalog)).toHaveCSS('border-top-left-radius', '10px');
   await expect(page.locator(catalog).getByRole('heading')).toHaveText(['1С3', 'A–C5', 'E–N7'].map((name, index) => index === 0 ? name + description : name));
   await expect(page.locator(card).locator('[data-master-count]')).toHaveText([
     'Источников: 554', 'Источников: 166', 'Источников: 230', 'Источников: 2', 'Источников: 133',

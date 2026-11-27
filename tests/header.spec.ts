@@ -1,14 +1,21 @@
 import { expect, test } from '@playwright/test';
 
-test('header, sidebar and Navigator search borders match the select in both themes', async ({ page }, info) => {
+test('header and sidebar edges match report card borders in both themes', async ({ page }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/preview/navigation?section=reports');
   const header = page.getByRole('banner');
   const sidebar = page.locator('aside[data-collapsed]');
+  const resizeHandle = sidebar.getByRole('separator', { name: 'Ширина боковой панели' });
   const themeToggle = header.getByRole('button', { name: 'Тёмная тема', exact: true });
   const search = header.locator('[data-appearance="header"]').filter({
     has: page.getByRole('combobox', { name: 'Поиск по каталогу' }),
+  });
+  await page.getByRole('button', { name: 'Карточный вид', exact: true }).click();
+  const card = page.locator('[data-card-report-id]').first();
+  const sidebarEdge = () => sidebar.evaluate(element => {
+    const edge = getComputedStyle(element, '::after');
+    return { thickness: edge.borderRightWidth, color: edge.borderRightColor, style: edge.borderRightStyle };
   });
 
   for (const [theme, color] of [
@@ -19,20 +26,23 @@ test('header, sidebar and Navigator search borders match the select in both them
     if ((await themeToggle.getAttribute('aria-pressed') === 'true') !== dark) await themeToggle.click();
     await page.mouse.move(3, 3);
     await expect(page.locator('html')).toHaveAttribute('data-catalog-theme', theme);
-    expect(await sidebar.evaluate(element => {
-      const edge = getComputedStyle(element, '::after');
-      return { thickness: edge.width, color: edge.backgroundColor };
-    })).toEqual({ thickness: '1px', color });
+    const edge = { thickness: '1px', color, style: 'solid' };
+    await expect(card).toHaveCSS('border-top', `1px solid ${color}`);
+    expect(await sidebarEdge()).toEqual(edge);
+    await resizeHandle.hover({ position: { x: 12, y: 160 } });
+    expect(await sidebarEdge()).toEqual(edge);
+    await page.mouse.move(3, 3);
     expect(await header.evaluate(element => {
       const edge = getComputedStyle(element, '::after');
       return {
-        thickness: edge.height,
-        color: edge.backgroundColor,
+        thickness: edge.borderBottomWidth,
+        color: edge.borderBottomColor,
+        style: edge.borderBottomStyle,
         width: edge.width,
         bottom: edge.bottom,
         pointerEvents: edge.pointerEvents,
       };
-    })).toEqual({ thickness: '1px', color, width: '1440px', bottom: '0px', pointerEvents: 'none' });
+    })).toEqual({ ...edge, width: '1440px', bottom: '0px', pointerEvents: 'none' });
     await expect(search).toHaveCSS('border', `1px solid ${color}`);
     expect(await header.boundingBox()).toEqual({ x: 0, y: 0, width: 1440, height: 48 });
     await page.screenshot({ path: info.outputPath('global-header-boundary-' + theme + '.png'),
@@ -42,8 +52,8 @@ test('header, sidebar and Navigator search borders match the select in both them
   await sidebar.getByRole('button', { name: 'Свернуть панель', exact: true }).click();
   await page.mouse.move(3, 3);
   await expect(sidebar).toHaveAttribute('data-collapsed', 'true');
-  expect(await sidebar.evaluate(element => getComputedStyle(element, '::after').backgroundColor))
-    .toBe(await header.evaluate(element => getComputedStyle(element, '::after').backgroundColor));
+  expect(await sidebar.evaluate(element => getComputedStyle(element, '::after').borderRight))
+    .toBe(await header.evaluate(element => getComputedStyle(element, '::after').borderBottom));
 });
 
 test('profile menu toggles on click and stays open when choosing a demo item', async ({ page }, info) => {

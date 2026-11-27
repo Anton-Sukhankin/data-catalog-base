@@ -1,4 +1,4 @@
-.surface { composes:frame from '../../styles/catalog-surface-frame.module.css'; position: relative; height: calc(100vh - 120px); min-height: 320px; border-radius: 16px 16px 0 0; background: var(--catalog-theme-section, #f3f4f9); color: var(--catalog-theme-text, #243247); overflow: hidden; }
+.surface { composes:frame from '../../styles/catalog-surface-frame.module.css'; position: relative; height: calc(100vh - 120px); min-height: 320px; border-radius: var(--catalog-results-top-corners); background: var(--catalog-theme-section, #f3f4f9); color: var(--catalog-theme-text, #243247); overflow: hidden; }
 .table {
   --table-inset: 16px;
   --table-visible-width: calc(100cqw - 2 * var(--table-inset));

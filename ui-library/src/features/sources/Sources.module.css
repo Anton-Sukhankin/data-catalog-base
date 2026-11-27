@@ -14,7 +14,7 @@
 .masterScope .reset { border:var(--catalog-card-border); }
 .tools { display:flex; align-items:center; gap:8px; }
 .reset { composes:typography from '../../components/ResetFiltersButton/ResetFiltersButton.module.css'; padding:0 12px; height:32px; background:var(--catalog-theme-surface, #fff); border:0; color:var(--catalog-theme-secondary, #52698c); border-radius:8px; cursor:pointer; }
-.results { composes:frame from '../../styles/catalog-surface-frame.module.css'; display:flex; flex-direction:column; flex:1; min-height:0; position:relative; border-radius:20px 20px 0 0; background:var(--catalog-theme-section, #f3f4f9); }
+.results { composes:frame from '../../styles/catalog-surface-frame.module.css'; display:flex; flex-direction:column; flex:1; min-height:0; position:relative; border-radius:var(--catalog-results-top-corners); background:var(--catalog-theme-section, #f3f4f9); }
 .tree { display:flex; flex:1; flex-direction:column; min-height:0; background:var(--sidebar-surface); border-radius:inherit; }
 .treeHeader {
   display:flex; flex:none; align-items:center; height:48px; padding-inline:16px;

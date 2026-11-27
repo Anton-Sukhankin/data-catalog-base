@@ -1,7 +1,7 @@
 .content, .content * { box-sizing:border-box; }
 .content { width:100%; min-width:0; font-family:'CoFo Sans',sans-serif; font-synthesis:none; }
-.listSurface { composes:frame from '../../styles/catalog-surface-frame.module.css'; position:relative; padding:16px 16px 0; overflow:hidden; border-radius:16px 16px 0 0; background:var(--catalog-theme-workspace, #f3f4f9); }
-.emptyListSurface { border-radius:16px; }
+.listSurface { composes:frame from '../../styles/catalog-surface-frame.module.css'; position:relative; padding:16px 16px 0; overflow:hidden; border-radius:var(--catalog-results-top-corners); background:var(--catalog-theme-workspace, #f3f4f9); }
+.emptyListSurface { border-radius:var(--catalog-select-radius); }
 .listScroll { height:100%; padding-bottom:16px; overflow-y:auto; scrollbar-width:none; }
 .listScroll[data-paginated='true'] { padding-bottom:80px; }
 .listScroll::-webkit-scrollbar, .article::-webkit-scrollbar, .sidebar::-webkit-scrollbar { display:none; }

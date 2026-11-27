@@ -17,10 +17,8 @@
 .review h1 { margin: 0; font-size: 20px; line-height: 28px; font-weight: 500; color: var(--catalog-theme-text, #101d3b); }
 .pageHeader { display: flex; align-items: center; gap: 8px; height: 28px; margin-block-end:var(--section-heading-gap); }
 .reportWorkspace {
-  composes: frame from '@data-catalog/ui/source/styles/catalog-surface-frame.module.css';
   position: relative;
   min-height: calc(100vh - 48px);
-  border-radius: 16px 16px 0 0;
 }
 .review[data-table-preview='true'] {
   padding-right: 24px;
@@ -30,7 +28,7 @@
 .pageHeader:has(+ [data-report-summary-clip]) { margin-block-end: 0; }
 [data-report-summary-clip] + .reportTable { margin-block-start: var(--section-heading-gap); }
 .searchContextNote + .reportTable { margin-top: 8px; }
-.catalogEmpty { min-block-size: min(480px, calc(100dvh - 210px)); border-radius:16px; background:var(--catalog-theme-section, #f3f4f9); }
+.catalogEmpty { min-block-size: min(480px, calc(100dvh - 210px)); border-radius:var(--catalog-select-radius); background:var(--catalog-theme-section, #f3f4f9); }
 .eyebrow { color: var(--catalog-theme-secondary, #616675); font-size: 14px; }
 .objectData { display: grid; gap: 12px; margin: 24px 0; font-size: 14px; }
 .objectData div { display: grid; grid-template-columns: 140px 1fr; gap: 16px; }

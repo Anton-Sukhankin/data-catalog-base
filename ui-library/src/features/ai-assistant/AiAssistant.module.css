@@ -356,7 +356,6 @@
 .deleteDialog button { padding-inline:10px; }
 .deleteDialog .confirmDelete { color:var(--catalog-theme-danger, #c02311); background:var(--catalog-theme-section, #ffedea); }
 .launcher:focus-visible, .panel :is(button, input, [role='separator']):focus-visible,
-.composer:has(textarea:focus-visible),
 .deleteDialog button:focus-visible { outline:2px solid var(--catalog-theme-focus-action, #007bfc); outline-offset:2px; }
 .composer textarea:focus { outline:none; }
 

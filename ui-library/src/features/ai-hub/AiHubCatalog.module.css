@@ -70,7 +70,7 @@
   --ai-title-divider:transparent;
   --ai-actions-divider:var(--catalog-card-border-color);
   position:relative; flex:1; min-height:220px; padding:0 16px;
-  border-radius:16px 16px 0 0; background:var(--catalog-theme-section, #f3f4f9);
+  border-radius:var(--catalog-results-top-corners); background:var(--catalog-theme-section, #f3f4f9);
 }
 .tableFrame::after {
   position:absolute; z-index:4; inset:calc(48px - var(--catalog-card-border-width)) 0 auto; height:var(--catalog-card-border-width);

@@ -54,6 +54,8 @@ const surfaces = [
   { name: 'ai-cards', query: 'section=ai&ai.view=cards', selector: '[data-ai-grid]' },
   { name: 'dictionary', query: 'section=dictionary', selector: '[data-dictionary-workspace] [data-detail-tab-content]' },
   { name: 'dictionary-processes', query: 'section=dictionary&dictionaryTab=processes', selector: '[data-dictionary-workspace] [data-detail-tab-content]' },
+  { name: 'dictionary-terms', query: 'section=dictionary&dictionaryTab=terms', selector: '[data-dictionary-workspace] [data-detail-tab-content]' },
+  { name: 'dictionary-domains', query: 'section=dictionary&dictionaryTab=domains', selector: '[data-dictionary-workspace] [data-detail-tab-content]' },
   { name: 'tasks', query: 'section=tasks', selector: boundary },
   { name: 'questions', query: 'section=questions', selector: '[aria-label="Прокрутка вопросов и ответов"]', parent: true },
   { name: 'favorites', query: 'segment=favorites', selector: reportTable, switchToCards: true, withSummary: true },
@@ -63,6 +65,7 @@ const surfaces = [
   { name: 'contribution', query: 'segment=contribution', selector: '[data-contribution-content]', withSummary: true },
   { name: 'news', query: 'tab=news', selector: '[aria-label="Список новостей"]' },
 ];
+const fullyRoundedSurfaces = new Set(['dictionary', 'master-systems', 'questions', 'tasks']);
 
 async function topBorder(target: Locator) {
   await expect(target).toBeVisible();
@@ -143,6 +146,8 @@ for (const theme of ['dark', 'light']) {
     const hoverFill = theme === 'dark' ? 'rgb(50, 52, 58)' : 'rgb(249, 250, 252)';
     const select = page.getByRole('combobox', { name: 'Тип метрики' });
     await expect(select).toHaveCSS('box-shadow', `${selectColor} 0px 0px 0px 1px inset`);
+    await expect(select).toHaveCSS('border-radius', '10px');
+    const selectRadius = await select.evaluate(element => getComputedStyle(element).borderTopLeftRadius);
     const selectDivider = `1px solid ${selectColor}`;
     await page.goto(preview + 'section=reports');
     await page.getByRole('button', { name: 'Карточный вид', exact: true }).click();
@@ -160,9 +165,18 @@ for (const theme of ['dark', 'light']) {
           await page.mouse.move(5, 5);
         }
         const target = page.locator(selector);
-        const surface = withSummary ? page.locator('main[data-catalog-screen]') : parent ? target.locator('..') : target;
+        const workspace = page.locator('main[data-catalog-screen]');
+        const surface = parent ? target.locator('..') : target;
         await expect(target).toBeVisible();
-        if (name !== 'news') {
+        await expect(workspace).toHaveCSS('border-style', 'none');
+        await expect(workspace).toHaveCSS('border-radius', '0px');
+        expect(await workspace.evaluate(element => getComputedStyle(element, '::before').content)).toBe('none');
+        if (name !== 'crm') {
+          const expectedRadius = fullyRoundedSurfaces.has(name) ? selectRadius : `${selectRadius} ${selectRadius} 0px 0px`;
+          await expect(surface).toHaveCSS('border-radius', expectedRadius);
+          expect(await surface.evaluate(element => getComputedStyle(element, '::before').borderRadius)).toBe(expectedRadius);
+        }
+        if (name !== 'news' && name !== 'domains') {
           expect(await surface.evaluate(element => getComputedStyle(element, '::before').borderTop)).toBe(selectDivider);
         }
         if (borderDividers[name]) {
@@ -227,24 +241,22 @@ for (const theme of ['dark', 'light']) {
           }
         }
         if (withSummary) {
-          const heading = surface.getByRole('heading', { level: 1 });
-          const summary = surface.getByRole('region', { name: 'Сводка каталога отчётов' });
+          const heading = workspace.getByRole('heading', { level: 1 });
+          const summary = workspace.getByRole('region', { name: 'Сводка каталога отчётов' });
           await expect(heading).toBeVisible();
           await expect(summary).toBeVisible();
-          const workspace = (await surface.boundingBox())!;
+          const workspaceBox = (await workspace.boundingBox())!;
           const headingBox = (await heading.boundingBox())!;
           const summaryBox = (await summary.boundingBox())!;
           const resultsBox = (await target.boundingBox())!;
-          expect(headingBox.y).toBeGreaterThan(workspace.y + 8);
+          expect(headingBox.y).toBeGreaterThan(workspaceBox.y + 8);
           expect(summaryBox.y).toBeGreaterThan(headingBox.y + headingBox.height);
-          expect(resultsBox.y + resultsBox.height).toBeLessThanOrEqual(workspace.y + workspace.height + 1);
-          if (name !== 'domains') {
-            expect(await target.evaluate(element => getComputedStyle(element, '::before').borderTop)).toBe(selectDivider);
-          }
+          expect(resultsBox.y + resultsBox.height).toBeLessThanOrEqual(workspaceBox.y + workspaceBox.height + 1);
         }
-        if (['reports-table', 'reports-cards', 'metrics-table', 'sources-table', 'references-list', 'ai-table', 'subscriptions', 'contribution', 'crm'].includes(name)) {
+        if (['reports-table', 'reports-cards', 'metrics-table', 'sources-table', 'references-list', 'ai-table', 'subscriptions', 'contribution', 'crm', 'dictionary'].includes(name)) {
           await page.screenshot({ path: info.outputPath(`catalog-frame-${name}.png`) });
-          await info.attach(`coordinates-${name}`, { body: JSON.stringify(await surface.boundingBox()), contentType: 'application/json' });
+          const capturedSurface = withSummary ? workspace : surface;
+          await info.attach(`coordinates-${name}`, { body: JSON.stringify(await capturedSurface.boundingBox()), contentType: 'application/json' });
         }
       });
     }

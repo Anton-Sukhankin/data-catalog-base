@@ -7,6 +7,8 @@
   --accent-hover-border: #408fe7;
   --accent-hover-ink: #0067dc;
   --accent-hover-icon-fill: #e7f2ff;
+  --catalog-select-radius: 10px;
+  --catalog-results-top-corners: var(--catalog-select-radius) var(--catalog-select-radius) 0 0;
   --catalog-card-gap: 8px;
   --catalog-list-row-gap: 8px;
   --description-separator-gap: 5px;

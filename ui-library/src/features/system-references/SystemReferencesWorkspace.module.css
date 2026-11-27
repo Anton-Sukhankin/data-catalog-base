@@ -6,7 +6,7 @@
 .catalog[data-paginated='true'] { padding-bottom:0; }
 .catalog > .header { align-items:flex-start; margin-block-end:var(--section-heading-gap); }
 .description { margin:4px 0 0; color:var(--catalog-theme-secondary, #52698c); font-size:14px; line-height:20px; }
-.catalogResults { composes:frame from '../../styles/catalog-surface-frame.module.css'; display:flex; flex:1; flex-direction:column; min-width:0; min-height:160px; border-radius:16px 16px 0 0; background:var(--catalog-theme-section, #f3f4f9); }
+.catalogResults { composes:frame from '../../styles/catalog-surface-frame.module.css'; display:flex; flex:1; flex-direction:column; min-width:0; min-height:160px; border-radius:var(--catalog-results-top-corners); background:var(--catalog-theme-section, #f3f4f9); }
 .groupHeader { display:flex; flex:none; flex-wrap:wrap; align-items:center; gap:4px 8px; min-height:48px; padding:8px 16px; border-bottom:var(--catalog-card-border); }
 .catalogResults[data-view='list'] > .groupHeader { border-block-end:var(--catalog-card-border); }
 .groupHeader h2 { margin:0; font-size:16px; font-weight:500; line-height:22px; }

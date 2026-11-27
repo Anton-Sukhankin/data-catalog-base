@@ -215,8 +215,8 @@ test('dictionary counters follow available results without changing object ident
   await expect(termBody).toBeHidden();
   expect(await backdrop.boundingBox()).toEqual(backdropBox);
   await expect(backdrop).toHaveCSS('background-color', 'rgb(243, 244, 249)');
-  await expect(backdrop).toHaveCSS('border-bottom-left-radius', '16px');
-  await expect(backdrop).toHaveCSS('border-bottom-right-radius', '16px');
+  await expect(backdrop).toHaveCSS('border-bottom-left-radius', '10px');
+  await expect(backdrop).toHaveCSS('border-bottom-right-radius', '10px');
   await expect(terms).toHaveCSS('border-bottom-width', '0px');
   await domainToggle.press('Enter');
   await expect(domainBody).toBeVisible();

@@ -299,6 +299,8 @@ test('sidebar resizes from its edge and restores the default width', async ({ pa
   await page.mouse.move(344, 208);
   await expectWidth(344);
   await expect(sidebar).toHaveAttribute('data-resizing', 'true');
+  expect(await sidebar.evaluate(element => getComputedStyle(element, '::after').borderRightColor))
+    .toBe('rgb(215, 230, 245)');
   await expect(handle).toHaveAttribute('aria-valuenow', '344');
   await expect.poll(async () => (await page.getByRole('main').boundingBox())?.x).toBe(344);
   await page.mouse.move(800, 208);
@@ -344,7 +346,7 @@ test('every collapsed icon keeps the background of its corresponding expanded st
   const transparent = 'rgba(0, 0, 0, 0)';
   const neutralEdge = 'rgb(215, 230, 245)';
   const activeEdge = 'rgb(0, 122, 255)';
-  const edgeColor = () => sidebar.evaluate(element => getComputedStyle(element, '::after').backgroundColor);
+  const edgeColor = () => sidebar.evaluate(element => getComputedStyle(element, '::after').borderRightColor);
   const icon = (button: typeof current) => button.locator('img').locator('..');
   await expect(current).toHaveAttribute('aria-current', 'page');
   await expect(current).toHaveCSS('background-color', highlight);
@@ -365,7 +367,7 @@ test('every collapsed icon keeps the background of its corresponding expanded st
   await expect(reports).toHaveCSS('background-color', transparent);
 
   await handle.hover();
-  await expect.poll(edgeColor).toBe(activeEdge);
+  await expect.poll(edgeColor).toBe(neutralEdge);
   await expect(toggle).toHaveCSS('color', activeEdge);
   await expect(toggle).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   await page.screenshot({ path: testInfo.outputPath('sidebar-edge-hover.png') });
@@ -374,7 +376,7 @@ test('every collapsed icon keeps the background of its corresponding expanded st
   await toggle.hover();
   await expect(toggle).toHaveCSS('cursor', 'pointer');
   await expect(toggle).toHaveCSS('background-color', 'rgb(229, 241, 255)');
-  await expect.poll(edgeColor).toBe(activeEdge);
+  await expect.poll(edgeColor).toBe(neutralEdge);
   await toggle.click();
   await expect(sidebar).toHaveCSS('width', '64px');
   const iconHighlight = (button: typeof reports) =>
@@ -391,7 +393,7 @@ test('every collapsed icon keeps the background of its corresponding expanded st
   await current.hover();
   await expect.poll(() => iconHighlight(current)).toBe(highlight);
   await toggle.hover();
-  await expect.poll(edgeColor).toBe(activeEdge);
+  await expect.poll(edgeColor).toBe(neutralEdge);
   await expect(toggle).toHaveCSS('background-color', 'rgb(229, 241, 255)');
   await reports.click();
   await page.mouse.move(700, 500);
@@ -439,7 +441,7 @@ test('navigation matches documented geometry and keeps selected identity across 
   await expect(reports).toHaveCSS('background-color', 'rgb(226, 230, 236)');
   await sidebar.screenshot({ path: 'verification/current/navigation/expanded-reports.png' });
   const collapse = page.getByRole('button', { name: 'Свернуть панель', exact: true });
-  const edgeColor = () => sidebar.evaluate(element => getComputedStyle(element, '::after').backgroundColor);
+  const edgeColor = () => sidebar.evaluate(element => getComputedStyle(element, '::after').borderRightColor);
   await expect(collapse).toHaveCSS('opacity', '1');
   expect(await collapse.boundingBox()).toEqual({ x: 268, y: 83, width: 24, height: 24 });
   await expect.poll(edgeColor).toBe('rgb(215, 230, 245)');
@@ -451,7 +453,7 @@ test('navigation matches documented geometry and keeps selected identity across 
   await expect(collapse).toHaveCSS('border-top-color', 'rgb(215, 230, 245)');
   await expect(collapse.locator('span')).toHaveCSS('background-color', 'rgb(104, 115, 132)');
   await page.mouse.move(286, 400);
-  await expect.poll(edgeColor).toBe('rgb(0, 122, 255)');
+  await expect.poll(edgeColor).toBe('rgb(215, 230, 245)');
   await expect(collapse).toHaveCSS('border-top-color', 'rgb(0, 122, 255)');
   await expect(collapse.locator('span')).toHaveCSS('background-color', 'rgb(0, 122, 255)');
   await collapse.hover();
@@ -478,7 +480,8 @@ test('navigation matches documented geometry and keeps selected identity across 
   await nav.getByRole('button', { name: 'Вопросы и ответы', exact: true }).press('Tab');
   await expect(expand).toBeFocused();
   await expect(expand).toHaveCSS('opacity', '1');
-  await expect.poll(edgeColor).toBe('rgb(0, 122, 255)');
+  await expect.poll(edgeColor).toBe('rgb(215, 230, 245)');
+  await expect(expand).toHaveCSS('border-top-color', 'rgb(0, 122, 255)');
   await expand.press('Enter');
   await expect(reports).toHaveAttribute('aria-current', 'page');
   await expect.poll(async () => (await sidebar.boundingBox())?.width).toBe(280);

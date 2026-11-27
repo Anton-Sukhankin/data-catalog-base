@@ -607,7 +607,7 @@ test('Home empty states and pagination remain accessible in both views',async({p
     const { height: summaryHeight } = (await summary.boundingBox())!;
     const summarySpace = summaryHeight + 16;
     expect(await surface.boundingBox()).toEqual({x:296,y:210+summarySpace,width:1128,height:(name==='subscriptions'?690:674)-summarySpace});
-    await expect(surface).toHaveCSS('border-bottom-right-radius','16px');
+    await expect(surface).toHaveCSS('border-bottom-right-radius','10px');
     await page.screenshot({path:`verification/current/home/empty-${name}.png`});
     await expect(page.getByRole('navigation',{name:/^Страницы/})).toHaveCount(0);
   }
@@ -615,12 +615,12 @@ test('Home empty states and pagination remain accessible in both views',async({p
   await expect(page.getByRole('heading',{name:'Новостей пока нет',exact:true})).toBeVisible();
   const emptyNews=page.getByRole('region',{name:'Список новостей',exact:true});
   expect(await emptyNews.boundingBox()).toEqual({x:296,y:154,width:1128,height:746});
-  await expect(emptyNews).toHaveCSS('border-bottom-right-radius','16px');
+  await expect(emptyNews).toHaveCSS('border-bottom-right-radius','10px');
   await page.screenshot({path:'verification/current/news/empty.png'});
   await expect(page.getByRole('tablist',{name:'Категории новостей'})).toHaveCount(0);
   await page.goto('/previews/contributors.html?view=cards&case=empty');
   expect((await page.locator('[data-contribution-content]').boundingBox())?.height).toBe(674);
-  await expect(page.locator('[data-contribution-content]')).toHaveCSS('border-bottom-right-radius','16px');
+  await expect(page.locator('[data-contribution-content]')).toHaveCSS('border-bottom-right-radius','10px');
   await page.goto('/preview/navigation?segment=contribution&homeCase=paginated');
   await page.getByRole('button',{name:'Карточный вид',exact:true}).click();
   const people=page.locator('[data-contribution-content]');

@@ -4,8 +4,8 @@
 .tools label { display: flex; align-items: center; gap: 8px; }
 .tools p { margin: 8px 0; color: var(--catalog-theme-secondary, #52698c); }
 .tools output { display: block; }
-.surface { width: 1128px; height: 690px; padding: 16px 16px 0; overflow: hidden; border-radius: 16px 16px 0 0; background: var(--catalog-theme-workspace, #f3f4f9); }
+.surface { width: 1128px; height: 690px; padding: 16px 16px 0; overflow: hidden; border-radius: var(--catalog-results-top-corners); background: var(--catalog-theme-workspace, #f3f4f9); }
 .scroll { width: 1096px; height: 100%; padding-bottom: 16px; overflow-y: auto; scrollbar-width: none; }
 .scroll::-webkit-scrollbar { display: none; }
-.emptySurface { height: 746px; border-radius: 16px; }
-.longSurface { width: 392px; padding: 16px; border-radius: 16px; background: var(--catalog-theme-workspace, #f3f4f9); }
+.emptySurface { height: 746px; border-radius: var(--catalog-select-radius); }
+.longSurface { width: 392px; padding: 16px; border-radius: var(--catalog-select-radius); background: var(--catalog-theme-workspace, #f3f4f9); }

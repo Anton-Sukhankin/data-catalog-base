@@ -1,8 +1,8 @@
 .surface, .surface * { box-sizing:border-box; }
-.surface { composes:frame from '../../styles/catalog-surface-frame.module.css'; position:relative; display:flex; flex-direction:column; width:100%; min-height:0; overflow:hidden; border-radius:16px 16px 0 0; background:var(--catalog-theme-section, #f3f4f9); color:var(--catalog-theme-text, #243247); font-family:'CoFo Sans',sans-serif; font-synthesis:none; }
+.surface { composes:frame from '../../styles/catalog-surface-frame.module.css'; position:relative; display:flex; flex-direction:column; width:100%; min-height:0; overflow:hidden; border-radius:var(--catalog-results-top-corners); background:var(--catalog-theme-section, #f3f4f9); color:var(--catalog-theme-text, #243247); font-family:'CoFo Sans',sans-serif; font-synthesis:none; }
 .surface[data-view='cards'] { padding:16px 16px 0; }
 .surface[data-view='list'] { padding:0 16px; }
-.surface[data-empty='true'] { gap:0; padding:16px 16px 0; border-radius:16px; }
+.surface[data-empty='true'] { gap:0; padding:16px 16px 0; border-radius:var(--catalog-select-radius); }
 .body { position:relative; flex:1; min-height:0; }
 .scroll { height:100%; overflow:auto; scrollbar-width:none; outline-offset:-2px; }
 .scroll::-webkit-scrollbar { display:none; }

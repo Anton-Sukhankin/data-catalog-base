@@ -92,6 +92,34 @@ test('header launcher aligns with the Navigator in both themes and keeps keyboar
   await expect(button).toBeFocused();
 });
 
+test('assistant composer keeps its resting border when clicked in both themes', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/preview/navigation?section=reports');
+  const themeToggle = page.getByRole('button', { name: 'Тёмная тема', exact: true });
+
+  for (const theme of ['light', 'dark']) {
+    if ((await themeToggle.getAttribute('aria-pressed') === 'true') !== (theme === 'dark')) {
+      await themeToggle.click();
+    }
+    await launcher(page).click();
+    const field = message(page);
+    const composer = field.locator('..');
+    await expect(field).toBeVisible();
+    const border = await composer.evaluate(element => getComputedStyle(element).border);
+
+    await field.click();
+    await expect(field).toBeFocused();
+    await expect(field).toHaveCSS('outline-style', 'none');
+    await expect(composer).toHaveCSS('outline-style', 'none');
+    await expect(composer).toHaveCSS('border', border);
+    await field.fill('Проверка поля ввода');
+    await expect(field).toHaveValue('Проверка поля ввода');
+    await field.clear();
+    await close(page).click();
+    await expect(launcher(page)).toBeVisible();
+  }
+});
+
 test('assistant launcher stays visually stable during section transitions', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.addInitScript(() => {

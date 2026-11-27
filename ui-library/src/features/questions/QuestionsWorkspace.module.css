@@ -1,7 +1,7 @@
 .page { display: flex; flex-direction: column; height: 100%; min-height: 0; container-type: inline-size; color: var(--catalog-theme-text, #101d3b); }
 .heading { display: grid; flex: none; gap: 4px; margin-block-end:var(--section-heading-gap); }
 .heading p { margin: 0; color: var(--catalog-theme-secondary, #52698c); font-size: 14px; line-height: 20px; }
-.workspace { composes:frame from '../../styles/catalog-surface-frame.module.css'; display: flex; flex-direction: column; min-height: 0; padding-block: 16px; border-radius: 12px; background: var(--catalog-theme-workspace, #f3f4f9); }
+.workspace { composes:frame from '../../styles/catalog-surface-frame.module.css'; display: flex; flex-direction: column; min-height: 0; padding-block: 16px; border-radius: var(--catalog-select-radius); background: var(--catalog-theme-workspace, #f3f4f9); }
 .workspace[data-paginated='true'] { position:relative; flex:1; }
 .workspace[data-paginated='true'] .workspaceScroll { flex:1; padding-block-end:64px; }
 .workspaceScroll { display: grid; align-content: start; gap: 8px; min-height: 0; padding-inline: 16px; overflow: auto; }
